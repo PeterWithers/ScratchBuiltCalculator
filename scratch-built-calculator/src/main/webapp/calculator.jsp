@@ -49,7 +49,7 @@
                 canvas = document.getElementById("canvas");
                 viewer = new HG.Viewer(canvas);
 
-                //viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});
+                viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});
             }
 
             function onLoaded() {
@@ -58,7 +58,7 @@
     <body onload="onLoad();">
         <h1>Scratch Built R/C Calculator Prototype</h1>
         <a href="scratchbuilt/calculator/ac3d">test ac3d</a><br>
-        <input id="clickMe" type="button" value="clickme" onclick="viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});" /><br>
-        <canvas id="canvas"></canvas><br>
+        <input id="clickMe" type="button" value="reload" onclick="viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});" /><br>
+        <canvas id="canvas" height="500" width="900"></canvas><br>
     </body>
 </html>
