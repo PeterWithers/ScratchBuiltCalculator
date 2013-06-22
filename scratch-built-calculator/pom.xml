@@ -5,8 +5,8 @@
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <groupId>com.bambooradical.scratch-built-calculator</groupId>
-    <artifactId>scratch-built-calculator</artifactId>
+    <groupId>com.bambooradical.scratch-built</groupId>
+    <artifactId>scratch-built</artifactId>
     <organization> 
         <name>Peter Withers</name>
         <url>https://github.com/PeterWithers/ScratchBuiltCalculator</url>

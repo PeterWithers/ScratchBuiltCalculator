@@ -28,7 +28,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Scratch Built R/C Calculator Prototype</title>
         <script type="text/javascript" src="hangar-read-only/src/libs/gl-matrix-min.js"></script> 
         <script type="text/javascript" src="hangar-read-only/src/libs/polyfill.js"></script>                 
         <script type="text/javascript" src="hangar-read-only/src/ac.js"></script>
@@ -49,15 +49,16 @@
                 canvas = document.getElementById("canvas");
                 viewer = new HG.Viewer(canvas);
 
-                viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});
+                //viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});
             }
 
             function onLoaded() {
             }</script>
     </head>
     <body onload="onLoad();">
-        <h1>Hello World!</h1>
-        <a href="scratchbuilt/calculator/ac3d">test ac3d</a>
-        <canvas id="canvas"></canvas>
+        <h1>Scratch Built R/C Calculator Prototype</h1>
+        <a href="scratchbuilt/calculator/ac3d">test ac3d</a><br>
+        <input id="clickMe" type="button" value="clickme" onclick="viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});" /><br>
+        <canvas id="canvas"></canvas><br>
     </body>
 </html>
