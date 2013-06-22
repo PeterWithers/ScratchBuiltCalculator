@@ -29,9 +29,35 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
+        <script type="text/javascript" src="hangar-read-only/src/libs/gl-matrix-min.js"></script> 
+        <script type="text/javascript" src="hangar-read-only/src/libs/polyfill.js"></script>                 
+        <script type="text/javascript" src="hangar-read-only/src/ac.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/hangar.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/camera.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/loader.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/renderer.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/scene.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/sgi.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/shader.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/trackball.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/triangulator.js"></script>
+        <script type="text/javascript" src="hangar-read-only/src/viewer.js"></script>
+        <script type="text/javascript">
+            var canvas;
+
+            function onLoad() {
+                canvas = document.getElementById("canvas");
+                viewer = new HG.Viewer(canvas);
+
+                viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});
+            }
+
+            function onLoaded() {
+            }</script>
     </head>
-    <body>
+    <body onload="onLoad();">
         <h1>Hello World!</h1>
         <a href="scratchbuilt/calculator/ac3d">test ac3d</a>
+        <canvas id="canvas"></canvas>
     </body>
 </html>
