@@ -33,9 +33,9 @@ public class TrainerDataTest {
     public void testGetStabiliserRatio() {
         System.out.println("getStabiliserRatio");
         TrainerData instance = new TrainerData();
-        int expResult = 0;
-        int result = instance.getStabiliserRatio();
-        assertEquals(expResult, result);
+        double expResult = 3;
+        double result = instance.getStabiliserRatio();
+        assertEquals(expResult, result, 0);
     }
 
     /**
@@ -45,7 +45,7 @@ public class TrainerDataTest {
     public void testGetStabiliserArea() {
         System.out.println("getStabiliserArea");
         TrainerData instance = new TrainerData();
-        int expResult = 0;
+        int expResult = 19200;
         int result = instance.getStabiliserArea();
         assertEquals(expResult, result);
     }
@@ -57,7 +57,7 @@ public class TrainerDataTest {
     public void testGetElevatorArea() {
         System.out.println("getElevatorArea");
         TrainerData instance = new TrainerData();
-        int expResult = 0;
+        int expResult = 4800;
         int result = instance.getElevatorArea();
         assertEquals(expResult, result);
     }
@@ -69,7 +69,7 @@ public class TrainerDataTest {
     public void testGetFinArea() {
         System.out.println("getFinArea");
         TrainerData instance = new TrainerData();
-        int expResult = 0;
+        int expResult = 6400;
         int result = instance.getFinArea();
         assertEquals(expResult, result);
     }
@@ -241,5 +241,16 @@ public class TrainerDataTest {
         int result = instance.getFuselageSectionLengthC();
         assertEquals(expResult, result);
     }
-  
+
+    /**
+     * Test of getWingArea method, of class TrainerData.
+     */
+    @Test
+    public void testGetWingArea() {
+        System.out.println("getWingArea");
+        TrainerData instance = new TrainerData();
+        double expResult = 12.8;
+        double result = instance.getWingArea();
+        assertEquals(expResult, result, 0);
+    }
 }

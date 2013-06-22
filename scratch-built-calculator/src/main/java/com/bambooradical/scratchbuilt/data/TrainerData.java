@@ -24,26 +24,31 @@ package com.bambooradical.scratchbuilt.data;
  */
 public class TrainerData implements ModelData {
 
-    int stabiliserRatio; // stabiliser ratio should be about 3:1
-    int stabiliserArea; //stabiliser area should be 15-20% of the wing area
-    int elevatorArea; // elevator area should be 20-30% of the stabaliser area
-    int finArea; //fin area should be 33% of the stabaliser
-    int dihedralAngle = 3; // dihedral angle: 3
-    int fuselageLength = 600; // fuselageLength: 600
-    int fuselageRadius = 30; // fuselageRadius: 30
-    int stabiliserSpan = 120; // stabiliserSpan 120
-    int stabiliserHeight = 80; // stabiliserHeight: 80
-    int stabiliserChord = 80; // stabiliserChord: 80
+    private int chordRibLength = 120;
+    private int aileronChord = chordRibLength / 3;
+    private int chordLength = chordRibLength + aileronChord;
+    private int strutSpacing = 50;
+    private int strutsPerWing = 8;
+    private int wingSpan = strutSpacing * strutsPerWing * 2;
+    private double wingArea = ((wingSpan / 100.0) * ((chordLength) / 100.0));
+    private int aileronLength = wingSpan / 4;
+    private int dihedralAngle = 3;
+    private int stabiliserChord = 80;
+    private int stabiliserSpan = (int) (stabiliserChord * 3.0 / 2.0);
+    private int elevatorChord = 20;
+    private int stabiliserHeight = stabiliserChord;
+    private int stabiliserArea = stabiliserSpan * 2 * stabiliserChord; // stabiliser area should be 15-20% of the wing area
+    private int finArea = stabiliserHeight * stabiliserChord; //fin area should be 33% of the stabaliser
+    private int elevatorArea = stabiliserSpan * 2 * elevatorChord; // elevator area should be 20-30% of the stabaliser area
+    private int fuselageLength = (int) (wingSpan * 0.75);
+//fuselageLength = chordLength*4.5;
+    private int fuselageRadius = (int) (fuselageLength * 0.1 / 2);
+    private double stabiliserRatio = (stabiliserSpan * 2.0) / stabiliserChord; // stabiliser ratio should be about 3:1
 //ECHO: "stabiliserArea: ", 19200
 //ECHO: "finArea: ", 6400
 //ECHO: "elevatorArea: ", 4800
-    int elevatorChord = 20;
-    int aileronLength = 200;
-    int aileronChord = 40;
 //ECHO: "noseCone(10,15,1.6,9.5,1,2);"
 //ECHO: "fuselageRib(15,10,1,2,false)"
-    int chordLength = 160;
-    int wingSpan = 800;
 //ECHO: "wingspan should be 5-6 times the chord: ", 5
 //ECHO: "wing area: ", 12.8, "dm2"
 //ECHO: "empennageStruts(80,120,80,20);"
@@ -55,74 +60,97 @@ public class TrainerData implements ModelData {
     int fuselageSectionLengthB = 160;
     int fuselageSectionLengthC = 280;
 
-    public int getStabiliserRatio() {
+    @Override
+    public double getStabiliserRatio() {
         return stabiliserRatio;
     }
 
+    @Override
     public int getStabiliserArea() {
         return stabiliserArea;
     }
 
+    @Override
     public int getElevatorArea() {
         return elevatorArea;
     }
 
+    @Override
     public int getFinArea() {
         return finArea;
     }
 
+    @Override
     public int getDihedralAngle() {
         return dihedralAngle;
     }
 
+    @Override
     public int getFuselageLength() {
         return fuselageLength;
     }
 
+    @Override
     public int getFuselageRadius() {
         return fuselageRadius;
     }
 
+    @Override
     public int getStabiliserSpan() {
         return stabiliserSpan;
     }
 
+    @Override
     public int getStabiliserHeight() {
         return stabiliserHeight;
     }
 
+    @Override
     public int getStabiliserChord() {
         return stabiliserChord;
     }
 
+    @Override
     public int getElevatorChord() {
         return elevatorChord;
     }
 
+    @Override
     public int getAileronLength() {
         return aileronLength;
     }
 
+    @Override
     public int getAileronChord() {
         return aileronChord;
     }
 
+    @Override
     public int getChordLength() {
         return chordLength;
     }
 
+    @Override
     public int getWingSpan() {
         return wingSpan;
     }
 
+    @Override
+    public double getWingArea() {
+        return wingArea;
+    }
+
+    @Override
     public int getFuselageSectionLengthA() {
         return fuselageSectionLengthA;
     }
 
+    @Override
     public int getFuselageSectionLengthB() {
         return fuselageSectionLengthB;
     }
 
+    @Override
     public int getFuselageSectionLengthC() {
         return fuselageSectionLengthC;
     }

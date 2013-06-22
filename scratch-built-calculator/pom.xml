@@ -19,7 +19,6 @@
         <netbeans.hint.license>gpl20</netbeans.hint.license>  
         <plugin.license.copyrightYear>2013</plugin.license.copyrightYear>    
     </properties>
-
     <dependencies>
         <!-- Compile/runtime dependencies -->
         <dependency>
@@ -131,7 +130,30 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>     
+            </plugin>  
+<!--            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jaxb-components</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <forceRegenerate>true</forceRegenerate>
+                            <generatePackage>net.sourceforge.jsbsim.schema</generatePackage>                 
+                            <outputDirectory>${basedir}/src/generated/jaxb</outputDirectory>
+                            <schemas>
+                                <schema>
+                                    <url>http://maven.apache.org/xsd/maven-4.0.0.xsd</url>
+                                    <url>http://jsbsim.sourceforge.net/JSBSim.xsd</url>
+                                </schema>
+                            </schemas>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>   -->
         </plugins>
     </build>
 

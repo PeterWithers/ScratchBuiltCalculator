@@ -24,7 +24,7 @@ package com.bambooradical.scratchbuilt.data;
  */
 public interface ModelData {
 
-    public int getStabiliserRatio();
+    public double getStabiliserRatio();
 
     public int getStabiliserArea();
 
@@ -53,6 +53,8 @@ public interface ModelData {
     public int getChordLength();
 
     public int getWingSpan();
+
+    public double getWingArea();
 
     public int getFuselageSectionLengthA();
 
