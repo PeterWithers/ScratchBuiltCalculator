@@ -60,6 +60,7 @@ public class ModelDataImpl implements ModelData {
     int fuselageSectionLengthA = 160;
     int fuselageSectionLengthB = 160;
     int fuselageSectionLengthC = 280;
+    int weightInGrams = 500;
 
     public ModelDataImpl(int aileronChord, int chordLength, int wingSpan, int aileronLength, double dihedralAngle, double attackAngle, int stabiliserHeight, int fuselageLength, int fuselageRadius) {
         this.aileronChord = aileronChord;
@@ -188,5 +189,10 @@ public class ModelDataImpl implements ModelData {
     @Override
     public int getFuselageSectionLengthC() {
         return fuselageSectionLengthC;
+    }
+
+    @Override
+    public double getWeightInGrams() {
+        return weightInGrams;
     }
 }

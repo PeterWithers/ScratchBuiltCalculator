@@ -43,7 +43,8 @@ public class YasimConfig {
     @XmlAttribute(name = "mass")
     public double getMass() {
         // The empty (no fuel) weight, in pounds. It does include the weight of the engine(s), so when you add the engine weight in its tag, it acts just like a ballast.
-        return 1;
+        // convert gms into a descendant of the Roman libra aka lbs
+        return modelData.getWeightInGrams() * 0.00220462;
     }
 
     @XmlElement(name = "approach")
@@ -62,5 +63,14 @@ public class YasimConfig {
     public YasimCockpit getYasimCockpit() {
         // The location of the cockpit (pilot eyepoint).
         return new YasimCockpit();
+    }
+
+    @XmlElement(name = "fuselage")
+    public Fuselage[] getYasimFuselage() {
+        // This defines a tubelike structure. It will be given an even mass and aerodynamic force distribution by the solver. You can have as many as you like, in any orientation you please.
+        return new Fuselage[]{
+            new Fuselage("fuselage part A (front)", 0, 0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageRadius(), modelData.getFuselageRadius() * 2),
+            new Fuselage("fuselage part B (middle)", 0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageSectionLengthB(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius() * 2),
+            new Fuselage("fuselage part C (back)", 0, 0, modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB(), modelData.getFuselageSectionLengthC(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius())};
     }
 }

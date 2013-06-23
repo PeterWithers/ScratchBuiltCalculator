@@ -63,4 +63,6 @@ public interface ModelData {
     public int getFuselageSectionLengthB();
 
     public int getFuselageSectionLengthC();
+
+    public double getWeightInGrams();
 }
