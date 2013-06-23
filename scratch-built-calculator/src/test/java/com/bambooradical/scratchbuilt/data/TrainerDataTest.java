@@ -81,9 +81,21 @@ public class TrainerDataTest {
     public void testGetDihedralAngle() {
         System.out.println("getDihedralAngle");
         TrainerData instance = new TrainerData();
-        int expResult = 3;
-        int result = instance.getDihedralAngle();
-        assertEquals(expResult, result);
+        double expResult = 3;
+        double result = instance.getDihedralAngle();
+        assertEquals(expResult, result, 0);
+    }
+
+    /**
+     * Test of getAttackAngle method, of class TrainerData.
+     */
+    @Test
+    public void testGetAttackAngle() {
+        System.out.println("getAttackAngle");
+        TrainerData instance = new TrainerData();
+        double expResult = 3;
+        double result = instance.getAttackAngle();
+        assertEquals(expResult, result, 0.0);
     }
 
     /**

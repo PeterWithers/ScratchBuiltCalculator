@@ -32,7 +32,9 @@ public interface ModelData {
 
     public int getFinArea();
 
-    public int getDihedralAngle();
+    public double getDihedralAngle();
+
+    public double getAttackAngle();
 
     public int getFuselageLength();
 

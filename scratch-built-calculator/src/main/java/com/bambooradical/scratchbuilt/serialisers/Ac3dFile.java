@@ -123,18 +123,20 @@ public class Ac3dFile {
                 + "kids 0\n";
     }
 
-    private String getRotationMatrix(double angle) {
-        double radians = Math.toRadians(angle);
-        return "rot 1 0 0, "
-                + "0 " + Math.cos(radians) + " " + -Math.sin(radians) + ", "
-                + "0 " + Math.sin(radians) + " " + Math.cos(radians) + "\n";
+    private String getRotationMatrix(double angleX, double angleY, double angleZ) {
+        double radiansX = Math.toRadians(angleX);
+        double radiansY = Math.toRadians(angleY);
+        double radiansZ = Math.toRadians(angleZ);
+        return "rot " + Math.cos(radiansY) * Math.cos(radiansZ) + " " + -Math.sin(radiansZ) + " " + Math.sin(radiansY) + ", "
+                + Math.sin(radiansZ) + " " + Math.cos(radiansX) * Math.cos(radiansZ) + " " + -Math.sin(radiansX) + ", "
+                + -Math.sin(radiansY) + " " + Math.sin(radiansX) + " " + Math.cos(radiansX) * Math.cos(radiansY) + "\n";
     }
 
-    private String getWing(double x, double y, double z, double chord, double length, double thickness, double angle) {
+    private String getWing(double x, double y, double z, double chord, double length, double thickness, double angle, double attackAngle) {
         return "OBJECT poly\n"
                 + "name \"wing\"\n"
                 + "loc " + x + " " + y + " " + z + "\n"
-                + getRotationMatrix(angle)
+                + getRotationMatrix(-attackAngle, 0, angle)
                 + "numvert 8\n"
                 + 0 + " " + thickness / 2 + " 0\n"
                 + length + " " + thickness / 2 + " 0\n"
@@ -148,13 +150,13 @@ public class Ac3dFile {
                 + "kids 0\n";
     }
 
-    private String getMainWing(double x, double y, double z, double chord, double span, double dihedral, double thickness) {
+    private String getMainWing(double x, double y, double z, double chord, double span, double dihedral, double attackAngle, double thickness) {
 //        double mmOfsetByDihedral
         return "OBJECT poly\n"
                 + "name \"mainwing\"\n"
                 + "kids 2\n"
-                + getWing(x, y, z, chord, span / 2, thickness, dihedral)
-                + getWing(-span / 2, y, z, chord, span / 2, thickness, dihedral);
+                + getWing(x, y, z, chord, span / 2, thickness, -dihedral, attackAngle)
+                + getWing(x, y, z, chord, span / 2, thickness, 180 + dihedral, attackAngle);
     }
 
     private double scaleToM(double mm) {
@@ -171,6 +173,6 @@ public class Ac3dFile {
                 + getFuselageSection(0, 0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageRadius() * 2))
                 + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius() * 2))
                 + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageSectionLengthC()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius()))
-                + getMainWing(0, scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingSpan()), modelData.getDihedralAngle(), scaleToM(5));
+                + getMainWing(0, scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingSpan()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(5));
     }
 }

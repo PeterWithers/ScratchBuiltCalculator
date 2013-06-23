@@ -32,7 +32,8 @@ public class TrainerData implements ModelData {
     private int wingSpan = strutSpacing * strutsPerWing * 2;
     private double wingArea = ((wingSpan / 100.0) * ((chordLength) / 100.0));
     private int aileronLength = wingSpan / 4;
-    private int dihedralAngle = 3;
+    private double dihedralAngle = 3;
+    private double attackAngle = 3;
     private int stabiliserChord = 80;
     private int stabiliserSpan = (int) (stabiliserChord * 3.0 / 2.0);
     private int elevatorChord = 20;
@@ -81,7 +82,12 @@ public class TrainerData implements ModelData {
     }
 
     @Override
-    public int getDihedralAngle() {
+    public double getAttackAngle() {
+        return attackAngle;
+    }
+
+    @Override
+    public double getDihedralAngle() {
         return dihedralAngle;
     }
 
