@@ -34,7 +34,7 @@ public class YasimConfig {
 
     public YasimConfig() {
     }
-    // confi file information can be found at: http://wiki.flightgear.org/YASim
+    // config file information can be found at: http://wiki.flightgear.org/YASim
 
     public YasimConfig(ModelData modelData) {
         this.modelData = modelData;
@@ -66,11 +66,18 @@ public class YasimConfig {
     }
 
     @XmlElement(name = "fuselage")
-    public Fuselage[] getYasimFuselage() {
+    public YasimFuselage[] getYasimFuselage() {
         // This defines a tubelike structure. It will be given an even mass and aerodynamic force distribution by the solver. You can have as many as you like, in any orientation you please.
-        return new Fuselage[]{
-            new Fuselage("fuselage part A (front)", 0, 0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageRadius(), modelData.getFuselageRadius() * 2),
-            new Fuselage("fuselage part B (middle)", 0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageSectionLengthB(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius() * 2),
-            new Fuselage("fuselage part C (back)", 0, 0, modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB(), modelData.getFuselageSectionLengthC(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius())};
+        return new YasimFuselage[]{
+            new YasimFuselage("fuselage part A (front)", 0, 0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageRadius(), modelData.getFuselageRadius() * 2),
+            new YasimFuselage("fuselage part B (middle)", 0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageSectionLengthB(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius() * 2),
+            new YasimFuselage("fuselage part C (back)", 0, 0, modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB(), modelData.getFuselageSectionLengthC(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius())};
+    }
+
+    @XmlElement(name = "wing")
+    public YasimWing[] getYasimWing() {
+        // This defines the main wing of the aircraft. You can have only one (but see below about using vstab objects for extra lifting surfaces). The wing should have a <stall> subelement to indicate stall behavior, control surface subelements (flap0, flap1, spoiler, slat) to indicate what and where the control surfaces are, and <control> subelements to map user input properties to the control surfaces.
+        return new YasimWing[]{
+            new YasimWing("main wing", modelData)};
     }
 }

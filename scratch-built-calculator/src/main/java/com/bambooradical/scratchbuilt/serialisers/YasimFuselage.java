@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlValue;
  *
  * @author Peter Withers <peter-ghc@bambooradical.com>
  */
-public class Fuselage {
+public class YasimFuselage {
 
     private String comment = null;
     private double x;
@@ -35,10 +35,10 @@ public class Fuselage {
     private double startWidth;
     private double endWidth;
 
-    public Fuselage() {
+    public YasimFuselage() {
     }
 
-    public Fuselage(String comment, double x, double y, double z, double length, double startWidth, double endWidth) {
+    public YasimFuselage(String comment, double x, double y, double z, double length, double startWidth, double endWidth) {
         this.comment = comment;
         this.x = x;
         this.y = y;
