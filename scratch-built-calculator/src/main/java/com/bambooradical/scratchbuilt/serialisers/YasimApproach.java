@@ -29,11 +29,13 @@ public class YasimApproach {
 
     @XmlAttribute(name = "speed")
     public double getSpeed() {
+        // The approach airspeed, in knots TAS.
         return 15;
     }
 
     @XmlAttribute(name = "aoa")
     public double getApproachAngleOfAttack() {
+        // The approach angle of attack, in degrees
         return 4;
     }
 
