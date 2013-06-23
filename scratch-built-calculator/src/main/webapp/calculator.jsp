@@ -65,6 +65,7 @@
     </head>
     <body onload="onLoad();">
         <h1>Scratch Built R/C Calculator Prototype</h1>
+        This is a work in progress, for more info: <a href="https://github.com/PeterWithers/ScratchBuiltCalculator">https://github.com/PeterWithers/ScratchBuiltCalculator</a><br>
         <table><tr><td>
                     <%--<%= // TrainerData trainerData = new TrainerData().getWingSpan(); %>--%>
                     <table><tr><td>
