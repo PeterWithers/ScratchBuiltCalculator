@@ -31,8 +31,8 @@ public class Ac3dFile {
     public Ac3dFile(ModelData modelData) {
         this.modelData = modelData;
     }
-// http://www.inivis.com/ac3d/man/ac3dfileformat.html
 
+    // AC3D file format information can be found here: http://www.inivis.com/ac3d/man/ac3dfileformat.html
     private String getBoxFaces() {
         return "numsurf 6\n"
                 // small end cap
@@ -151,12 +151,20 @@ public class Ac3dFile {
     }
 
     private String getMainWing(double x, double y, double z, double chord, double span, double dihedral, double attackAngle, double thickness) {
-//        double mmOfsetByDihedral
         return "OBJECT poly\n"
                 + "name \"mainwing\"\n"
                 + "kids 2\n"
                 + getWing(x, y, z, chord, span / 2, thickness, -dihedral, attackAngle)
                 + getWing(x, y, z, chord, span / 2, thickness, 180 + dihedral, attackAngle);
+    }
+
+    private String getTailWing(double x, double y, double z, double chordHorizontal, double chordVertical, double spanHorizontal, double spanVertical, double thickness) {
+        return "OBJECT poly\n"
+                + "name \"tailwing\"\n"
+                + "kids 3\n"
+                + getWing(x, y, z, chordHorizontal, spanHorizontal / 2, thickness, 0, 0)
+                + getWing(x, y, z, chordVertical, spanVertical, thickness, -90, 0)
+                + getWing(x, y, z, chordHorizontal, spanHorizontal / 2, thickness, 180, 0);
     }
 
     private double scaleToM(double mm) {
@@ -167,12 +175,11 @@ public class Ac3dFile {
         return "AC3Db\n"
                 + "MATERIAL \"\" rgb 0 1 1  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "OBJECT world\n"
-                + "kids 4\n"
-                //                + getRectangle(-1, -0.5, 1, 0.5)
-                //                + getRectangle(5, 5, 1, 1)
+                + "kids 5\n"
                 + getFuselageSection(0, 0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageRadius() * 2))
                 + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius() * 2))
                 + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageSectionLengthC()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius()))
-                + getMainWing(0, scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingSpan()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(5));
+                + getMainWing(0, scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingSpan()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(5))
+                + getTailWing(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB() + modelData.getFuselageSectionLengthC() - modelData.getStabiliserChord() / 2), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserSpan()), scaleToM(modelData.getStabiliserHeight()), scaleToM(5));
     }
 }
