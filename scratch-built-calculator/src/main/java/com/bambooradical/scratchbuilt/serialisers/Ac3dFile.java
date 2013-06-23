@@ -123,22 +123,42 @@ public class Ac3dFile {
                 + "kids 0\n";
     }
 
-    private String getWing(double x, double y, double z, double chord, double span, double dihedral, double thickness) {
+    private String getRotationMatrix(double angle) {
+        double radians = Math.toRadians(angle);
+        return "rot 1 0 0, "
+                + "0 " + Math.cos(radians) + " " + -Math.sin(radians) + ", "
+                + "0 " + Math.sin(radians) + " " + Math.cos(radians) + "\n";
+    }
+
+    private String getWing(double x, double y, double z, double chord, double length, double thickness, double angle) {
         return "OBJECT poly\n"
-                + "name \"fuselage\"\n"
+                + "name \"wing\"\n"
                 + "loc " + x + " " + y + " " + z + "\n"
-//                + "rot " + 1/dihedral + " 0 0, 0 1 0, 0 0 1\n"
+                + getRotationMatrix(angle)
                 + "numvert 8\n"
-                + -span / 2 + " " + thickness / 2 + " 0\n"
-                + span / 2 + " " + thickness / 2 + " 0\n"
-                + span / 2 + " " + -thickness / 2 + " 0\n"
-                + -span / 2 + " " + -thickness / 2 + " 0\n"
-                + -span / 2 + " " + thickness / 2 + " " + chord + "\n"
-                + span / 2 + " " + thickness / 2 + " " + chord + "\n"
-                + span / 2 + " " + -thickness / 2 + " " + chord + "\n"
-                + -span / 2 + " " + -thickness / 2 + " " + chord + "\n"
+                + 0 + " " + thickness / 2 + " 0\n"
+                + length + " " + thickness / 2 + " 0\n"
+                + length + " " + -thickness / 2 + " 0\n"
+                + 0 + " " + -thickness / 2 + " 0\n"
+                + 0 + " " + thickness / 2 + " " + chord + "\n"
+                + length + " " + thickness / 2 + " " + chord + "\n"
+                + length + " " + -thickness / 2 + " " + chord + "\n"
+                + 0 + " " + -thickness / 2 + " " + chord + "\n"
                 + getBoxFaces()
                 + "kids 0\n";
+    }
+
+    private String getMainWing(double x, double y, double z, double chord, double span, double dihedral, double thickness) {
+//        double mmOfsetByDihedral
+        return "OBJECT poly\n"
+                + "name \"mainwing\"\n"
+                + "kids 2\n"
+                + getWing(x, y, z, chord, span / 2, thickness, dihedral)
+                + getWing(-span / 2, y, z, chord, span / 2, thickness, dihedral);
+    }
+
+    private double scaleToM(double mm) {
+        return mm / 1000;
     }
 
     public String getAc3dFile() {
@@ -148,9 +168,9 @@ public class Ac3dFile {
                 + "kids 4\n"
                 //                + getRectangle(-1, -0.5, 1, 0.5)
                 //                + getRectangle(5, 5, 1, 1)
-                + getFuselageSection(0, 0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageRadius(), modelData.getFuselageRadius() * 2)
-                + getFuselageSection(0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageSectionLengthB(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius() * 2)
-                + getFuselageSection(0, 0, modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB(), modelData.getFuselageSectionLengthC(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius())
-                + getWing(0, modelData.getFuselageRadius(), modelData.getFuselageSectionLengthA(), modelData.getChordLength(), modelData.getWingSpan(), modelData.getDihedralAngle(), 5);
+                + getFuselageSection(0, 0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageRadius() * 2))
+                + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius() * 2))
+                + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageSectionLengthC()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius()))
+                + getMainWing(0, scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingSpan()), modelData.getDihedralAngle(), scaleToM(5));
     }
 }
