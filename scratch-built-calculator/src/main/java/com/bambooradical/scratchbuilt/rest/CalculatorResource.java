@@ -19,6 +19,7 @@ package com.bambooradical.scratchbuilt.rest;
 
 import com.bambooradical.scratchbuilt.data.ModelDataImpl;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
+import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -45,5 +46,16 @@ public class CalculatorResource {
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
             @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle) {
         return new Ac3dFile(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle)).getAc3dFile();
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_XML)
+    @Path("yasim")
+    public YasimConfig getYasimFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
+            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
+            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
+            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle) {
+        return new YasimConfig(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle));
     }
 }

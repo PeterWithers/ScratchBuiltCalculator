@@ -52,12 +52,12 @@
 
                 viewer.show(getAc3dRestUrl(), {callback: onLoaded});
             }
-            function getAc3dRestUrl() {
+            function getRestUrl(formatType) {
                 var wingSpan = document.getElementById("wingspan").value;
                 var wingChord = document.getElementById("wingchord").value;
                 var dihedral = document.getElementById("dihedral").value;
                 var attackangle = document.getElementById("attackangle").value;
-                return './scratchbuilt/calculator/ac3d?wingSpan=' + wingSpan + '&wingChord=' + wingChord
+                return './scratchbuilt/calculator/' + formatType + '?wingSpan=' + wingSpan + '&wingChord=' + wingChord
                         + '&dihedral=' + dihedral + '&attackAngle=' + attackangle;
             }
             function onLoaded() {
@@ -91,7 +91,8 @@
                 </td><td>
                     <canvas id="ac3dcanvas" height="500" width="900"></canvas>
                 </td><td>
-                    <input id="ac3dButton" type="button" value="Browse to AC3D File" onclick="window.location.href = getAc3dRestUrl();"/>
+                    <input id="ac3dButton" type="button" value="Browse to AC3D File" onclick="window.location.href = getRestUrl('ac3d');"/><br>
+                    <input id="yasimButton" type="button" value="Browse to YASim File" onclick="window.location.href = getRestUrl('yasim');"/>
                 </td></tr></table>
     </body>
 </html>
