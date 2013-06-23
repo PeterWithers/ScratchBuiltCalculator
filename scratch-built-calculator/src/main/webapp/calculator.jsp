@@ -50,7 +50,7 @@
                 canvas = document.getElementById("ac3dcanvas");
                 viewer = new HG.Viewer(canvas);
 
-                viewer.show(getAc3dRestUrl(), {callback: onLoaded});
+                viewer.show(getRestUrl('ac3d'), {callback: onLoaded});
             }
             function getRestUrl(formatType) {
                 var wingSpan = document.getElementById("wingspan").value;
@@ -84,7 +84,7 @@
                             </td><td>
                                 <input id="attackangle" value="<%= new TrainerData().getAttackAngle()%>"/>                            
                             </td></tr><tr><td></td><td>
-                                <input id="clickMe" type="button" value="update" onclick="viewer.show(getAc3dRestUrl(), {callback: onLoaded});" />
+                                <input id="clickMe" type="button" value="update" onclick="viewer.show(getRestUrl('ac3d'), {callback: onLoaded});" />
                             </td></tr></table>
                     <br>
                     <br>
