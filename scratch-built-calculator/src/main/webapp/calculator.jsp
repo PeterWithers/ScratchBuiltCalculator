@@ -17,6 +17,7 @@
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 --%>
+<%@page import="com.bambooradical.scratchbuilt.data.TrainerData"%>
 <%-- 
     Document   : scratchbuiltcalculator
     Created on : Jun 22, 2013, 5:00:13 PM
@@ -49,16 +50,48 @@
                 canvas = document.getElementById("canvas");
                 viewer = new HG.Viewer(canvas);
 
-                viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});
+                viewer.show(getAc3dRestUrl(), {callback: onLoaded});
             }
-
+            function getAc3dRestUrl() {
+                var wingSpan = document.getElementById("wingspan").value;
+                var wingChord = document.getElementById("wingchord").value;
+                var dihedral = document.getElementById("dihedral").value;
+                var attackangle = document.getElementById("attackangle").value;
+                return './scratchbuilt/calculator/ac3d?wingSpan=' + wingSpan + '&wingChord=' + wingChord
+                        + '&dihedral=' + dihedral + '&attackAngle=' + attackangle;
+            }
             function onLoaded() {
             }</script>
     </head>
     <body onload="onLoad();">
         <h1>Scratch Built R/C Calculator Prototype</h1>
-        <a href="scratchbuilt/calculator/ac3d">test ac3d</a><br>
-        <input id="clickMe" type="button" value="reload" onclick="viewer.show('./scratchbuilt/calculator/ac3d', {callback: onLoaded});" /><br>
-        <canvas id="canvas" height="500" width="900"></canvas><br>
+        <table><tr><td>
+                    <%--<%= // TrainerData trainerData = new TrainerData().getWingSpan(); %>--%>
+                    <table><tr><td>
+                                Wing&nbsp;Span
+                            </td><td>
+                                <input id="wingspan" value="<%= new TrainerData().getWingSpan()%>"/>
+                            </td></tr><tr><td>
+                                Wing&nbsp;Chord
+                            </td><td>
+                                <input id="wingchord" value="<%= new TrainerData().getChordLength()%>"/>
+                            </td></tr><tr><td>
+                                Dihedral&nbsp;Angle
+                            </td><td>
+                                <input id="dihedral" value="<%= new TrainerData().getDihedralAngle()%>"/>
+                            </td></tr><tr><td>
+                                Attack&nbsp;Angle
+                            </td><td>
+                                <input id="attackangle" value="<%= new TrainerData().getAttackAngle()%>"/>                            
+                            </td></tr><tr><td></td><td>
+                                <input id="clickMe" type="button" value="update" onclick="viewer.show(getAc3dRestUrl(), {callback: onLoaded});" />
+                            </td></tr></table>
+                    <br>
+                    <br>
+                </td><td>
+                    <canvas id="canvas" height="500" width="900"></canvas>
+                </td><td>
+                    <input id="ac3dButton" type="button" value="Browse to AC3D File" onclick="window.location.href = getAc3dRestUrl();"/>
+                </td></tr></table>
     </body>
 </html>

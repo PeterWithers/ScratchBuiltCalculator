@@ -17,12 +17,14 @@
  */
 package com.bambooradical.scratchbuilt.rest;
 
-import com.bambooradical.scratchbuilt.data.TrainerData;
+import com.bambooradical.scratchbuilt.data.ModelDataImpl;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -37,7 +39,11 @@ public class CalculatorResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("ac3d")
-    public String getAc3dFile(@Context HttpServletRequest httpServletRequest) {
-        return new Ac3dFile(new TrainerData()).getAc3dFile();
+    public String getAc3dFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
+            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
+            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
+            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle) {
+        return new Ac3dFile(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle)).getAc3dFile();
     }
 }
