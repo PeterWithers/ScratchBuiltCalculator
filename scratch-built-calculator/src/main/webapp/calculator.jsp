@@ -47,7 +47,7 @@
             var canvas;
 
             function onLoad() {
-                canvas = document.getElementById("canvas");
+                canvas = document.getElementById("ac3dcanvas");
                 viewer = new HG.Viewer(canvas);
 
                 viewer.show(getAc3dRestUrl(), {callback: onLoaded});
@@ -89,7 +89,7 @@
                     <br>
                     <br>
                 </td><td>
-                    <canvas id="canvas" height="500" width="900"></canvas>
+                    <canvas id="ac3dcanvas" height="500" width="900"></canvas>
                 </td><td>
                     <input id="ac3dButton" type="button" value="Browse to AC3D File" onclick="window.location.href = getAc3dRestUrl();"/>
                 </td></tr></table>
