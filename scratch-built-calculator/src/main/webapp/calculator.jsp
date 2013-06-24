@@ -49,19 +49,41 @@
             function onLoad() {
                 canvas = document.getElementById("ac3dcanvas");
                 viewer = new HG.Viewer(canvas);
-
-                viewer.show(getRestUrl('ac3d'), {callback: onLoaded});
+                updateModel();
             }
             function getRestUrl(formatType) {
                 var wingSpan = document.getElementById("wingspan").value;
                 var wingChord = document.getElementById("wingchord").value;
                 var dihedral = document.getElementById("dihedral").value;
                 var attackangle = document.getElementById("attackangle").value;
-                return './scratchbuilt/calculator/' + formatType + '?wingSpan=' + wingSpan + '&wingChord=' + wingChord
+                var getParam = '?wingSpan=' + wingSpan + '&wingChord=' + wingChord
                         + '&dihedral=' + dihedral + '&attackAngle=' + attackangle;
+                if (typeof _gaq !== 'undefined')
+                    _gaq.push(["_trackEvent", formatType, "view", "parameters", getParam]);
+                return "./scratchbuilt/calculator/" + formatType + getParam;
             }
             function onLoaded() {
+            }
+            function updateModel() {
+                document.getElementById("svgImage").src = getRestUrl('svg');
+                viewer.show(getRestUrl('ac3d'), {callback: onLoaded});
             }</script>
+        <script>
+            (function(i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function() {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+            ga('create', 'UA-41988110-1', 'scratch-built.appspot.com');
+            ga('send', 'pageview');
+        </script>
     </head>
     <body onload="onLoad();">
         <h1>Scratch Built R/C Calculator Prototype</h1>
@@ -85,14 +107,17 @@
                             </td><td>
                                 <input id="attackangle" value="<%= new TrainerData().getAttackAngle()%>"/>                            
                             </td></tr><tr><td></td><td>
-                                <input id="clickMe" type="button" value="update" onclick="viewer.show(getRestUrl('ac3d'), {callback: onLoaded});" />
+                                <input id="clickMe" type="button" value="update" onclick="updateModel();" />
                             </td></tr></table>
                     <br>
                     <br>
                 </td><td>
                     <canvas id="ac3dcanvas" height="500" width="900"></canvas>
+                    <!--                    <embed id="svgImage" src="" type="image/svg+xml"/>-->
+                    <iframe id="svgImage" height="500" width="900"></iframe>
                 </td><td>
                     <input id="ac3dButton" type="button" value="Browse to AC3D File" onclick="window.location.href = getRestUrl('ac3d');"/><br>
+                    <input id="svgButton" type="button" value="Browse to SVG File" onclick="window.location.href = getRestUrl('svg');"/><br>
                     <input id="yasimButton" type="button" value="Browse to YASim File" onclick="window.location.href = getRestUrl('yasim');"/>
                 </td></tr></table>
     </body>
