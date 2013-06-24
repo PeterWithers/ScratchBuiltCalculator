@@ -19,6 +19,7 @@ package com.bambooradical.scratchbuilt.rest;
 
 import com.bambooradical.scratchbuilt.data.ModelDataImpl;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
+import com.bambooradical.scratchbuilt.serialisers.SvgLayout;
 import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
@@ -57,5 +58,16 @@ public class CalculatorResource {
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
             @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle) {
         return new YasimConfig(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle));
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_XML)
+    @Path("svg")
+    public SvgLayout getSvgFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
+            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
+            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
+            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle) {
+        return new SvgLayout(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle));
     }
 }
