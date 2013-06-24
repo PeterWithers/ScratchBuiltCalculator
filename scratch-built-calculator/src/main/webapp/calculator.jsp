@@ -48,7 +48,17 @@
 
             function onLoad() {
                 canvas = document.getElementById("ac3dcanvas");
-                viewer = new HG.Viewer(canvas);
+                try {
+                    viewer = new HG.Viewer(canvas);
+                } catch (errorOb) {
+                    ga('send', "error", {
+                        'message': errorOb.message,
+                        'wingChord': wingChord,
+                        'dihedral': dihedral,
+                        'attackangle': attackangle
+                    });
+                    document.getElementById("errordiv").innerHTML = "WebGL appears not to be available on this machine, so model view is not available.";
+                }
                 updateModel();
             }
             function getRestUrl(formatType) {
@@ -56,10 +66,14 @@
                 var wingChord = document.getElementById("wingchord").value;
                 var dihedral = document.getElementById("dihedral").value;
                 var attackangle = document.getElementById("attackangle").value;
+                ga('send', formatType, {
+                    'wingSpan': wingSpan,
+                    'wingChord': wingChord,
+                    'dihedral': dihedral,
+                    'attackangle': attackangle
+                });
                 var getParam = '?wingSpan=' + wingSpan + '&wingChord=' + wingChord
                         + '&dihedral=' + dihedral + '&attackAngle=' + attackangle;
-                if (typeof _gaq !== 'undefined')
-                    _gaq.push(["_trackEvent", formatType, "view", "parameters", getParam]);
                 return "./scratchbuilt/calculator/" + formatType + getParam;
             }
             function onLoaded() {
@@ -112,13 +126,15 @@
                     <br>
                     <br>
                 </td><td>
+                    <div id="errordiv"/><br>
                     <canvas id="ac3dcanvas" height="500" width="900"></canvas>
-                    <!--                    <embed id="svgImage" src="" type="image/svg+xml"/>-->
-                    <iframe id="svgImage" height="500" width="900"></iframe>
-                </td><td>
+                </td></tr><tr><td>        
                     <input id="ac3dButton" type="button" value="Browse to AC3D File" onclick="window.location.href = getRestUrl('ac3d');"/><br>
                     <input id="svgButton" type="button" value="Browse to SVG File" onclick="window.location.href = getRestUrl('svg');"/><br>
                     <input id="yasimButton" type="button" value="Browse to YASim File" onclick="window.location.href = getRestUrl('yasim');"/>
+                </td><td>
+                    <!--                    <embed id="svgImage" src="" type="image/svg+xml"/>-->
+                    <iframe id="svgImage" height="500" width="900"></iframe>
                 </td></tr></table>
     </body>
 </html>
