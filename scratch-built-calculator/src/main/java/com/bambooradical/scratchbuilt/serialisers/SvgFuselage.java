@@ -41,7 +41,7 @@ public class SvgFuselage extends SvgGroup {
     }
 
     private SvgPolyline getPolyline(double offsetX, double offsetY, double start, double end) {
-        final SvgPolyline svgPolyline = new SvgPolyline(modelData, x + offsetX, y + offsetY);
+        final SvgPolyline svgPolyline = new SvgPolyline(modelData, x + offsetX, y + offsetY, modelData.getFuselageColour());
         svgPolyline.addPoint(0, 0);
         svgPolyline.addPoint(0, start);
         svgPolyline.addPoint(length, end);

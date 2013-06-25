@@ -18,6 +18,7 @@
 package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.ModelData;
+import java.awt.Color;
 
 /**
  * Created on : Jun 22, 2013, 5:21:26 PM
@@ -33,11 +34,11 @@ public class Ac3dFile {
     }
 
     // AC3D file format information can be found here: http://www.inivis.com/ac3d/man/ac3dfileformat.html
-    private String getBoxFaces() {
+    private String getBoxFaces(int materialIndex) {
         return "numsurf 6\n"
                 // small end cap
                 + "SURF 0x20\n"
-                + "mat 0\n"
+                + "mat " + materialIndex + "\n"
                 + "refs 4\n"
                 + "0 0 0\n"
                 + "1 1 0\n"
@@ -45,7 +46,7 @@ public class Ac3dFile {
                 + "3 0 1\n"
                 // large end cap
                 + "SURF 0x20\n"
-                + "mat 0\n"
+                + "mat " + materialIndex + "\n"
                 + "refs 4\n"
                 + "7 0 0\n"
                 + "6 1 0\n"
@@ -53,7 +54,7 @@ public class Ac3dFile {
                 + "4 0 1\n"
                 // side 1
                 + "SURF 0x20\n"
-                + "mat 0\n"
+                + "mat " + materialIndex + "\n"
                 + "refs 4\n"
                 + "4 0 0\n"
                 + "5 1 0\n"
@@ -61,7 +62,7 @@ public class Ac3dFile {
                 + "0 0 1\n"
                 // side 2
                 + "SURF 0x20\n"
-                + "mat 0\n"
+                + "mat " + materialIndex + "\n"
                 + "refs 4\n"
                 + "5 0 0\n"
                 + "6 1 0\n"
@@ -69,7 +70,7 @@ public class Ac3dFile {
                 + "1 0 1\n"
                 // side 3
                 + "SURF 0x20\n"
-                + "mat 0\n"
+                + "mat " + materialIndex + "\n"
                 + "refs 4\n"
                 + "6 0 0\n"
                 + "7 1 0\n"
@@ -77,7 +78,7 @@ public class Ac3dFile {
                 + "2 0 1\n"
                 // side 4
                 + "SURF 0x20\n"
-                + "mat 0\n"
+                + "mat " + materialIndex + "\n"
                 + "refs 4\n"
                 + "7 0 0\n"
                 + "4 1 0\n"
@@ -98,7 +99,7 @@ public class Ac3dFile {
                 + endWidth / 2 + " " + endWidth / 2 + " " + length + "\n"
                 + endWidth / 2 + " " + -endWidth / 2 + " " + length + "\n"
                 + -endWidth / 2 + " " + -endWidth / 2 + " " + length + "\n"
-                + getBoxFaces()
+                + getBoxFaces(0)
                 + "kids 0\n";
 
     }
@@ -132,7 +133,7 @@ public class Ac3dFile {
                 + -Math.sin(radiansY) + " " + Math.sin(radiansX) + " " + Math.cos(radiansX) * Math.cos(radiansY) + "\n";
     }
 
-    private String getWing(double x, double y, double z, double chord, double length, double thickness, double angle, double attackAngle) {
+    private String getWing(double x, double y, double z, double chord, double length, double thickness, double angle, double attackAngle, int materialIndex) {
         return "OBJECT poly\n"
                 + "name \"wing\"\n"
                 + "loc " + x + " " + y + " " + z + "\n"
@@ -146,7 +147,7 @@ public class Ac3dFile {
                 + length + " " + thickness / 2 + " " + chord + "\n"
                 + length + " " + -thickness / 2 + " " + chord + "\n"
                 + 0 + " " + -thickness / 2 + " " + chord + "\n"
-                + getBoxFaces()
+                + getBoxFaces(materialIndex)
                 + "kids 0\n";
     }
 
@@ -154,26 +155,34 @@ public class Ac3dFile {
         return "OBJECT poly\n"
                 + "name \"mainwing\"\n"
                 + "kids 2\n"
-                + getWing(x, y, z, chord, span / 2, thickness, -dihedral, attackAngle)
-                + getWing(x, y, z, chord, span / 2, thickness, 180 + dihedral, attackAngle);
+                + getWing(x, y, z, chord, span / 2, thickness, -dihedral, attackAngle, 1)
+                + getWing(x, y, z, chord, span / 2, thickness, 180 + dihedral, attackAngle, 1);
     }
 
     private String getTailWing(double x, double y, double z, double chordHorizontal, double chordVertical, double spanHorizontal, double spanVertical, double thickness) {
         return "OBJECT poly\n"
                 + "name \"tailwing\"\n"
                 + "kids 3\n"
-                + getWing(x, y, z, chordHorizontal, spanHorizontal / 2, thickness, 0, 0)
-                + getWing(x, y, z, chordVertical, spanVertical, thickness, -90, 0)
-                + getWing(x, y, z, chordHorizontal, spanHorizontal / 2, thickness, 180, 0);
+                + getWing(x, y, z, chordHorizontal, spanHorizontal / 2, thickness, 0, 0, 3)
+                + getWing(x, y, z, chordVertical, spanVertical, thickness, -90, 0, 4)
+                + getWing(x, y, z, chordHorizontal, spanHorizontal / 2, thickness, 180, 0, 3);
     }
 
     private double scaleToM(double mm) {
         return mm / 1000;
     }
 
+    protected String getFormattedColour(Color colour) {
+        return colour.getRed() / 255.0 + " " + colour.getGreen() / 255.0 + " " + colour.getBlue() / 255.0;
+    }
+
     public String getAc3dFile() {
         return "AC3Db\n"
-                + "MATERIAL \"\" rgb 0 1 1  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getFuselageColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getMainWingColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getAileronColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getHStabiliserColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getVStabiliserColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "OBJECT world\n"
                 + "kids 5\n"
                 + getFuselageSection(0, 0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageRadius() * 2))

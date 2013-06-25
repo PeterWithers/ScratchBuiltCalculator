@@ -18,6 +18,7 @@
 package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.ModelData;
+import java.awt.Color;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -34,14 +35,22 @@ public class SvgPolyline {
     private String points = "";
     private double maxX = 0;
     private double maxY = 0;
+    private String style;
 
     public SvgPolyline() {
     }
 
-    public SvgPolyline(ModelData modelData, double x, double y) {
+    public SvgPolyline(ModelData modelData, double x, double y, Color colour) {
         this.modelData = modelData;
         this.x = x;
         this.y = y;
+        this.style = "fill:" + getFormattedColour(colour) + ";stroke:black;stroke-width:1";
+    }
+
+    final public String getFormattedColour(Color colour) {
+        final String hexString = Integer.toHexString(colour.getRGB());
+        final String fillHexString = "#" + hexString.substring(2, hexString.length()).toLowerCase();
+        return fillHexString;
     }
 
     private double adjustToScale(double inputValue) {
@@ -61,7 +70,7 @@ public class SvgPolyline {
 
     @XmlAttribute(name = "style")
     public String getStyle() {
-        return "fill:none;stroke:black;stroke-width:1";
+        return style;
     }
 
     @XmlTransient

@@ -17,6 +17,8 @@
  */
 package com.bambooradical.scratchbuilt.data;
 
+import java.awt.Color;
+
 /**
  * Created on : Jun 23, 2013, 1:45:54 PM
  *
@@ -212,5 +214,40 @@ public class ModelDataImpl implements ModelData {
     @Override
     public double getWeightInGrams() {
         return weightInGrams;
+    }
+
+    @Override
+    public Color getMainWingColour() {
+        return new Color(0xC20048);
+    }
+
+    @Override
+    public Color getAileronColour() {
+        return new Color(0xC20018);
+    }
+
+    @Override
+    public Color getHStabiliserColour() {
+        return new Color(0xC21800);
+    }
+
+    @Override
+    public Color getVStabiliserColour() {
+        return new Color(0xC24900);
+    }
+
+    @Override
+    public Color getElevatorColour() {
+        return new Color(0xC27900);
+    }
+
+    @Override
+    public Color getRudderColour() {
+        return getElevatorColour();
+    }
+
+    @Override
+    public Color getFuselageColour() {
+        return new Color(0xC2AA00);
     }
 }

@@ -35,18 +35,18 @@ public class SvgWing extends SvgGroup {
 
     @Override
     public SvgPolyline[] getPolylines() {
-        final SvgPolyline wingPolyline = new SvgPolyline(modelData, x, y);
+        final SvgPolyline wingPolyline = new SvgPolyline(modelData, x, y, modelData.getMainWingColour());
         wingPolyline.addPoint(0, 0);
         wingPolyline.addPoint(modelData.getWingSpan(), 0);
         wingPolyline.addPoint(modelData.getWingSpan(), modelData.getChordLength());
         wingPolyline.addPoint(0, modelData.getChordLength());
         wingPolyline.addPoint(0, 0);
-        final SvgPolyline aileronLPolyline = new SvgPolyline(modelData, x, y);
+        final SvgPolyline aileronLPolyline = new SvgPolyline(modelData, x, y, modelData.getElevatorColour());
         aileronLPolyline.addPoint(modelData.getWingLength() - modelData.getAileronEnd(), 0);
         aileronLPolyline.addPoint(modelData.getWingLength() - modelData.getAileronEnd(), modelData.getAileronChord());
         aileronLPolyline.addPoint(modelData.getWingLength() - modelData.getAileronStart(), modelData.getAileronChord());
         aileronLPolyline.addPoint(modelData.getWingLength() - modelData.getAileronStart(), 0);
-        final SvgPolyline aileronRPolyline = new SvgPolyline(modelData, x, y);
+        final SvgPolyline aileronRPolyline = new SvgPolyline(modelData, x, y, modelData.getElevatorColour());
         aileronRPolyline.addPoint(modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronEnd()), 2);
         aileronRPolyline.addPoint(modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronEnd()), modelData.getAileronChord());
         aileronRPolyline.addPoint(modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronStart()), modelData.getAileronChord());
