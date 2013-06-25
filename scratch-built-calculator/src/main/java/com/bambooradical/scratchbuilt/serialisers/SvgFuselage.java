@@ -42,19 +42,29 @@ public class SvgFuselage extends SvgGroup {
 
     private SvgPolyline getPolyline(double offsetX, double offsetY, double start, double end) {
         final SvgPolyline svgPolyline = new SvgPolyline(modelData, x + offsetX, y + offsetY, modelData.getFuselageColour());
-        svgPolyline.addPoint(0, 0);
-        svgPolyline.addPoint(0, start);
-        svgPolyline.addPoint(length, end);
-        svgPolyline.addPoint(length, 0);
-        svgPolyline.addPoint(0, 0);
+        double startOffset;
+        double endOffset;
+        if (start > end) {
+            startOffset = 0;
+            endOffset = (start - end) / 2.0;
+        } else {
+            startOffset = (end - start) / 2.0;
+            endOffset = 0;
+        }
+        svgPolyline.addPoint(0, startOffset);
+        svgPolyline.addPoint(0, start + startOffset);
+        svgPolyline.addPoint(length, end + endOffset);
+        svgPolyline.addPoint(length, endOffset);
+        svgPolyline.addPoint(0, startOffset);
         return svgPolyline;
     }
 
     @Override
     public SvgPolyline[] getPolylines() {
+        final double averageHeight = (startHeight + endHeight) / 2;
         return new SvgPolyline[]{getPolyline(0, 0, startHeight, endHeight),
-            getPolyline(0, (startHeight + endHeight) / 2, endHeight, startHeight),
-            getPolyline(0, (startHeight + endHeight) / 2 * 2, startHeight, endHeight),
-            getPolyline(0, (startHeight + endHeight) / 2 * 3, endHeight, startHeight)};
+            getPolyline(0, averageHeight, endHeight, startHeight),
+            getPolyline(0, averageHeight * 2, startHeight, endHeight),
+            getPolyline(0, averageHeight * 3, endHeight, startHeight)};
     }
 }
