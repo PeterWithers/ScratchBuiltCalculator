@@ -50,6 +50,7 @@
                 canvas = document.getElementById("ac3dcanvas");
                 try {
                     viewer = new HG.Viewer(canvas);
+                    updateModel();
                 } catch (errorOb) {
                     ga('send', "error", {
                         'message': errorOb.message,
@@ -59,7 +60,6 @@
                     });
                     document.getElementById("errordiv").innerHTML = "WebGL appears not to be available on this machine, so model view is not available.";
                 }
-                updateModel();
             }
             function getRestUrl(formatType) {
                 var wingSpan = document.getElementById("wingspan").value;

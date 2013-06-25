@@ -44,8 +44,18 @@ public class SvgLayout {
         return 1.1;
     }
 
+    @XmlElement(name = "g", namespace = "http://www.w3.org/2000/svg")
+    public SvgGroup[] getGroups() {
+        final SvgWing svgWing = new SvgWing(modelData, 0, 0, "mainwing");
+        double fuselageOffsetY = svgWing.getHeight();
+        return new SvgGroup[]{svgWing,
+            new SvgFuselage(modelData, 0, fuselageOffsetY, "fuselagePartA", modelData.getFuselageSectionLengthA(), modelData.getFuselageRadius(), modelData.getFuselageRadius() / 2),
+            new SvgFuselage(modelData, modelData.getFuselageSectionLengthA(), fuselageOffsetY, "fuselagePartB", modelData.getFuselageSectionLengthB(), modelData.getFuselageRadius(), modelData.getFuselageRadius()),
+            new SvgFuselage(modelData, modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB(), fuselageOffsetY, "fuselagePartC", modelData.getFuselageSectionLengthC(), modelData.getFuselageRadius(), modelData.getFuselageRadius() / 2)};
+    }
+
     @XmlElement(name = "polyline", namespace = "http://www.w3.org/2000/svg")
-    public SvgPolyline[] getYasimFuselage() {
-        return new SvgPolyline[]{new SvgPolyline(), new SvgWing(modelData, 1500, 100)};
+    public SvgPolyline[] getPolylines() {
+        return new SvgPolyline[]{new SvgPolyline()};
     }
 }

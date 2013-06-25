@@ -18,25 +18,39 @@
 package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.ModelData;
-import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Created on : Jun 24, 2013, 6:51:29 PM
  *
  * @author Peter Withers <peter-ghc@bambooradical.com>
  */
-public class SvgWing extends SvgPolyline {
+public class SvgWing extends SvgGroup {
 
-    public SvgWing(ModelData modelData, double x, double y) {
-        super(modelData, x, y);
+    public SvgWing() {
     }
 
-    @XmlAttribute(name = "points")
-    public String getPoints() {
-        return getScaledPoints(0, 0)
-                + getScaledPoints(0, modelData.getWingSpan())
-                + getScaledPoints(modelData.getChordLength(), modelData.getWingSpan())
-                + getScaledPoints(modelData.getChordLength(), 0)
-                + getScaledPoints(0, 0);
+    public SvgWing(ModelData modelData, double x, double y, String id) {
+        super(modelData, x, y, id);
+    }
+
+    @Override
+    public SvgPolyline[] getPolylines() {
+        final SvgPolyline wingPolyline = new SvgPolyline(modelData, x, y);
+        wingPolyline.addPoint(0, 0);
+        wingPolyline.addPoint(modelData.getWingSpan(), 0);
+        wingPolyline.addPoint(modelData.getWingSpan(), modelData.getChordLength());
+        wingPolyline.addPoint(0, modelData.getChordLength());
+        wingPolyline.addPoint(0, 0);
+        final SvgPolyline aileronLPolyline = new SvgPolyline(modelData, x, y);
+        aileronLPolyline.addPoint(modelData.getWingLength() - modelData.getAileronEnd(), 0);
+        aileronLPolyline.addPoint(modelData.getWingLength() - modelData.getAileronEnd(), modelData.getAileronChord());
+        aileronLPolyline.addPoint(modelData.getWingLength() - modelData.getAileronStart(), modelData.getAileronChord());
+        aileronLPolyline.addPoint(modelData.getWingLength() - modelData.getAileronStart(), 0);
+        final SvgPolyline aileronRPolyline = new SvgPolyline(modelData, x, y);
+        aileronRPolyline.addPoint(modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronEnd()), 2);
+        aileronRPolyline.addPoint(modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronEnd()), modelData.getAileronChord());
+        aileronRPolyline.addPoint(modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronStart()), modelData.getAileronChord());
+        aileronRPolyline.addPoint(modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronStart()), 0);
+        return new SvgPolyline[]{wingPolyline, aileronLPolyline, aileronRPolyline};
     }
 }

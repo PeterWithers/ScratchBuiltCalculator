@@ -48,11 +48,17 @@ public interface ModelData {
 
     public int getElevatorChord();
 
+    public int getAileronStart();
+
+    public int getAileronEnd();
+
     public int getAileronLength();
 
     public int getAileronChord();
 
     public int getChordLength();
+
+    public int getWingLength();
 
     public int getWingSpan();
 

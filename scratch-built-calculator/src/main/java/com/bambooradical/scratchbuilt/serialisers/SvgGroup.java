@@ -19,58 +19,54 @@ package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.ModelData;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Created on : Jun 24, 2013, 6:51:29 PM
  *
  * @author Peter Withers <peter-ghc@bambooradical.com>
  */
-public class SvgPolyline {
+public class SvgGroup {
 
     protected ModelData modelData;
-    private double x;
-    private double y;
-    private String points = "";
-    private double maxX = 0;
-    private double maxY = 0;
+    protected double x;
+    protected double y;
+    private String id;
 
-    public SvgPolyline() {
+    public SvgGroup() {
     }
 
-    public SvgPolyline(ModelData modelData, double x, double y) {
+    public SvgGroup(ModelData modelData, double x, double y, String id) {
         this.modelData = modelData;
         this.x = x;
         this.y = y;
+        this.id = id;
     }
 
-    private double adjustToScale(double inputValue) {
-        return inputValue / 1.0;
+    protected double getHeight() {
+        return modelData.getChordLength();
     }
 
-    protected String addPoint(double pointX, double pointY) {
-        maxX = maxX < pointX ? pointX : maxX;
-        maxX = maxX < pointY ? pointY : maxY;
-        return points = points + adjustToScale(x + pointX) + "," + adjustToScale(y + pointY) + " ";
+//    @XmlAttribute(name = "x")
+//    public double getX() {
+//        return x;
+//    }
+//
+//    @XmlAttribute(name = "y")
+//    public double getY() {
+//        return y;
+//    }
+//    @XmlAttribute(name = "transform")
+//    public String getTransform() {
+//        return "scale(" + .5 + ") translate(" + x + "," + y + ")";
+//    }
+    @XmlAttribute(name = "id")
+    public String getIs() {
+        return id;
     }
 
-    @XmlAttribute(name = "points")
-    public String getPoints() {
-        return points;
-    }
-
-    @XmlAttribute(name = "style")
-    public String getStyle() {
-        return "fill:none;stroke:black;stroke-width:1";
-    }
-
-    @XmlTransient
-    public double getMaxPageX() {
-        return maxX + x;
-    }
-
-    @XmlTransient
-    public double getMaxPageY() {
-        return maxY + y;
+    @XmlElement(name = "polyline", namespace = "http://www.w3.org/2000/svg")
+    public SvgPolyline[] getPolylines() {
+        return null;
     }
 }
