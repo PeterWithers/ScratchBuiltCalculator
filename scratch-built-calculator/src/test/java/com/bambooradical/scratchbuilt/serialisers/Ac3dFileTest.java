@@ -38,14 +38,14 @@ public class Ac3dFileTest {
         System.out.println("getFormattedColour");
         Color colour = null;
         Ac3dFile instance = new Ac3dFile(null);
-        String expResult0 = "0.0 0.0 0.0";
+        String expResult0 = "0.00 0.00 0.00";
         String result0 = instance.getFormattedColour(Color.BLACK);
         assertEquals(expResult0, result0);
-        String expResult1 = "1.0 1.0 1.0";
+        String expResult1 = "1.00 1.00 1.00";
         String result1 = instance.getFormattedColour(Color.WHITE);
         assertEquals(expResult1, result1);
-//        String expResult2 = "0.5 0.5 0.5";
-//        String result2 = instance.getFormattedColour(Color.GRAY);
-//        assertEquals(expResult2, result2);
+        String expResult2 = "0.50 0.50 0.50";
+        String result2 = instance.getFormattedColour(Color.GRAY);
+        assertEquals(expResult2, result2);
     }
 }

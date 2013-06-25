@@ -19,6 +19,7 @@ package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.ModelData;
 import java.awt.Color;
+import java.text.DecimalFormat;
 
 /**
  * Created on : Jun 22, 2013, 5:21:26 PM
@@ -99,7 +100,7 @@ public class Ac3dFile {
                 + endWidth / 2 + " " + endWidth / 2 + " " + length + "\n"
                 + endWidth / 2 + " " + -endWidth / 2 + " " + length + "\n"
                 + -endWidth / 2 + " " + -endWidth / 2 + " " + length + "\n"
-                + getBoxFaces(0)
+                + getBoxFaces(1)
                 + "kids 0\n";
 
     }
@@ -133,39 +134,65 @@ public class Ac3dFile {
                 + -Math.sin(radiansY) + " " + Math.sin(radiansX) + " " + Math.cos(radiansX) * Math.cos(radiansY) + "\n";
     }
 
-    private String getWing(double x, double y, double z, double chord, double length, double thickness, double angle, double attackAngle, int materialIndex) {
+    private String getWing(double chordStart, double chordEnd, double start, double end, double thickness, double angle, double attackAngle, int materialIndex) {
         return "OBJECT poly\n"
                 + "name \"wing\"\n"
-                + "loc " + x + " " + y + " " + z + "\n"
+                //                + "loc " + x + " " + y + " " + 0 + "\n"
                 + getRotationMatrix(-attackAngle, 0, angle)
                 + "numvert 8\n"
-                + 0 + " " + thickness / 2 + " 0\n"
-                + length + " " + thickness / 2 + " 0\n"
-                + length + " " + -thickness / 2 + " 0\n"
-                + 0 + " " + -thickness / 2 + " 0\n"
-                + 0 + " " + thickness / 2 + " " + chord + "\n"
-                + length + " " + thickness / 2 + " " + chord + "\n"
-                + length + " " + -thickness / 2 + " " + chord + "\n"
-                + 0 + " " + -thickness / 2 + " " + chord + "\n"
+                + start + " " + thickness / 2 + " " + chordStart + "\n"
+                + end + " " + thickness / 2 + " " + chordStart + "\n"
+                + end + " " + -thickness / 2 + " " + chordStart + "\n"
+                + start + " " + -thickness / 2 + " " + chordStart + "\n"
+                + start + " " + thickness / 2 + " " + chordEnd + "\n"
+                + end + " " + thickness / 2 + " " + chordEnd + "\n"
+                + end + " " + -thickness / 2 + " " + chordEnd + "\n"
+                + start + " " + -thickness / 2 + " " + chordEnd + "\n"
                 + getBoxFaces(materialIndex)
                 + "kids 0\n";
     }
 
-    private String getMainWing(double x, double y, double z, double chord, double span, double dihedral, double attackAngle, double thickness) {
+    private String getWingWithAileron(double chord, double length, double aileronStart, double aileronEnd, double aileronChord, double thickness) {
+        String preAileronSection = getWing(0, chord, 0, aileronStart, thickness, 0, 0, 2);;
+        String aileronSection = getWing(0, chord - aileronChord, aileronStart, aileronEnd, thickness, 0, 0, 2);;
+        String aileron = getWing(chord - aileronChord, chord, aileronStart, aileronEnd, thickness, 0, 0, 1);
+        String postAileronSection = getWing(0, chord, aileronEnd, length, thickness, 0, 0, 2);;
+        return "OBJECT poly\n"
+                + "name \"wingwithaileron\"\n"
+                + "kids 4\n"
+                + preAileronSection
+                + aileronSection
+                + aileron
+                + postAileronSection;
+    }
+
+    private String getMainWing(double x, double y, double z, double chord, double length, double dihedral, double attackAngle, double aileronStart, double aileronEnd, double aileronChord, double thickness) {
+
         return "OBJECT poly\n"
                 + "name \"mainwing\"\n"
                 + "kids 2\n"
-                + getWing(x, y, z, chord, span / 2, thickness, -dihedral, attackAngle, 1)
-                + getWing(x, y, z, chord, span / 2, thickness, 180 + dihedral, attackAngle, 1);
+                + "OBJECT poly\n"
+                + "name \"wingA\"\n"
+                + "loc " + x + " " + y + " " + z + "\n"
+                + getRotationMatrix(-attackAngle, 0, -dihedral)
+                + getWingWithAileron(chord, length, aileronStart, aileronEnd, aileronChord, thickness)
+                + "kids 0\n"
+                + "OBJECT poly\n"
+                + "name \"wingB\"\n"
+                + "loc " + x + " " + y + " " + z + "\n"
+                + getRotationMatrix(-attackAngle, 0, 180 + dihedral)
+                //                + "loc " + 0 + " " + 0 + " "  + "\n"
+                + getWingWithAileron(chord, length, aileronStart, aileronEnd, aileronChord, thickness)
+                + "kids 0\n";
     }
 
     private String getTailWing(double x, double y, double z, double chordHorizontal, double chordVertical, double spanHorizontal, double spanVertical, double thickness) {
         return "OBJECT poly\n"
                 + "name \"tailwing\"\n"
                 + "kids 3\n"
-                + getWing(x, y, z, chordHorizontal, spanHorizontal / 2, thickness, 0, 0, 3)
-                + getWing(x, y, z, chordVertical, spanVertical, thickness, -90, 0, 4)
-                + getWing(x, y, z, chordHorizontal, spanHorizontal / 2, thickness, 180, 0, 3);
+                + getWing(z, chordHorizontal + z, 0, spanHorizontal / 2, thickness, 0, 0, 3)
+                + getWing(z, chordVertical + z, 0, spanVertical, thickness, -90, 0, 4)
+                + getWing(z, chordHorizontal + z, 0, spanHorizontal / 2, thickness, 180, 0, 3);
     }
 
     private double scaleToM(double mm) {
@@ -173,14 +200,15 @@ public class Ac3dFile {
     }
 
     protected String getFormattedColour(Color colour) {
-        return colour.getRed() / 255.0 + " " + colour.getGreen() / 255.0 + " " + colour.getBlue() / 255.0;
+        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+        return decimalFormat.format(colour.getRed() / 255.0) + " " + decimalFormat.format(colour.getGreen() / 255.0) + " " + decimalFormat.format(colour.getBlue() / 255.0);
     }
 
     public String getAc3dFile() {
         return "AC3Db\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getAileronColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getFuselageColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getMainWingColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
-                + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getAileronColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getHStabiliserColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getVStabiliserColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "OBJECT world\n"
@@ -188,7 +216,7 @@ public class Ac3dFile {
                 + getFuselageSection(0, 0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageRadius() * 2))
                 + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius() * 2))
                 + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageSectionLengthC()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius()))
-                + getMainWing(0, scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingSpan()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(5))
+                + getMainWing(0, scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingLength()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(modelData.getAileronStart()), scaleToM(modelData.getAileronEnd()), scaleToM(modelData.getAileronChord()), scaleToM(5))
                 + getTailWing(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB() + modelData.getFuselageSectionLengthC() - modelData.getStabiliserChord() / 2), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserSpan()), scaleToM(modelData.getStabiliserHeight()), scaleToM(5));
     }
 }

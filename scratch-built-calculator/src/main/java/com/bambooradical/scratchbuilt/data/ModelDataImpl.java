@@ -82,7 +82,7 @@ public class ModelDataImpl implements ModelData {
         this.chordLength = chordLength;
         this.wingSpan = wingSpan;
         wingSpan = strutSpacing * strutsPerWing * 2;
-        aileronLength = wingSpan / 4;
+        aileronLength = wingSpan / 4 - 5;
 //        chordLength = chordRibLength + aileronChord;
         wingArea = ((wingSpan / 100.0) * ((chordLength) / 100.0));
         chordRibLength = 120;
@@ -93,7 +93,7 @@ public class ModelDataImpl implements ModelData {
         finArea = stabiliserHeight * stabiliserChord; //fin area should be 33% of the stabaliser
         this.dihedralAngle = dihedralAngle;
         this.attackAngle = attackAngle;
-        this.aileronStart = wingSpan / 2 - aileronLength;
+        this.aileronStart = wingSpan / 2 - aileronLength - 5;
     }
 
     @Override
@@ -238,7 +238,7 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public Color getElevatorColour() {
-        return new Color(0xC27900);
+        return new Color(0xC2AA00);
     }
 
     @Override
@@ -248,6 +248,6 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public Color getFuselageColour() {
-        return new Color(0xC2AA00);
+        return new Color(0xC27900);
     }
 }
