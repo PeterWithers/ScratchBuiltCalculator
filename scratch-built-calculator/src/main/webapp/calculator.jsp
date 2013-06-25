@@ -66,14 +66,26 @@
                 var wingChord = document.getElementById("wingchord").value;
                 var dihedral = document.getElementById("dihedral").value;
                 var attackangle = document.getElementById("attackangle").value;
+                var aileronend = document.getElementById("aileronend").value;
+                var aileronstart = document.getElementById("aileronstart").value;
+                var aileronchord = document.getElementById("aileronchord").value;
+                var fuselageradius = document.getElementById("fuselageradius").value;
                 ga('send', formatType, {
                     'wingSpan': wingSpan,
                     'wingChord': wingChord,
                     'dihedral': dihedral,
-                    'attackangle': attackangle
+                    'attackangle': attackangle,
+                    'aileronend': aileronend,
+                    'aileronstart': aileronstart,
+                    'aileronchord': aileronchord,
+                    'fuselageradius': fuselageradius
                 });
                 var getParam = '?wingSpan=' + wingSpan + '&wingChord=' + wingChord
-                        + '&dihedral=' + dihedral + '&attackAngle=' + attackangle;
+                        + '&dihedral=' + dihedral + '&attackAngle=' + attackangle
+                        + '&aileronEnd=' + aileronend
+                        + '&aileronStart=' + aileronstart
+                        + '&aileronChord=' + aileronchord
+                        + '&fuselageRadius=' + fuselageradius;
                 return "./scratchbuilt/calculator/" + formatType + getParam;
             }
             function onLoaded() {
@@ -119,7 +131,23 @@
                             </td></tr><tr><td>
                                 Attack&nbsp;Angle
                             </td><td>
-                                <input id="attackangle" value="<%= new TrainerData().getAttackAngle()%>"/>                            
+                                <input id="attackangle" value="<%= new TrainerData().getAttackAngle()%>"/> 
+                            </td></tr><tr><td>
+                                Fuselage&nbsp;Radius
+                            </td><td>
+                                <input id="fuselageradius" value="<%= new TrainerData().getFuselageRadius()%>"/>
+                            </td></tr><tr><td>
+                                Aileron&nbsp;Chord
+                            </td><td>
+                                <input id="aileronchord" value="<%= new TrainerData().getAileronChord()%>"/>  
+                            </td></tr><tr><td>
+                                Aileron&nbsp;Start
+                            </td><td>
+                                <input id="aileronstart" value="<%= new TrainerData().getAileronStart()%>"/>                            
+                            </td></tr><tr><td>
+                                Aileron&nbsp;End
+                            </td><td>
+                                <input id="aileronend" value="<%= new TrainerData().getAileronEnd()%>"/>                            
                             </td></tr><tr><td></td><td>
                                 <input id="clickMe" type="button" value="update" onclick="updateModel();" />
                             </td></tr></table>

@@ -45,8 +45,12 @@ public class CalculatorResource {
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
-            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle) {
-        return new Ac3dFile(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle)).getAc3dFile();
+            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
+            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
+            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
+            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
+            @DefaultValue("30") @QueryParam("fuselageRadius") int fuselageRadius) {
+        return new Ac3dFile(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, fuselageRadius)).getAc3dFile();
     }
 
     @GET
@@ -56,8 +60,12 @@ public class CalculatorResource {
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
-            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle) {
-        return new YasimConfig(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle));
+            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
+            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
+            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
+            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
+            @DefaultValue("30") @QueryParam("fuselageRadius") int fuselageRadius) {
+        return new YasimConfig(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, fuselageRadius));
     }
 
     @GET
@@ -67,7 +75,11 @@ public class CalculatorResource {
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
-            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle) {
-        return new SvgLayout(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle));
+            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
+            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
+            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
+            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
+            @DefaultValue("30") @QueryParam("fuselageRadius") int fuselageRadius) {
+        return new SvgLayout(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, fuselageRadius));
     }
 }

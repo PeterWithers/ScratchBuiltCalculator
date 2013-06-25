@@ -34,7 +34,7 @@ public class ModelDataImpl implements ModelData {
     private final int wingSpan;
     private double wingArea;
     private final int aileronStart;
-    private final int aileronLength;
+    private final int aileronEnd;
     private final double dihedralAngle;
     private final double attackAngle;
     private final int stabiliserChord = 80;
@@ -65,35 +65,24 @@ public class ModelDataImpl implements ModelData {
     int fuselageSectionLengthC = 280;
     int weightInGrams = 500;
 
-    public ModelDataImpl(int aileronChord, int chordLength, int wingSpan, int aileronStart, int aileronLength, double dihedralAngle, double attackAngle, int stabiliserHeight, int fuselageLength, int fuselageRadius) {
-        this.aileronChord = aileronChord;
-        this.chordLength = chordLength;
-        this.wingSpan = wingSpan;
-        this.aileronStart = aileronStart;
-        this.aileronLength = aileronLength;
-        this.dihedralAngle = dihedralAngle;
-        this.attackAngle = attackAngle;
-        this.stabiliserHeight = stabiliserHeight;
-        this.fuselageLength = fuselageLength;
-        this.fuselageRadius = fuselageRadius;
-    }
-
-    public ModelDataImpl(int chordLength, int wingSpan, double dihedralAngle, double attackAngle) {
+    public ModelDataImpl(int chordLength, int wingSpan, double dihedralAngle, double attackAngle, int aileronEnd, int aileronStart, int aileronChord, int fuselageRadius) {
         this.chordLength = chordLength;
         this.wingSpan = wingSpan;
         wingSpan = strutSpacing * strutsPerWing * 2;
-        aileronLength = wingSpan / 4 - 5;
+//        aileronLength = wingSpan / 4 - 5;
 //        chordLength = chordRibLength + aileronChord;
         wingArea = ((wingSpan / 100.0) * ((chordLength) / 100.0));
         chordRibLength = 120;
-        aileronChord = chordRibLength / 3;
+        this.aileronChord = aileronChord;
         fuselageLength = (int) (wingSpan * 0.75);
-        fuselageRadius = (int) (fuselageLength * 0.1 / 2);
+        this.fuselageRadius = fuselageRadius;
         stabiliserHeight = stabiliserChord;
         finArea = stabiliserHeight * stabiliserChord; //fin area should be 33% of the stabaliser
         this.dihedralAngle = dihedralAngle;
         this.attackAngle = attackAngle;
-        this.aileronStart = wingSpan / 2 - aileronLength - 5;
+        this.aileronStart = aileronStart;
+        this.aileronEnd = aileronEnd;
+
     }
 
     @Override
@@ -163,12 +152,12 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public int getAileronEnd() {
-        return aileronStart + aileronLength;
+        return aileronEnd;
     }
 
     @Override
     public int getAileronLength() {
-        return aileronLength;
+        return aileronEnd - aileronStart;
     }
 
     @Override
