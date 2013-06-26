@@ -56,6 +56,35 @@ public class SvgFuselage extends SvgGroup {
         return svgPolyline;
     }
 
+    public double getOptimalOffset(double lastStart, double lastEnd, double nextStart, double nextEnd) {
+//        lastStart = lastStart / 2.0;
+//        lastEnd = lastEnd / 2.0;
+//        nextStart = nextStart / 2.0;
+//        nextEnd = nextEnd / 2.0;
+        if ((lastStart + nextStart) > (lastEnd + nextEnd)) {
+            // calculate the offset based on the start 
+            return (lastStart + nextStart) / 2.0;
+        } else {
+            // calculate the offset based on the  end
+            return (lastEnd + nextEnd) / 2.0;
+        }
+
+//        if(lastStart>lastEnd){
+//            
+//        }else{
+//            
+//        }
+
+//    if ((lastStart + nextStart / 2) > (lastEnd + nextEnd / 2)) {
+//            double startOffset = (startWidth > endWidth) ? 0 : endWidth - startWidth;
+//            return endHeight - startOffset / 2 + 2;
+//        } else {
+//            double endOffset = (startWidth > endWidth) ? startWidth - endWidth : 0;
+//            currentOffset += startHeight - endOffset / 2 + 2;
+//        }
+//        return 10;
+    }
+
     @Override
     public SvgPolyline[] getPolylines() {
         double startHeight = fuselageSection.getStartHeight();
@@ -63,21 +92,15 @@ public class SvgFuselage extends SvgGroup {
         double startWidth = fuselageSection.getStartWidth();
         double endWidth = fuselageSection.getEndWidth();
         double length = fuselageSection.getLength();
-        final double averageHeight = (startHeight + endHeight) / 2 + 2;
-        final double averageWidth = (startWidth + endWidth) / 2 + 2;
+//        final double averageHeight = (startHeight + endHeight) / 2 + 2;
+//        final double averageWidth = (startWidth + endWidth) / 2 + 2;
         double currentOffset = 0;
         final SvgPolyline leftSide = getPolyline(0, currentOffset, startHeight, endHeight, length);
-        currentOffset += averageHeight;
+        currentOffset += getOptimalOffset(startHeight, endHeight, endHeight, startHeight);
         final SvgPolyline rightSide = getPolyline(0, currentOffset, endHeight, startHeight, length);
-        if ((endHeight + startWidth / 2) > (startHeight + endWidth / 2)) {
-            double startOffset = (startWidth > endWidth) ? 0 : endWidth - startWidth;
-            currentOffset += endHeight - startOffset / 2 + 2;
-        } else {
-            double endOffset = (startWidth > endWidth) ? startWidth - endWidth : 0;
-            currentOffset += startHeight - endOffset / 2 + 2;
-        }
+        currentOffset += getOptimalOffset(endHeight, startHeight, startWidth, endWidth);
         final SvgPolyline bottom = getPolyline(0, currentOffset, startWidth, endWidth, length);
-        currentOffset += averageWidth;
+        currentOffset += getOptimalOffset(startWidth, endWidth, endWidth, startWidth);
         final SvgPolyline top = getPolyline(0, currentOffset, endWidth, startWidth, length);
         if (fuselageSection.isRequiresTop()) {
             return new SvgPolyline[]{leftSide, rightSide, bottom, top};

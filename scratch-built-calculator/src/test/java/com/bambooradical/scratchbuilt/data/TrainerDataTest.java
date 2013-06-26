@@ -117,7 +117,7 @@ public class TrainerDataTest {
     public void testGetFuselageRadius() {
         System.out.println("getFuselageRadius");
         TrainerData instance = new TrainerData();
-        int expResult = 30;
+        int expResult = 40;
         int result = instance.getFuselageWidth();
         assertEquals(expResult, result);
     }
