@@ -60,12 +60,25 @@ public class SvgFuselage extends SvgGroup {
     public SvgPolyline[] getPolylines() {
         double startHeight = fuselageSection.getStartHeight();
         double endHeight = fuselageSection.getEndHeight();
+        double startWidth = fuselageSection.getStartWidth();
+        double endWidth = fuselageSection.getEndWidth();
         double length = fuselageSection.getLength();
-        final double averageHeight = (startHeight + endHeight) / 2;
-        final SvgPolyline leftSide = getPolyline(0, 0, startHeight, endHeight, length);
-        final SvgPolyline rightSide = getPolyline(0, averageHeight, endHeight, startHeight, length);
-        final SvgPolyline bottom = getPolyline(0, averageHeight * 2, startHeight, endHeight, length);
-        final SvgPolyline top = getPolyline(0, averageHeight * 3, endHeight, startHeight, length);
+        final double averageHeight = (startHeight + endHeight) / 2 + 2;
+        final double averageWidth = (startWidth + endWidth) / 2 + 2;
+        double currentOffset = 0;
+        final SvgPolyline leftSide = getPolyline(0, currentOffset, startHeight, endHeight, length);
+        currentOffset += averageHeight;
+        final SvgPolyline rightSide = getPolyline(0, currentOffset, endHeight, startHeight, length);
+        if ((endHeight + startWidth / 2) > (startHeight + endWidth / 2)) {
+            double startOffset = (startWidth > endWidth) ? 0 : endWidth - startWidth;
+            currentOffset += endHeight - startOffset / 2 + 2;
+        } else {
+            double endOffset = (startWidth > endWidth) ? startWidth - endWidth : 0;
+            currentOffset += startHeight - endOffset / 2 + 2;
+        }
+        final SvgPolyline bottom = getPolyline(0, currentOffset, startWidth, endWidth, length);
+        currentOffset += averageWidth;
+        final SvgPolyline top = getPolyline(0, currentOffset, endWidth, startWidth, length);
         if (fuselageSection.isRequiresTop()) {
             return new SvgPolyline[]{leftSide, rightSide, bottom, top};
         } else {
