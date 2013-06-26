@@ -25,6 +25,6 @@ package com.bambooradical.scratchbuilt.data;
 public class TrainerData extends ModelDataImpl {
 
     public TrainerData() {
-        super(160, 800, 3, 3, 400, 200, 40, 30);
+        super(160, 800, 3, 3, 400, 200, 40, 20, 40, 40, 20);
     }
 }

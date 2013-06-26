@@ -40,6 +40,10 @@ public interface ModelData {
 
     public int getFuselageWidth();
 
+    public int getFuselageHeight();
+
+    public int getFuselageEndsDiameter();
+
     public int getStabiliserSpan();
 
     public int getStabiliserHeight();
@@ -64,7 +68,7 @@ public interface ModelData {
 
     public double getWingArea();
 
-    public double getWingHeight();
+    public int getWingHeight();
 
     public FuselageSection[] getFuselageSections();
 

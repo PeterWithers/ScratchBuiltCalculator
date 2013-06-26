@@ -64,7 +64,7 @@ public class ModelDataImpl implements ModelData {
     int fuselageSectionLength = 160 + 160 + 280;
     int weightInGrams = 500;
 
-    public ModelDataImpl(int chordLength, int wingSpan, double dihedralAngle, double attackAngle, int aileronEnd, int aileronStart, int aileronChord, int fuselageRadius) {
+    public ModelDataImpl(int chordLength, int wingSpan, double dihedralAngle, double attackAngle, int aileronEnd, int aileronStart, int aileronChord, int wingHeight, int fuselageHeight, int fuselageWidth, int fuselageEndsDiameter) {
         this.chordLength = chordLength;
         this.wingSpan = wingSpan;
         wingSpan = strutSpacing * strutsPerWing * 2;
@@ -74,16 +74,16 @@ public class ModelDataImpl implements ModelData {
         chordRibLength = 120;
         this.aileronChord = aileronChord;
         fuselageLength = (int) (wingSpan * 0.75);
-        this.fuselageHeight = fuselageRadius;
-        this.fuselageWidth = fuselageRadius;
-        fuselageEndsDiameter = fuselageRadius / 2;
+        this.fuselageHeight = fuselageHeight;
+        this.fuselageWidth = fuselageWidth;
+        this.fuselageEndsDiameter = fuselageEndsDiameter;
         stabiliserHeight = stabiliserChord;
         finArea = stabiliserHeight * stabiliserChord; //fin area should be 33% of the stabaliser
         this.dihedralAngle = dihedralAngle;
         this.attackAngle = attackAngle;
         this.aileronStart = aileronStart;
         this.aileronEnd = aileronEnd;
-        this.wingHeight = this.fuselageHeight / 2;
+        this.wingHeight = wingHeight;
 
     }
 
@@ -120,6 +120,16 @@ public class ModelDataImpl implements ModelData {
     @Override
     public int getFuselageLength() {
         return fuselageLength;
+    }
+
+    @Override
+    public int getFuselageHeight() {
+        return fuselageHeight;
+    }
+
+    @Override
+    public int getFuselageEndsDiameter() {
+        return fuselageEndsDiameter;
     }
 
     @Override
@@ -178,7 +188,7 @@ public class ModelDataImpl implements ModelData {
     }
 
     @Override
-    public double getWingHeight() {
+    public int getWingHeight() {
         return wingHeight;
     }
 

@@ -49,8 +49,11 @@ public class CalculatorResource {
             @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
             @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
             @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
-            @DefaultValue("30") @QueryParam("fuselageRadius") int fuselageRadius) {
-        return new Ac3dFile(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, fuselageRadius)).getAc3dFile();
+            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
+            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
+            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
+            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
+        return new Ac3dFile(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)).getAc3dFile();
     }
 
     @GET
@@ -64,8 +67,11 @@ public class CalculatorResource {
             @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
             @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
             @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
-            @DefaultValue("30") @QueryParam("fuselageRadius") int fuselageRadius) {
-        return new YasimConfig(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, fuselageRadius));
+            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
+            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
+            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
+            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
+        return new YasimConfig(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
     }
 
     @GET
@@ -79,7 +85,10 @@ public class CalculatorResource {
             @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
             @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
             @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
-            @DefaultValue("30") @QueryParam("fuselageRadius") int fuselageRadius) {
-        return new SvgLayout(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, fuselageRadius));
+            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
+            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
+            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
+            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
+        return new SvgLayout(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
     }
 }

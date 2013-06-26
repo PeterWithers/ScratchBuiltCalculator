@@ -88,19 +88,19 @@ public class Ac3dFile {
                 + "3 0 1\n";
     }
 
-    private String getFuselageSection(double x, double y, double z, double length, double startWidth, double endWidth, int materialIndex) {
+    private String getFuselageSection(double x, double y, double z, double length, double startWidth, double startHeight, double endWidth, double endHeight, int materialIndex) {
         return "OBJECT poly\n"
                 + "name \"fuselage\"\n"
                 + "loc " + x + " " + y + " " + z + "\n"
                 + "numvert 8\n"
-                + -startWidth / 2 + " " + startWidth / 2 + " 0\n"
-                + startWidth / 2 + " " + startWidth / 2 + " 0\n"
-                + startWidth / 2 + " " + -startWidth / 2 + " 0\n"
-                + -startWidth / 2 + " " + -startWidth / 2 + " 0\n"
-                + -endWidth / 2 + " " + endWidth / 2 + " " + length + "\n"
-                + endWidth / 2 + " " + endWidth / 2 + " " + length + "\n"
-                + endWidth / 2 + " " + -endWidth / 2 + " " + length + "\n"
-                + -endWidth / 2 + " " + -endWidth / 2 + " " + length + "\n"
+                + -startWidth / 2 + " " + startHeight / 2 + " 0\n"
+                + startWidth / 2 + " " + startHeight / 2 + " 0\n"
+                + startWidth / 2 + " " + -startHeight / 2 + " 0\n"
+                + -startWidth / 2 + " " + -startHeight / 2 + " 0\n"
+                + -endWidth / 2 + " " + endHeight / 2 + " " + length + "\n"
+                + endWidth / 2 + " " + endHeight / 2 + " " + length + "\n"
+                + endWidth / 2 + " " + -endHeight / 2 + " " + length + "\n"
+                + -endWidth / 2 + " " + -endHeight / 2 + " " + length + "\n"
                 + getBoxFaces(materialIndex)
                 + "kids 0\n";
 
@@ -136,18 +136,22 @@ public class Ac3dFile {
     }
 
     private String getWing(double chordStart, double chordEnd, double start, double end, double thickness, double angle, double attackAngle, int materialIndex) {
+        return getTaperedWing(chordStart, chordEnd, chordStart, chordEnd, start, end, thickness, angle, attackAngle, materialIndex);
+    }
+
+    private String getTaperedWing(double chordStart, double chordEnd, double chordStartOuter, double chordEndOuter, double start, double end, double thickness, double angle, double attackAngle, int materialIndex) {
         return "OBJECT poly\n"
                 + "name \"wing\"\n"
                 //                + "loc " + x + " " + y + " " + 0 + "\n"
                 + getRotationMatrix(-attackAngle, 0, angle)
                 + "numvert 8\n"
                 + start + " " + thickness / 2 + " " + chordStart + "\n"
-                + end + " " + thickness / 2 + " " + chordStart + "\n"
-                + end + " " + -thickness / 2 + " " + chordStart + "\n"
+                + end + " " + thickness / 2 + " " + chordStartOuter + "\n"
+                + end + " " + -thickness / 2 + " " + chordStartOuter + "\n"
                 + start + " " + -thickness / 2 + " " + chordStart + "\n"
                 + start + " " + thickness / 2 + " " + chordEnd + "\n"
-                + end + " " + thickness / 2 + " " + chordEnd + "\n"
-                + end + " " + -thickness / 2 + " " + chordEnd + "\n"
+                + end + " " + thickness / 2 + " " + chordEndOuter + "\n"
+                + end + " " + -thickness / 2 + " " + chordEndOuter + "\n"
                 + start + " " + -thickness / 2 + " " + chordEnd + "\n"
                 + getBoxFaces(materialIndex)
                 + "kids 0\n";
@@ -191,9 +195,9 @@ public class Ac3dFile {
         return "OBJECT poly\n"
                 + "name \"tailwing\"\n"
                 + "kids 3\n"
-                + getWing(z, chordHorizontal + z, 0, spanHorizontal / 2, thickness, 0, 0, 3)
-                + getWing(z, chordVertical + z, 0, spanVertical, thickness, -90, 0, 4)
-                + getWing(z, chordHorizontal + z, 0, spanHorizontal / 2, thickness, 180, 0, 3);
+                + getTaperedWing(z, chordHorizontal + z, chordHorizontal / 2 + z, chordHorizontal + z, 0, spanHorizontal / 2, thickness, 0, 0, 3)
+                + getTaperedWing(z, chordVertical + z, chordHorizontal / 2 + z, chordVertical + z, 0, spanVertical, thickness, -90, 0, 4)
+                + getTaperedWing(z, chordHorizontal + z, chordHorizontal / 2 + z, chordHorizontal + z, 0, spanHorizontal / 2, thickness, 180, 0, 3);
     }
 
     private double scaleToM(double mm) {
@@ -217,9 +221,9 @@ public class Ac3dFile {
                 + "MATERIAL \"\" rgb " + getFormattedColour(fuselageSections[1].getColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "MATERIAL \"\" rgb " + getFormattedColour(fuselageSections[2].getColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n" + "OBJECT world\n"
                 + "kids 5\n"
-                + getFuselageSection(0, 0, scaleToM(fuselageSections[0].getStart()), scaleToM(fuselageSections[0].getLength()), scaleToM(fuselageSections[0].getStartWidth()), scaleToM(fuselageSections[0].getEndWidth()), 5)
-                + getFuselageSection(0, 0, scaleToM(fuselageSections[1].getStart()), scaleToM(fuselageSections[1].getLength()), scaleToM(fuselageSections[1].getStartWidth()), scaleToM(fuselageSections[1].getEndWidth()), 6)
-                + getFuselageSection(0, 0, scaleToM(fuselageSections[2].getStart()), scaleToM(fuselageSections[2].getLength()), scaleToM(fuselageSections[2].getStartWidth()), scaleToM(fuselageSections[2].getEndWidth()), 7)
+                + getFuselageSection(0, 0, scaleToM(fuselageSections[0].getStart()), scaleToM(fuselageSections[0].getLength()), scaleToM(fuselageSections[0].getStartWidth()), scaleToM(fuselageSections[0].getStartHeight()), scaleToM(fuselageSections[0].getEndWidth()), scaleToM(fuselageSections[0].getEndHeight()), 5)
+                + getFuselageSection(0, 0, scaleToM(fuselageSections[1].getStart()), scaleToM(fuselageSections[1].getLength()), scaleToM(fuselageSections[1].getStartWidth()), scaleToM(fuselageSections[1].getStartHeight()), scaleToM(fuselageSections[1].getEndWidth()), scaleToM(fuselageSections[1].getEndHeight()), 6)
+                + getFuselageSection(0, 0, scaleToM(fuselageSections[2].getStart()), scaleToM(fuselageSections[2].getLength()), scaleToM(fuselageSections[2].getStartWidth()), scaleToM(fuselageSections[2].getStartHeight()), scaleToM(fuselageSections[2].getEndWidth()), scaleToM(fuselageSections[2].getEndHeight()), 7)
                 + getMainWing(0, scaleToM(modelData.getWingHeight()), scaleToM(fuselageSections[1].getStart()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingLength()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(modelData.getAileronStart()), scaleToM(modelData.getAileronEnd()), scaleToM(modelData.getAileronChord()), scaleToM(5))
                 + getTailWing(0, 0, scaleToM(fuselageSections[2].getEnd() - modelData.getStabiliserChord() / 2), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserSpan()), scaleToM(modelData.getStabiliserHeight()), scaleToM(5));
     }

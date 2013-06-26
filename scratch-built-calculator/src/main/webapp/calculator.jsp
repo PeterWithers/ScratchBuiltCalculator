@@ -69,7 +69,10 @@
                 var aileronend = document.getElementById("aileronend").value;
                 var aileronstart = document.getElementById("aileronstart").value;
                 var aileronchord = document.getElementById("aileronchord").value;
-                var fuselageradius = document.getElementById("fuselageradius").value;
+                var fuselageheight = document.getElementById("fuselageheight").value;
+                var fuselagewidth = document.getElementById("fuselagewidth").value;
+                var fuselageendseiameter = document.getElementById("fuselageendseiameter").value;
+                var wingheight = document.getElementById("wingheight").value;
                 ga('send', formatType, {
                     'wingSpan': wingSpan,
                     'wingChord': wingChord,
@@ -78,14 +81,20 @@
                     'aileronend': aileronend,
                     'aileronstart': aileronstart,
                     'aileronchord': aileronchord,
-                    'fuselageradius': fuselageradius
+                    'wingheight': wingheight,
+                    'fuselageheight': fuselageheight,
+                    'fuselagewidth': fuselagewidth,
+                    'fuselageendsdiameter': fuselageendseiameter
                 });
                 var getParam = '?wingSpan=' + wingSpan + '&wingChord=' + wingChord
                         + '&dihedral=' + dihedral + '&attackAngle=' + attackangle
                         + '&aileronEnd=' + aileronend
                         + '&aileronStart=' + aileronstart
                         + '&aileronChord=' + aileronchord
-                        + '&fuselageRadius=' + fuselageradius;
+                        + '&fuselageHeight=' + fuselageheight
+                        + '&fuselageWidth=' + fuselagewidth
+                        + '&fuselageEndsDiameter=' + fuselageendseiameter
+                        + '&wingHeight=' + wingheight;
                 return "./scratchbuilt/calculator/" + formatType + getParam;
             }
             function onLoaded() {
@@ -133,9 +142,17 @@
                             </td><td>
                                 <input id="attackangle" value="<%= new TrainerData().getAttackAngle()%>"/> 
                             </td></tr><tr><td>
-                                Fuselage&nbsp;Radius
+                                Fuselage&nbsp;Height
                             </td><td>
-                                <input id="fuselageradius" value="<%= new TrainerData().getFuselageWidth()%>"/>
+                                <input id="fuselageheight" value="<%= new TrainerData().getFuselageHeight()%>"/>
+                            </td></tr><tr><td>
+                                Fuselage&nbsp;Width
+                            </td><td>
+                                <input id="fuselagewidth" value="<%= new TrainerData().getFuselageWidth()%>"/>
+                            </td></tr><tr><td>
+                                Start&nbsp;and&nbsp;End&nbsp;Diameter
+                            </td><td>
+                                <input id="fuselageendseiameter" value="<%= new TrainerData().getFuselageEndsDiameter()%>"/>
                             </td></tr><tr><td>
                                 Aileron&nbsp;Chord
                             </td><td>
@@ -147,7 +164,10 @@
                             </td></tr><tr><td>
                                 Aileron&nbsp;End
                             </td><td>
-                                <input id="aileronend" value="<%= new TrainerData().getAileronEnd()%>"/>                            
+                                <input id="aileronend" value="<%= new TrainerData().getAileronEnd()%>"/>   </td></tr><tr><td>
+                                Wing&nbsp;Height
+                            </td><td>
+                                <input id="wingheight" value="<%= new TrainerData().getWingHeight()%>"/>                            
                             </td></tr><tr><td></td><td>
                                 <input id="clickMe" type="button" value="update" onclick="updateModel();" />
                             </td></tr></table>
