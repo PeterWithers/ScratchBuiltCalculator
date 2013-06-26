@@ -17,6 +17,7 @@
  */
 package com.bambooradical.scratchbuilt.serialisers;
 
+import com.bambooradical.scratchbuilt.data.FuselageSection;
 import com.bambooradical.scratchbuilt.data.ModelData;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -68,10 +69,12 @@ public class YasimConfig {
     @XmlElement(name = "fuselage")
     public YasimFuselage[] getYasimFuselage() {
         // This defines a tubelike structure. It will be given an even mass and aerodynamic force distribution by the solver. You can have as many as you like, in any orientation you please.
+        final FuselageSection[] fuselageSections = modelData.getFuselageSections();
         return new YasimFuselage[]{
-            new YasimFuselage("fuselage part A (front)", 0, 0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageRadius(), modelData.getFuselageRadius() * 2),
-            new YasimFuselage("fuselage part B (middle)", 0, 0, modelData.getFuselageSectionLengthA(), modelData.getFuselageSectionLengthB(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius() * 2),
-            new YasimFuselage("fuselage part C (back)", 0, 0, modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB(), modelData.getFuselageSectionLengthC(), modelData.getFuselageRadius() * 2, modelData.getFuselageRadius())};
+            new YasimFuselage(fuselageSections[0]),
+            new YasimFuselage(fuselageSections[1]),
+            new YasimFuselage(fuselageSections[2])
+        };
     }
 
     @XmlElement(name = "wing")

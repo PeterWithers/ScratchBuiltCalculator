@@ -17,6 +17,7 @@
  */
 package com.bambooradical.scratchbuilt.serialisers;
 
+import com.bambooradical.scratchbuilt.data.FuselageSection;
 import com.bambooradical.scratchbuilt.data.ModelData;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -48,10 +49,11 @@ public class SvgLayout {
     public SvgGroup[] getGroups() {
         final SvgWing svgWing = new SvgWing(modelData, 0, 0, "mainwing");
         double fuselageOffsetY = svgWing.getHeight();
+        final FuselageSection[] fuselageSections = modelData.getFuselageSections();
         return new SvgGroup[]{svgWing,
-            new SvgFuselage(modelData, 0, fuselageOffsetY, "fuselagePartA", modelData.getFuselageSectionLengthA(), modelData.getFuselageRadius(), modelData.getFuselageRadius() / 2, modelData.getFuselageColour()),
-            new SvgFuselage(modelData, modelData.getFuselageSectionLengthA(), fuselageOffsetY, "fuselagePartB", modelData.getFuselageSectionLengthB(), modelData.getFuselageRadius(), modelData.getFuselageRadius(), modelData.getMainWingColour()),
-            new SvgFuselage(modelData, modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB(), fuselageOffsetY, "fuselagePartC", modelData.getFuselageSectionLengthC(), modelData.getFuselageRadius(), modelData.getFuselageRadius() / 2, modelData.getFuselageColour())};
+            new SvgFuselage(modelData, 0, fuselageOffsetY, fuselageSections[0]),
+            new SvgFuselage(modelData, fuselageSections[0].getLength(), fuselageOffsetY, fuselageSections[1]),
+            new SvgFuselage(modelData, fuselageSections[0].getLength() + fuselageSections[1].getLength(), fuselageOffsetY, fuselageSections[2])};
     }
 
     @XmlElement(name = "polyline", namespace = "http://www.w3.org/2000/svg")

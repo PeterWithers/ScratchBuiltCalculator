@@ -31,6 +31,7 @@ public class ModelDataImpl implements ModelData {
     private int strutsPerWing = 8;
     private final int wingSpan;
     private double wingArea;
+    private final int wingHeight;
     private final int aileronStart;
     private final int aileronEnd;
     private final double dihedralAngle;
@@ -43,7 +44,10 @@ public class ModelDataImpl implements ModelData {
     private int finArea;
     private final int fuselageLength;
 //fuselageLength = chordLength*4.5;
-    private final int fuselageRadius;
+//    private final int fuselageRadius;
+    private final int fuselageWidth;
+    private final int fuselageHeight;
+    private final int fuselageEndsDiameter;
     private double stabiliserRatio = (stabiliserSpan * 2.0) / stabiliserChord; // stabiliser ratio should be about 3:1
 //ECHO: "stabiliserArea: ", 19200
 //ECHO: "finArea: ", 6400
@@ -70,13 +74,16 @@ public class ModelDataImpl implements ModelData {
         chordRibLength = 120;
         this.aileronChord = aileronChord;
         fuselageLength = (int) (wingSpan * 0.75);
-        this.fuselageRadius = fuselageRadius;
+        this.fuselageHeight = fuselageRadius;
+        this.fuselageWidth = fuselageRadius;
+        fuselageEndsDiameter = fuselageRadius / 2;
         stabiliserHeight = stabiliserChord;
         finArea = stabiliserHeight * stabiliserChord; //fin area should be 33% of the stabaliser
         this.dihedralAngle = dihedralAngle;
         this.attackAngle = attackAngle;
         this.aileronStart = aileronStart;
         this.aileronEnd = aileronEnd;
+        this.wingHeight = this.fuselageHeight / 2;
 
     }
 
@@ -116,8 +123,8 @@ public class ModelDataImpl implements ModelData {
     }
 
     @Override
-    public int getFuselageRadius() {
-        return fuselageRadius;
+    public int getFuselageWidth() {
+        return fuselageWidth;
     }
 
     @Override
@@ -171,6 +178,11 @@ public class ModelDataImpl implements ModelData {
     }
 
     @Override
+    public double getWingHeight() {
+        return wingHeight;
+    }
+
+    @Override
     public int getWingLength() {
         return wingSpan / 2;
     }
@@ -181,18 +193,15 @@ public class ModelDataImpl implements ModelData {
     }
 
     @Override
-    public int getFuselageSectionLengthA() {
-        return getChordLength();
-    }
-
-    @Override
-    public int getFuselageSectionLengthB() {
-        return (int) Math.abs(getChordLength() * Math.cos(Math.toRadians(getAttackAngle())));
-    }
-
-    @Override
-    public int getFuselageSectionLengthC() {
-        return fuselageSectionLength - getFuselageSectionLengthA() - getFuselageSectionLengthB();
+    public FuselageSection[] getFuselageSections() {
+        int firstSectionLength = getChordLength();
+        int secondSectionLength = (int) Math.abs(getChordLength() * Math.cos(Math.toRadians(getAttackAngle())));
+        int thirdSectionLength = fuselageSectionLength - firstSectionLength - secondSectionLength;
+        return new FuselageSection[]{
+            new FuselageSection(fuselageEndsDiameter, fuselageEndsDiameter, fuselageWidth, fuselageHeight, 0, firstSectionLength, getRudderColour(), true, "fuselagePartA"),
+            new FuselageSection(fuselageWidth, fuselageHeight, fuselageWidth, fuselageHeight, firstSectionLength, secondSectionLength, getMainWingColour(), false, "fuselagePartB"),
+            new FuselageSection(fuselageWidth, fuselageHeight, fuselageEndsDiameter, fuselageEndsDiameter, firstSectionLength + secondSectionLength, thirdSectionLength, getRudderColour(), true, "fuselagePartC")
+        };
     }
 
     @Override
@@ -227,11 +236,6 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public Colour getRudderColour() {
-        return getElevatorColour();
-    }
-
-    @Override
-    public Colour getFuselageColour() {
         return new Colour(0xC27900);
     }
 }

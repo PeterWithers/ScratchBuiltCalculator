@@ -48,12 +48,12 @@ public class YasimWing {
 
     @XmlAttribute(name = "y")
     public double getY() {
-        return -modelData.getFuselageRadius();
+        return -modelData.getFuselageWidth() / 2;
     }
 
     @XmlAttribute(name = "z")
     public double getZ() {
-        return -modelData.getFuselageRadius();
+        return -modelData.getWingHeight();
     }
     // length: The length from the base of the wing to the midchord point at the tip. Note that this is not the same thing as span.
 

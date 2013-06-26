@@ -17,6 +17,7 @@
  */
 package com.bambooradical.scratchbuilt.serialisers;
 
+import com.bambooradical.scratchbuilt.data.FuselageSection;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -38,14 +39,14 @@ public class YasimFuselage {
     public YasimFuselage() {
     }
 
-    public YasimFuselage(String comment, double x, double y, double z, double length, double startWidth, double endWidth) {
-        this.comment = comment;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.length = length;
-        this.startWidth = startWidth;
-        this.endWidth = endWidth;
+    public YasimFuselage(FuselageSection fuselageSection) {
+        this.comment = fuselageSection.getLabel();
+        this.x = fuselageSection.getStart();
+        this.y = 0;
+        this.z = 0;
+        this.length = fuselageSection.getLength();
+        this.startWidth = (fuselageSection.getStartWidth() + fuselageSection.getStartHeight()) / 2;
+        this.endWidth = (fuselageSection.getEndWidth() + fuselageSection.getStartHeight()) / 2;
     }
     // ax,ay,az: One end of the tube (typically the front)
 

@@ -37,7 +37,7 @@ public class ModelDataImplTest {
         System.out.println("getFuselageColour");
         ModelDataImpl instance = new ModelDataImpl(0, 0, 0, 0, 0, 0, 0, 0);
         String expResult = "#C27900".toLowerCase();
-        Colour result = instance.getFuselageColour();
+        Colour result = instance.getRudderColour();
         final String hexString = Integer.toHexString(result.getRGB());
         assertEquals(expResult, "#" + hexString.substring(2, hexString.length()).toLowerCase());
     }

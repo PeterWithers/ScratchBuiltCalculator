@@ -135,7 +135,7 @@
                             </td></tr><tr><td>
                                 Fuselage&nbsp;Radius
                             </td><td>
-                                <input id="fuselageradius" value="<%= new TrainerData().getFuselageRadius()%>"/>
+                                <input id="fuselageradius" value="<%= new TrainerData().getFuselageWidth()%>"/>
                             </td></tr><tr><td>
                                 Aileron&nbsp;Chord
                             </td><td>

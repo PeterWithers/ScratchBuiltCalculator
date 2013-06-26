@@ -118,7 +118,7 @@ public class TrainerDataTest {
         System.out.println("getFuselageRadius");
         TrainerData instance = new TrainerData();
         int expResult = 30;
-        int result = instance.getFuselageRadius();
+        int result = instance.getFuselageWidth();
         assertEquals(expResult, result);
     }
 
@@ -226,7 +226,7 @@ public class TrainerDataTest {
         System.out.println("getFuselageSectionLengthA");
         TrainerData instance = new TrainerData();
         int expResult = 160;
-        int result = instance.getFuselageSectionLengthA();
+        int result = instance.getFuselageSections()[0].getLength();
         assertEquals(expResult, result);
     }
 
@@ -238,7 +238,7 @@ public class TrainerDataTest {
         System.out.println("getFuselageSectionLengthB");
         TrainerData instance = new TrainerData();
         int expResult = 159;
-        int result = instance.getFuselageSectionLengthB();
+        int result = instance.getFuselageSections()[1].getLength();
         assertEquals(expResult, result);
     }
 
@@ -250,7 +250,7 @@ public class TrainerDataTest {
         System.out.println("getFuselageSectionLengthC");
         TrainerData instance = new TrainerData();
         int expResult = 281;
-        int result = instance.getFuselageSectionLengthC();
+        int result = instance.getFuselageSections()[2].getLength();
         assertEquals(expResult, result);
     }
 

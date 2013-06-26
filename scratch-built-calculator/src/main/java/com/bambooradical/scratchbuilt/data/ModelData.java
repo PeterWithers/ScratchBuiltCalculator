@@ -38,7 +38,7 @@ public interface ModelData {
 
     public int getFuselageLength();
 
-    public int getFuselageRadius();
+    public int getFuselageWidth();
 
     public int getStabiliserSpan();
 
@@ -64,11 +64,9 @@ public interface ModelData {
 
     public double getWingArea();
 
-    public int getFuselageSectionLengthA();
+    public double getWingHeight();
 
-    public int getFuselageSectionLengthB();
-
-    public int getFuselageSectionLengthC();
+    public FuselageSection[] getFuselageSections();
 
     public double getWeightInGrams();
 
@@ -83,6 +81,4 @@ public interface ModelData {
     public Colour getElevatorColour();
 
     public Colour getRudderColour();
-
-    public Colour getFuselageColour();
 }

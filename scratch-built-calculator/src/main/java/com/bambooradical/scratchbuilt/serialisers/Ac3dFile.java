@@ -18,6 +18,7 @@
 package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.Colour;
+import com.bambooradical.scratchbuilt.data.FuselageSection;
 import com.bambooradical.scratchbuilt.data.ModelData;
 import java.text.DecimalFormat;
 
@@ -205,18 +206,21 @@ public class Ac3dFile {
     }
 
     public String getAc3dFile() {
+        FuselageSection[] fuselageSections = modelData.getFuselageSections();
         return "AC3Db\n"
                 + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getAileronColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
-                + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getFuselageColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getElevatorColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getMainWingColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getHStabiliserColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getVStabiliserColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
-                + "OBJECT world\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(fuselageSections[0].getColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(fuselageSections[1].getColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
+                + "MATERIAL \"\" rgb " + getFormattedColour(fuselageSections[2].getColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n" + "OBJECT world\n"
                 + "kids 5\n"
-                + getFuselageSection(0, 0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageRadius() * 2), 1)
-                + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius() * 2), 2)
-                + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageSectionLengthC()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius()), 1)
-                + getMainWing(0, scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingLength()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(modelData.getAileronStart()), scaleToM(modelData.getAileronEnd()), scaleToM(modelData.getAileronChord()), scaleToM(5))
-                + getTailWing(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB() + modelData.getFuselageSectionLengthC() - modelData.getStabiliserChord() / 2), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserSpan()), scaleToM(modelData.getStabiliserHeight()), scaleToM(5));
+                + getFuselageSection(0, 0, scaleToM(fuselageSections[0].getStart()), scaleToM(fuselageSections[0].getLength()), scaleToM(fuselageSections[0].getStartWidth()), scaleToM(fuselageSections[0].getEndWidth()), 5)
+                + getFuselageSection(0, 0, scaleToM(fuselageSections[1].getStart()), scaleToM(fuselageSections[1].getLength()), scaleToM(fuselageSections[1].getStartWidth()), scaleToM(fuselageSections[1].getEndWidth()), 6)
+                + getFuselageSection(0, 0, scaleToM(fuselageSections[2].getStart()), scaleToM(fuselageSections[2].getLength()), scaleToM(fuselageSections[2].getStartWidth()), scaleToM(fuselageSections[2].getEndWidth()), 7)
+                + getMainWing(0, scaleToM(modelData.getWingHeight()), scaleToM(fuselageSections[1].getStart()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingLength()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(modelData.getAileronStart()), scaleToM(modelData.getAileronEnd()), scaleToM(modelData.getAileronChord()), scaleToM(5))
+                + getTailWing(0, 0, scaleToM(fuselageSections[2].getEnd() - modelData.getStabiliserChord() / 2), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserSpan()), scaleToM(modelData.getStabiliserHeight()), scaleToM(5));
     }
 }

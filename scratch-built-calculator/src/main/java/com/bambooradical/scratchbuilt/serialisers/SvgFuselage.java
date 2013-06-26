@@ -17,7 +17,7 @@
  */
 package com.bambooradical.scratchbuilt.serialisers;
 
-import com.bambooradical.scratchbuilt.data.Colour;
+import com.bambooradical.scratchbuilt.data.FuselageSection;
 import com.bambooradical.scratchbuilt.data.ModelData;
 
 /**
@@ -27,24 +27,18 @@ import com.bambooradical.scratchbuilt.data.ModelData;
  */
 public class SvgFuselage extends SvgGroup {
 
-    private double length;
-    private double startHeight;
-    private double endHeight;
-    protected Colour colour;
+    private FuselageSection fuselageSection;
 
     public SvgFuselage() {
     }
 
-    public SvgFuselage(ModelData modelData, double x, double y, String id, double length, double startHeight, double endHeight, Colour colour) {
-        super(modelData, x, y, id);
-        this.length = length;
-        this.startHeight = startHeight;
-        this.endHeight = endHeight;
-        this.colour = colour;
+    public SvgFuselage(ModelData modelData, double x, double y, FuselageSection fuselageSection) {
+        super(modelData, x, y, fuselageSection.getLabel());
+        this.fuselageSection = fuselageSection;
     }
 
-    private SvgPolyline getPolyline(double offsetX, double offsetY, double start, double end) {
-        final SvgPolyline svgPolyline = new SvgPolyline(modelData, x + offsetX, y + offsetY, colour);
+    private SvgPolyline getPolyline(double offsetX, double offsetY, double start, double end, double length) {
+        final SvgPolyline svgPolyline = new SvgPolyline(modelData, x + offsetX, y + offsetY, fuselageSection.getColour());
         double startOffset;
         double endOffset;
         if (start > end) {
@@ -64,10 +58,18 @@ public class SvgFuselage extends SvgGroup {
 
     @Override
     public SvgPolyline[] getPolylines() {
+        double startHeight = fuselageSection.getStartHeight();
+        double endHeight = fuselageSection.getEndHeight();
+        double length = fuselageSection.getLength();
         final double averageHeight = (startHeight + endHeight) / 2;
-        return new SvgPolyline[]{getPolyline(0, 0, startHeight, endHeight),
-            getPolyline(0, averageHeight, endHeight, startHeight),
-            getPolyline(0, averageHeight * 2, startHeight, endHeight),
-            getPolyline(0, averageHeight * 3, endHeight, startHeight)};
+        final SvgPolyline leftSide = getPolyline(0, 0, startHeight, endHeight, length);
+        final SvgPolyline rightSide = getPolyline(0, averageHeight, endHeight, startHeight, length);
+        final SvgPolyline bottom = getPolyline(0, averageHeight * 2, startHeight, endHeight, length);
+        final SvgPolyline top = getPolyline(0, averageHeight * 3, endHeight, startHeight, length);
+        if (fuselageSection.isRequiresTop()) {
+            return new SvgPolyline[]{leftSide, rightSide, bottom, top};
+        } else {
+            return new SvgPolyline[]{leftSide, rightSide, bottom};
+        }
     }
 }
