@@ -17,8 +17,8 @@
  */
 package com.bambooradical.scratchbuilt.serialisers;
 
+import com.bambooradical.scratchbuilt.data.Colour;
 import com.bambooradical.scratchbuilt.data.ModelData;
-import java.awt.Color;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -40,14 +40,14 @@ public class SvgPolyline {
     public SvgPolyline() {
     }
 
-    public SvgPolyline(ModelData modelData, double x, double y, Color colour) {
+    public SvgPolyline(ModelData modelData, double x, double y, Colour colour) {
         this.modelData = modelData;
         this.x = x;
         this.y = y;
         this.style = "fill:" + getFormattedColour(colour) + ";stroke:black;stroke-width:1";
     }
 
-    final public String getFormattedColour(Color colour) {
+    final public String getFormattedColour(Colour colour) {
         final String hexString = Integer.toHexString(colour.getRGB());
         final String fillHexString = "#" + hexString.substring(2, hexString.length()).toLowerCase();
         return fillHexString;

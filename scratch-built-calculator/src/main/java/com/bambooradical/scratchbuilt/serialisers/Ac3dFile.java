@@ -17,8 +17,8 @@
  */
 package com.bambooradical.scratchbuilt.serialisers;
 
+import com.bambooradical.scratchbuilt.data.Colour;
 import com.bambooradical.scratchbuilt.data.ModelData;
-import java.awt.Color;
 import java.text.DecimalFormat;
 
 /**
@@ -87,7 +87,7 @@ public class Ac3dFile {
                 + "3 0 1\n";
     }
 
-    private String getFuselageSection(double x, double y, double z, double length, double startWidth, double endWidth) {
+    private String getFuselageSection(double x, double y, double z, double length, double startWidth, double endWidth, int materialIndex) {
         return "OBJECT poly\n"
                 + "name \"fuselage\"\n"
                 + "loc " + x + " " + y + " " + z + "\n"
@@ -100,7 +100,7 @@ public class Ac3dFile {
                 + endWidth / 2 + " " + endWidth / 2 + " " + length + "\n"
                 + endWidth / 2 + " " + -endWidth / 2 + " " + length + "\n"
                 + -endWidth / 2 + " " + -endWidth / 2 + " " + length + "\n"
-                + getBoxFaces(1)
+                + getBoxFaces(materialIndex)
                 + "kids 0\n";
 
     }
@@ -199,7 +199,7 @@ public class Ac3dFile {
         return mm / 1000;
     }
 
-    protected String getFormattedColour(Color colour) {
+    protected String getFormattedColour(Colour colour) {
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
         return decimalFormat.format(colour.getRed() / 255.0) + " " + decimalFormat.format(colour.getGreen() / 255.0) + " " + decimalFormat.format(colour.getBlue() / 255.0);
     }
@@ -213,9 +213,9 @@ public class Ac3dFile {
                 + "MATERIAL \"\" rgb " + getFormattedColour(modelData.getVStabiliserColour()) + "  amb 0.2 0.2 0.2  emis 0 0 0  spec 0.5 0.5 0.5  shi 10  trans 0\n"
                 + "OBJECT world\n"
                 + "kids 5\n"
-                + getFuselageSection(0, 0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageRadius() * 2))
-                + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius() * 2))
-                + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageSectionLengthC()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius()))
+                + getFuselageSection(0, 0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageRadius() * 2), 1)
+                + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius() * 2), 2)
+                + getFuselageSection(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB()), scaleToM(modelData.getFuselageSectionLengthC()), scaleToM(modelData.getFuselageRadius() * 2), scaleToM(modelData.getFuselageRadius()), 1)
                 + getMainWing(0, scaleToM(modelData.getFuselageRadius()), scaleToM(modelData.getFuselageSectionLengthA()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingLength()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(modelData.getAileronStart()), scaleToM(modelData.getAileronEnd()), scaleToM(modelData.getAileronChord()), scaleToM(5))
                 + getTailWing(0, 0, scaleToM(modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB() + modelData.getFuselageSectionLengthC() - modelData.getStabiliserChord() / 2), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserSpan()), scaleToM(modelData.getStabiliserHeight()), scaleToM(5));
     }

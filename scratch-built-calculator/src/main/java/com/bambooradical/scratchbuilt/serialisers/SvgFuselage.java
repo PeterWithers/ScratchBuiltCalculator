@@ -17,6 +17,7 @@
  */
 package com.bambooradical.scratchbuilt.serialisers;
 
+import com.bambooradical.scratchbuilt.data.Colour;
 import com.bambooradical.scratchbuilt.data.ModelData;
 
 /**
@@ -29,19 +30,21 @@ public class SvgFuselage extends SvgGroup {
     private double length;
     private double startHeight;
     private double endHeight;
+    protected Colour colour;
 
     public SvgFuselage() {
     }
 
-    public SvgFuselage(ModelData modelData, double x, double y, String id, double length, double startHeight, double endHeight) {
+    public SvgFuselage(ModelData modelData, double x, double y, String id, double length, double startHeight, double endHeight, Colour colour) {
         super(modelData, x, y, id);
         this.length = length;
         this.startHeight = startHeight;
         this.endHeight = endHeight;
+        this.colour = colour;
     }
 
     private SvgPolyline getPolyline(double offsetX, double offsetY, double start, double end) {
-        final SvgPolyline svgPolyline = new SvgPolyline(modelData, x + offsetX, y + offsetY, modelData.getFuselageColour());
+        final SvgPolyline svgPolyline = new SvgPolyline(modelData, x + offsetX, y + offsetY, colour);
         double startOffset;
         double endOffset;
         if (start > end) {

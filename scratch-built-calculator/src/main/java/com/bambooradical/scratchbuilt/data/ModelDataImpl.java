@@ -17,8 +17,6 @@
  */
 package com.bambooradical.scratchbuilt.data;
 
-import java.awt.Color;
-
 /**
  * Created on : Jun 23, 2013, 1:45:54 PM
  *
@@ -43,7 +41,6 @@ public class ModelDataImpl implements ModelData {
     private final int stabiliserHeight;
     private int stabiliserArea = stabiliserSpan * 2 * stabiliserChord; // stabiliser area should be 15-20% of the wing area
     private int finArea;
-    private int elevatorArea = stabiliserSpan * 2 * elevatorChord; // elevator area should be 20-30% of the stabaliser area
     private final int fuselageLength;
 //fuselageLength = chordLength*4.5;
     private final int fuselageRadius;
@@ -60,9 +57,7 @@ public class ModelDataImpl implements ModelData {
 //ECHO: "verticalStabiliser(112.8,169.2,112.8);"
 //ECHO: "horizontalStabiliser(112.8,169.2,112.8);"
 //ECHO: "elevator(80,120,112.8,20);"
-    int fuselageSectionLengthA = 160;
-    int fuselageSectionLengthB = 160;
-    int fuselageSectionLengthC = 280;
+    int fuselageSectionLength = 160 + 160 + 280;
     int weightInGrams = 500;
 
     public ModelDataImpl(int chordLength, int wingSpan, double dihedralAngle, double attackAngle, int aileronEnd, int aileronStart, int aileronChord, int fuselageRadius) {
@@ -97,7 +92,7 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public int getElevatorArea() {
-        return elevatorArea;
+        return stabiliserSpan * 2 * elevatorChord; // elevator area should be 20-30% of the stabaliser area;
     }
 
     @Override
@@ -187,17 +182,17 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public int getFuselageSectionLengthA() {
-        return fuselageSectionLengthA;
+        return getChordLength();
     }
 
     @Override
     public int getFuselageSectionLengthB() {
-        return fuselageSectionLengthB;
+        return (int) Math.abs(getChordLength() * Math.cos(Math.toRadians(getAttackAngle())));
     }
 
     @Override
     public int getFuselageSectionLengthC() {
-        return fuselageSectionLengthC;
+        return fuselageSectionLength - getFuselageSectionLengthA() - getFuselageSectionLengthB();
     }
 
     @Override
@@ -206,37 +201,37 @@ public class ModelDataImpl implements ModelData {
     }
 
     @Override
-    public Color getMainWingColour() {
-        return new Color(0xC20048);
+    public Colour getMainWingColour() {
+        return new Colour(0xC20048);
     }
 
     @Override
-    public Color getAileronColour() {
-        return new Color(0xC20018);
+    public Colour getAileronColour() {
+        return new Colour(0xC20018);
     }
 
     @Override
-    public Color getHStabiliserColour() {
-        return new Color(0xC21800);
+    public Colour getHStabiliserColour() {
+        return new Colour(0xC21800);
     }
 
     @Override
-    public Color getVStabiliserColour() {
-        return new Color(0xC24900);
+    public Colour getVStabiliserColour() {
+        return new Colour(0xC24900);
     }
 
     @Override
-    public Color getElevatorColour() {
-        return new Color(0xC2AA00);
+    public Colour getElevatorColour() {
+        return new Colour(0xC2AA00);
     }
 
     @Override
-    public Color getRudderColour() {
+    public Colour getRudderColour() {
         return getElevatorColour();
     }
 
     @Override
-    public Color getFuselageColour() {
-        return new Color(0xC27900);
+    public Colour getFuselageColour() {
+        return new Colour(0xC27900);
     }
 }

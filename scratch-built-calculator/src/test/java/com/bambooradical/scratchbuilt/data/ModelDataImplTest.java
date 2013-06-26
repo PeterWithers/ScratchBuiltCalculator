@@ -17,7 +17,6 @@
  */
 package com.bambooradical.scratchbuilt.data;
 
-import java.awt.Color;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -38,7 +37,7 @@ public class ModelDataImplTest {
         System.out.println("getFuselageColour");
         ModelDataImpl instance = new ModelDataImpl(0, 0, 0, 0, 0, 0, 0, 0);
         String expResult = "#C27900".toLowerCase();
-        Color result = instance.getFuselageColour();
+        Colour result = instance.getFuselageColour();
         final String hexString = Integer.toHexString(result.getRGB());
         assertEquals(expResult, "#" + hexString.substring(2, hexString.length()).toLowerCase());
     }

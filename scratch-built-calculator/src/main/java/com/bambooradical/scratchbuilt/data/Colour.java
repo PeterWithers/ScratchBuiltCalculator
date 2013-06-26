@@ -15,31 +15,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package com.bambooradical.scratchbuilt.serialisers;
-
-import com.bambooradical.scratchbuilt.data.Colour;
-import org.junit.Test;
-import static org.junit.Assert.*;
+package com.bambooradical.scratchbuilt.data;
 
 /**
+ * Created on : Jun 26, 2013, 8:29:05 AM
  *
  * @author Peter Withers <peter-ghc@bambooradical.com>
  */
-public class SvgPolylineTest {
+public class Colour {
 
-    public SvgPolylineTest() {
+    static final public Colour BLACK = new Colour(0x000000);
+    static final public Colour WHITE = new Colour(0xffffff);
+    static final public Colour GREY = new Colour(0x808080);
+    final private int colourValue;
+
+    public Colour(int colourValue) {
+        this.colourValue = colourValue | 0xff000000;
     }
 
-    /**
-     * Test of getFormattedColour method, of class SvgPolyline.
-     */
-    @Test
-    public void testGetFormattedColour() {
-        System.out.println("getFormattedColour");
-        SvgPolyline instance = new SvgPolyline();
-        String result1 = instance.getFormattedColour(Colour.WHITE);
-        assertEquals("#ffffff", result1);
-        String result2 = instance.getFormattedColour(Colour.BLACK);
-        assertEquals("#000000", result2);
+    public int getRed() {
+        return (colourValue >> 16) & 0xFF;
+    }
+
+    public int getGreen() {
+        return (colourValue >> 8) & 0xFF;
+    }
+
+    public int getBlue() {
+        return colourValue & 0xFF;
+    }
+
+    public int getRGB() {
+        return colourValue;
     }
 }

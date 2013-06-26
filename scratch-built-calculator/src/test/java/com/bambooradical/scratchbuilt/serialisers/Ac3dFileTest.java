@@ -17,7 +17,7 @@
  */
 package com.bambooradical.scratchbuilt.serialisers;
 
-import java.awt.Color;
+import com.bambooradical.scratchbuilt.data.Colour;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -36,16 +36,16 @@ public class Ac3dFileTest {
     @Test
     public void testGetFormattedColour() {
         System.out.println("getFormattedColour");
-        Color colour = null;
+        Colour colour = null;
         Ac3dFile instance = new Ac3dFile(null);
         String expResult0 = "0.00 0.00 0.00";
-        String result0 = instance.getFormattedColour(Color.BLACK);
+        String result0 = instance.getFormattedColour(Colour.BLACK);
         assertEquals(expResult0, result0);
         String expResult1 = "1.00 1.00 1.00";
-        String result1 = instance.getFormattedColour(Color.WHITE);
+        String result1 = instance.getFormattedColour(Colour.WHITE);
         assertEquals(expResult1, result1);
         String expResult2 = "0.50 0.50 0.50";
-        String result2 = instance.getFormattedColour(Color.GRAY);
+        String result2 = instance.getFormattedColour(Colour.GREY);
         assertEquals(expResult2, result2);
     }
 }

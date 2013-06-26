@@ -17,8 +17,6 @@
  */
 package com.bambooradical.scratchbuilt.data;
 
-import java.awt.Color;
-
 /**
  * Created on : Jun 22, 2013, 12:13:21 PM
  *
@@ -74,17 +72,17 @@ public interface ModelData {
 
     public double getWeightInGrams();
 
-    public Color getMainWingColour();
+    public Colour getMainWingColour();
 
-    public Color getAileronColour();
+    public Colour getAileronColour();
 
-    public Color getHStabiliserColour();
+    public Colour getHStabiliserColour();
 
-    public Color getVStabiliserColour();
+    public Colour getVStabiliserColour();
 
-    public Color getElevatorColour();
+    public Colour getElevatorColour();
 
-    public Color getRudderColour();
+    public Colour getRudderColour();
 
-    public Color getFuselageColour();
+    public Colour getFuselageColour();
 }

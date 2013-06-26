@@ -237,7 +237,7 @@ public class TrainerDataTest {
     public void testGetFuselageSectionLengthB() {
         System.out.println("getFuselageSectionLengthB");
         TrainerData instance = new TrainerData();
-        int expResult = 160;
+        int expResult = 159;
         int result = instance.getFuselageSectionLengthB();
         assertEquals(expResult, result);
     }
@@ -249,7 +249,7 @@ public class TrainerDataTest {
     public void testGetFuselageSectionLengthC() {
         System.out.println("getFuselageSectionLengthC");
         TrainerData instance = new TrainerData();
-        int expResult = 280;
+        int expResult = 281;
         int result = instance.getFuselageSectionLengthC();
         assertEquals(expResult, result);
     }

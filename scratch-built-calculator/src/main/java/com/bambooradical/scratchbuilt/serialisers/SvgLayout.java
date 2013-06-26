@@ -49,9 +49,9 @@ public class SvgLayout {
         final SvgWing svgWing = new SvgWing(modelData, 0, 0, "mainwing");
         double fuselageOffsetY = svgWing.getHeight();
         return new SvgGroup[]{svgWing,
-            new SvgFuselage(modelData, 0, fuselageOffsetY, "fuselagePartA", modelData.getFuselageSectionLengthA(), modelData.getFuselageRadius(), modelData.getFuselageRadius() / 2),
-            new SvgFuselage(modelData, modelData.getFuselageSectionLengthA(), fuselageOffsetY, "fuselagePartB", modelData.getFuselageSectionLengthB(), modelData.getFuselageRadius(), modelData.getFuselageRadius()),
-            new SvgFuselage(modelData, modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB(), fuselageOffsetY, "fuselagePartC", modelData.getFuselageSectionLengthC(), modelData.getFuselageRadius(), modelData.getFuselageRadius() / 2)};
+            new SvgFuselage(modelData, 0, fuselageOffsetY, "fuselagePartA", modelData.getFuselageSectionLengthA(), modelData.getFuselageRadius(), modelData.getFuselageRadius() / 2, modelData.getFuselageColour()),
+            new SvgFuselage(modelData, modelData.getFuselageSectionLengthA(), fuselageOffsetY, "fuselagePartB", modelData.getFuselageSectionLengthB(), modelData.getFuselageRadius(), modelData.getFuselageRadius(), modelData.getMainWingColour()),
+            new SvgFuselage(modelData, modelData.getFuselageSectionLengthA() + modelData.getFuselageSectionLengthB(), fuselageOffsetY, "fuselagePartC", modelData.getFuselageSectionLengthC(), modelData.getFuselageRadius(), modelData.getFuselageRadius() / 2, modelData.getFuselageColour())};
     }
 
     @XmlElement(name = "polyline", namespace = "http://www.w3.org/2000/svg")
