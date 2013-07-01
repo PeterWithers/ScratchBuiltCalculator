@@ -21,6 +21,10 @@ import com.bambooradical.scratchbuilt.data.ModelDataImpl;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
 import com.bambooradical.scratchbuilt.serialisers.SvgLayout;
 import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -29,6 +33,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 /**
  * Created on : Jun 22, 2013, 5:06:33 PM
@@ -90,5 +98,37 @@ public class CalculatorResource {
             @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
             @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
         return new SvgLayout(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+    }
+
+    @GET
+    @Produces("application/zip")
+    @Path("zip")
+    public Response getZipFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
+            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
+            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
+            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
+            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
+            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
+            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
+            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
+            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
+            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
+            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) throws IOException, JAXBException {
+
+        final ModelDataImpl modelDataImpl = new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ZipOutputStream zipfile = new ZipOutputStream(bos);
+        JAXBContext jaxbContext = JAXBContext.newInstance(YasimConfig.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+        ZipEntry zipentry = new ZipEntry("yasim.xml");
+        zipfile.putNextEntry(zipentry);
+        marshaller.marshal(new YasimConfig(modelDataImpl), zipfile);
+
+        zipfile.flush();
+        zipfile.close();
+        return Response.ok().entity(zipfile).header("Content-Disposition", "attachment; filename = scratchbuilt.zip").build();
     }
 }

@@ -179,7 +179,8 @@
                 </td></tr><tr><td>        
                     <input id="ac3dButton" type="button" value="Browse to AC3D File" onclick="window.location.href = getRestUrl('ac3d');"/><br>
                     <input id="svgButton" type="button" value="Browse to SVG File" onclick="window.location.href = getRestUrl('svg');"/><br>
-                    <input id="yasimButton" type="button" value="Browse to YASim File" onclick="window.location.href = getRestUrl('yasim');"/>
+                    <input id="yasimButton" type="button" value="Browse to YASim File" onclick="window.location.href = getRestUrl('yasim');"/><br>
+                    <input id="zipButton" type="button" value="Download Zip File" onclick="window.location.href = getRestUrl('zip');"/>
                 </td><td>
                     <!--                    <embed id="svgImage" src="" type="image/svg+xml"/>-->
                     <iframe id="svgImage" height="500" width="900"></iframe>

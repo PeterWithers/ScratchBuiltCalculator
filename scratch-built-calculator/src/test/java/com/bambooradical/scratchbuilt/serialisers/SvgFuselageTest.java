@@ -38,5 +38,17 @@ public class SvgFuselageTest {
         SvgFuselage instance = new SvgFuselage();
         double result = instance.getOptimalOffset(5, 10, 10, 5);
         assertEquals((10 + 5) / 2.0, result, 0.0);
+        double result1 = instance.getOptimalOffset(10, 5, 10, 5);
+        assertEquals((10 + 10) / 2.0, result1, 0.0);
+        double result2 = instance.getOptimalOffset(5, 10, 5, 10);
+        assertEquals((10 + 10) / 2.0, result2, 0.0);
+        double result3 = instance.getOptimalOffset(10, 5, 5, 10);
+        assertEquals((10 + 5) / 2.0, result3, 0.0);
+        double result4 = instance.getOptimalOffset(15, 5, 5, 10);
+        assertEquals(15 - 2.5, result4, 0.0);
+        double result5 = instance.getOptimalOffset(5, 15, 10, 5);
+        assertEquals(15 - 2.5, result5, 0.0);
+        double result6 = instance.getOptimalOffset(10, 5, 5, 15);
+        assertEquals(10 - 2.5, result6, 0.0);
     }
 }
