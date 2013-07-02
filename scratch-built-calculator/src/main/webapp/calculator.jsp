@@ -50,16 +50,21 @@
                 canvas = document.getElementById("ac3dcanvas");
                 try {
                     viewer = new HG.Viewer(canvas);
-                    updateModel();
+                    if (viewer.renderer.gl == null) {
+                        throw "webgl not supported";
+                    } 
                 } catch (errorOb) {
                     ga('send', "error", {
                         'message': errorOb.message,
-                        'wingChord': wingChord,
-                        'dihedral': dihedral,
-                        'attackangle': attackangle
+                        //'wingChord': wingChord,
+                        //'dihedral': dihedral,
+                        //'attackangle': attackangle
                     });
                     document.getElementById("errordiv").innerHTML = "WebGL appears not to be available on this machine, so model view is not available.";
+                    canvas.width = 10;
+                    canvas.height = 10;
                 }
+                updateModel();
             }
             function getRestUrl(formatType) {
                 var wingSpan = document.getElementById("wingspan").value;
