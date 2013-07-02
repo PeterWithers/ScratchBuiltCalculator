@@ -132,6 +132,10 @@ public class CalculatorResource {
                     zipfile.putNextEntry(zipentry);
                     marshaller.marshal(new YasimConfig(modelDataImpl), zipfile);
 
+                    ZipEntry zipentryAc = new ZipEntry("model.ac");
+                    zipfile.putNextEntry(zipentryAc);
+                    zipfile.write(new Ac3dFile(modelDataImpl).getAc3dFile().getBytes());
+                    
                     zipfile.flush();
                     zipfile.close();
                 } catch (IOException exception) {
