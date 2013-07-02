@@ -21,8 +21,8 @@ import com.bambooradical.scratchbuilt.data.ModelDataImpl;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
 import com.bambooradical.scratchbuilt.serialisers.SvgLayout;
 import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -31,9 +31,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -103,7 +104,7 @@ public class CalculatorResource {
     @GET
     @Produces("application/zip")
     @Path("zip")
-    public Response getZipFile(@Context HttpServletRequest httpServletRequest,
+    public StreamingOutput getZipFile(@Context HttpServletRequest httpServletRequest,
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
@@ -115,20 +116,29 @@ public class CalculatorResource {
             @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
             @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
             @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) throws IOException, JAXBException {
-
         final ModelDataImpl modelDataImpl = new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ZipOutputStream zipfile = new ZipOutputStream(bos);
-        JAXBContext jaxbContext = JAXBContext.newInstance(YasimConfig.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        return new StreamingOutput() {
 
-        ZipEntry zipentry = new ZipEntry("yasim.xml");
-        zipfile.putNextEntry(zipentry);
-        marshaller.marshal(new YasimConfig(modelDataImpl), zipfile);
+            @Override
+            public void write(OutputStream out) throws IOException, WebApplicationException {
+                try {
+                    ZipOutputStream zipfile = new ZipOutputStream(out);
+                    JAXBContext jaxbContext = JAXBContext.newInstance(YasimConfig.class);
+                    Marshaller marshaller = jaxbContext.createMarshaller();
+                    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-        zipfile.flush();
-        zipfile.close();
-        return Response.ok().entity(zipfile).header("Content-Disposition", "attachment; filename = scratchbuilt.zip").build();
+                    ZipEntry zipentry = new ZipEntry("yasim.xml");
+                    zipfile.putNextEntry(zipentry);
+                    marshaller.marshal(new YasimConfig(modelDataImpl), zipfile);
+
+                    zipfile.flush();
+                    zipfile.close();
+                } catch (IOException exception) {
+                    throw new WebApplicationException(exception);
+                } catch (JAXBException exception) {
+                    throw new WebApplicationException(exception);
+                }
+            }
+        };
     }
 }
