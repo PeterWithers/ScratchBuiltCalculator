@@ -34,6 +34,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -104,7 +105,7 @@ public class CalculatorResource {
     @GET
     @Produces("application/zip")
     @Path("zip")
-    public StreamingOutput getZipFile(@Context HttpServletRequest httpServletRequest,
+    public Response getZipFile(@Context HttpServletRequest httpServletRequest,
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
@@ -117,7 +118,7 @@ public class CalculatorResource {
             @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
             @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) throws IOException, JAXBException {
         final ModelDataImpl modelDataImpl = new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter);
-        return new StreamingOutput() {
+        StreamingOutput zipfileStream = new StreamingOutput() {
 
             @Override
             public void write(OutputStream out) throws IOException, WebApplicationException {
@@ -140,5 +141,6 @@ public class CalculatorResource {
                 }
             }
         };
+        return Response.ok().entity(zipfileStream).header("Content-Disposition", "attachment; filename = scratchbuilt.zip").build();
     }
 }
