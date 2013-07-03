@@ -50,16 +50,12 @@
                 canvas = document.getElementById("ac3dcanvas");
                 try {
                     viewer = new HG.Viewer(canvas);
-                    if (viewer.renderer.gl == null) {
+                    if (viewer.renderer.gl === null) {
                         throw "webgl not supported";
-                    } 
+                    }
                 } catch (errorOb) {
-                    ga('send', "error", {
-                        'message': errorOb.message,
-                        //'wingChord': wingChord,
-                        //'dihedral': dihedral,
-                        //'attackangle': attackangle
-                    });
+                    // update with this info: https://developers.google.com/analytics/devguides/collection/analyticsjs/events
+                    ga('send', "error", errorOb.message);
                     document.getElementById("errordiv").innerHTML = "WebGL appears not to be available on this machine, so model view is not available.";
                     canvas.width = 10;
                     canvas.height = 10;
@@ -78,19 +74,6 @@
                 var fuselagewidth = document.getElementById("fuselagewidth").value;
                 var fuselageendseiameter = document.getElementById("fuselageendseiameter").value;
                 var wingheight = document.getElementById("wingheight").value;
-                ga('send', formatType, {
-                    'wingSpan': wingSpan,
-                    'wingChord': wingChord,
-                    'dihedral': dihedral,
-                    'attackangle': attackangle,
-                    'aileronend': aileronend,
-                    'aileronstart': aileronstart,
-                    'aileronchord': aileronchord,
-                    'wingheight': wingheight,
-                    'fuselageheight': fuselageheight,
-                    'fuselagewidth': fuselagewidth,
-                    'fuselageendsdiameter': fuselageendseiameter
-                });
                 var getParam = '?wingSpan=' + wingSpan + '&wingChord=' + wingChord
                         + '&dihedral=' + dihedral + '&attackAngle=' + attackangle
                         + '&aileronEnd=' + aileronend
@@ -100,6 +83,7 @@
                         + '&fuselageWidth=' + fuselagewidth
                         + '&fuselageEndsDiameter=' + fuselageendseiameter
                         + '&wingHeight=' + wingheight;
+                ga('send', formatType, getParam);
                 return "./scratchbuilt/calculator/" + formatType + getParam;
             }
             function onLoaded() {
