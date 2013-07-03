@@ -65,7 +65,7 @@ public class AircraftSetSim {
     @XmlElement(name = "flight-model")
     public String getAircraftFDM() {
         // What FDM system is the aircraft using. Set to 'yasim' for YASim and to 'jsb' for JSBSim.
-        return "";
+        return "yasim";
     }
 
     @XmlElement(name = "aero")
@@ -74,7 +74,7 @@ public class AircraftSetSim {
 //For instance, if your FDM file is sopwithCamel1F1.xml, the aero section would look like:
 //<aero>sopwithCamel1F1</aero>
 //You have created this file earlier on at: #The .xml file (FDM)
-        return "";
+        return "scratch-built-yasim";
     }
 
     @XmlElement(name = "splash-texture")
@@ -86,13 +86,13 @@ public class AircraftSetSim {
     @XmlElement(name = "splash-title")
     public String getAircraftSplashTitle() {
         // Adds small text (above the splash texture) to the loading screen.
-        return "";
+        return "scratch-built";
     }
 
     @XmlElement(name = "model")
     public AircraftPath getAircraftModel() {
         // Where to find the model. Could be an .ac file (plain model format) or .xml if you want to have extras like animations etc.
-        return new AircraftPath("");
+        return new AircraftPath("scratch-built.xml");
     }
 
     @XmlElement(name = "splash-title")

@@ -19,6 +19,7 @@ package com.bambooradical.scratchbuilt.rest;
 
 import com.bambooradical.scratchbuilt.data.ModelDataImpl;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
+import com.bambooradical.scratchbuilt.serialisers.AircraftAnimation;
 import com.bambooradical.scratchbuilt.serialisers.AircraftSet;
 import com.bambooradical.scratchbuilt.serialisers.SvgLayout;
 import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
@@ -142,22 +143,29 @@ public class CalculatorResource {
             @Override
             public void write(OutputStream out) throws IOException, WebApplicationException {
                 try {
+                    final AircraftSet aircraftSet = new AircraftSet(modelDataImpl);
+                    final AircraftAnimation aircraftAnimation = new AircraftAnimation(modelDataImpl);
+
                     ZipOutputStream zipfile = new ZipOutputStream(out);
-                    JAXBContext jaxbContext = JAXBContext.newInstance(YasimConfig.class);
+                    JAXBContext jaxbContext = JAXBContext.newInstance(YasimConfig.class, AircraftAnimation.class, AircraftSet.class);
                     Marshaller marshaller = jaxbContext.createMarshaller();
                     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-                    ZipEntry zipentry = new ZipEntry("yasim.xml");
+                    ZipEntry zipentry = new ZipEntry(aircraftSet.getSim().getAircraftAero() + ".xml");
                     zipfile.putNextEntry(zipentry);
                     marshaller.marshal(new YasimConfig(modelDataImpl), zipfile);
 
-                    ZipEntry zipentryAc = new ZipEntry("model.ac");
+                    ZipEntry zipentryModel = new ZipEntry(aircraftSet.getSim().getAircraftModel().getPath());
+                    zipfile.putNextEntry(zipentryModel);
+                    marshaller.marshal(aircraftAnimation, zipfile);
+
+                    ZipEntry zipentryAc = new ZipEntry(aircraftAnimation.getAcPath());
                     zipfile.putNextEntry(zipentryAc);
                     zipfile.write(new Ac3dFile(modelDataImpl).getAc3dFile().getBytes());
 
                     ZipEntry zipentrySet = new ZipEntry("set.xml");
                     zipfile.putNextEntry(zipentrySet);
-                    marshaller.marshal(new AircraftSet(modelDataImpl), zipfile);
+                    marshaller.marshal(aircraftSet, zipfile);
 
                     zipfile.flush();
                     zipfile.close();
