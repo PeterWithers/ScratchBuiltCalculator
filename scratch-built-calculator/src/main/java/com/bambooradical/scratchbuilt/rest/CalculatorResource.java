@@ -163,7 +163,7 @@ public class CalculatorResource {
                     zipfile.putNextEntry(zipentryAc);
                     zipfile.write(new Ac3dFile(modelDataImpl).getAc3dFile().getBytes());
 
-                    ZipEntry zipentrySet = new ZipEntry("set.xml");
+                    ZipEntry zipentrySet = new ZipEntry("scratch-built-set.xml");
                     zipfile.putNextEntry(zipentrySet);
                     marshaller.marshal(aircraftSet, zipfile);
 
