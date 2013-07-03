@@ -19,6 +19,7 @@ package com.bambooradical.scratchbuilt.rest;
 
 import com.bambooradical.scratchbuilt.data.ModelDataImpl;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
+import com.bambooradical.scratchbuilt.serialisers.AircraftSet;
 import com.bambooradical.scratchbuilt.serialisers.SvgLayout;
 import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
 import java.io.IOException;
@@ -103,6 +104,24 @@ public class CalculatorResource {
     }
 
     @GET
+    @Produces(MediaType.TEXT_XML)
+    @Path("set")
+    public AircraftSet getSetFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
+            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
+            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
+            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
+            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
+            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
+            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
+            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
+            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
+            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
+            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
+        return new AircraftSet(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+    }
+
+    @GET
     @Produces("application/zip")
     @Path("zip")
     public Response getZipFile(@Context HttpServletRequest httpServletRequest,
@@ -135,7 +154,11 @@ public class CalculatorResource {
                     ZipEntry zipentryAc = new ZipEntry("model.ac");
                     zipfile.putNextEntry(zipentryAc);
                     zipfile.write(new Ac3dFile(modelDataImpl).getAc3dFile().getBytes());
-                    
+
+                    ZipEntry zipentrySet = new ZipEntry("set.xml");
+                    zipfile.putNextEntry(zipentrySet);
+                    marshaller.marshal(new AircraftSet(modelDataImpl), zipfile);
+
                     zipfile.flush();
                     zipfile.close();
                 } catch (IOException exception) {

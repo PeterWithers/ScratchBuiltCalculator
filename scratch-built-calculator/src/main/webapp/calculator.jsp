@@ -169,6 +169,7 @@
                     <input id="ac3dButton" type="button" value="Browse to AC3D File" onclick="window.location.href = getRestUrl('ac3d');"/><br>
                     <input id="svgButton" type="button" value="Browse to SVG File" onclick="window.location.href = getRestUrl('svg');"/><br>
                     <input id="yasimButton" type="button" value="Browse to YASim File" onclick="window.location.href = getRestUrl('yasim');"/><br>
+                    <input id="setButton" type="button" value="Browse to Aircraft Set File" onclick="window.location.href = getRestUrl('set');"/><br>
                     <input id="zipButton" type="button" value="Download Zip File" onclick="window.location.href = getRestUrl('zip');"/>
                 </td><td>
                     <!--                    <embed id="svgImage" src="" type="image/svg+xml"/>-->
