@@ -55,7 +55,10 @@
                     }
                 } catch (errorOb) {
                     // update with this info: https://developers.google.com/analytics/devguides/collection/analyticsjs/events
-                    ga('send', "error", errorOb.message);
+                    ga('send', 'event', {
+                        'eventCategory': 'error',
+                        'eventAction': errorOb.message
+                    });
                     document.getElementById("errordiv").innerHTML = "WebGL appears not to be available on this machine, so model view is not available.";
                     canvas.width = 10;
                     canvas.height = 10;
@@ -83,7 +86,10 @@
                         + '&fuselageWidth=' + fuselagewidth
                         + '&fuselageEndsDiameter=' + fuselageendseiameter
                         + '&wingHeight=' + wingheight;
-                ga('send', formatType, getParam);
+                ga('send', 'event', {
+                    'eventCategory': formatType,
+                    'eventAction': getParam
+                });
                 return "./scratchbuilt/calculator/" + formatType + getParam;
             }
             function onLoaded() {
