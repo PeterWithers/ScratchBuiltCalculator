@@ -138,23 +138,38 @@ public class ModelDataImpl implements ModelData {
     }
 
     @Override
-    public int getStabiliserSpan() {
-        return stabiliserSpan;
-    }
-
-    @Override
-    public int getStabiliserHeight() {
-        return stabiliserHeight;
-    }
-
-    @Override
     public int getStabiliserChord() {
         return stabiliserChord;
     }
 
     @Override
+    public int getStabiliserSpanLeading() {
+        return stabiliserSpan;
+    }
+
+    @Override
+    public int getStabiliserSpanTrailing() {
+        return stabiliserSpan;
+    }
+
+    @Override
+    public int getStabiliserHeightLeading() {
+        return stabiliserSpan;
+    }
+
+    @Override
+    public int getStabiliserHeightTrailing() {
+        return stabiliserHeight;
+    }
+
+    @Override
     public int getElevatorChord() {
         return elevatorChord;
+    }
+
+    @Override
+    public int getElevatorSpan() {
+        return chordLength;
     }
 
     @Override
@@ -208,10 +223,10 @@ public class ModelDataImpl implements ModelData {
         int secondSectionLength = (int) Math.abs(getChordLength() * Math.cos(Math.toRadians(getAttackAngle())));
         int thirdSectionLength = fuselageSectionLength - firstSectionLength - secondSectionLength;
         return new FuselageSection[]{
-            new FuselageSection(fuselageEndsDiameter, fuselageEndsDiameter, fuselageWidth, fuselageHeight, 0, firstSectionLength, getRudderColour(), true, "fuselagePartA"),
-            new FuselageSection(fuselageWidth, fuselageHeight, fuselageWidth, fuselageHeight, firstSectionLength, secondSectionLength, getMainWingColour(), false, "fuselagePartB"),
-            new FuselageSection(fuselageWidth, fuselageHeight, fuselageEndsDiameter, fuselageEndsDiameter, firstSectionLength + secondSectionLength, thirdSectionLength, getRudderColour(), true, "fuselagePartC")
-        };
+                    new FuselageSection(fuselageEndsDiameter, fuselageEndsDiameter, fuselageWidth, fuselageHeight, 0, firstSectionLength, getRudderColour(), true, "fuselagePartA"),
+                    new FuselageSection(fuselageWidth, fuselageHeight, fuselageWidth, fuselageHeight, firstSectionLength, secondSectionLength, getMainWingColour(), false, "fuselagePartB"),
+                    new FuselageSection(fuselageWidth, fuselageHeight, fuselageEndsDiameter, fuselageEndsDiameter, firstSectionLength + secondSectionLength, thirdSectionLength, getRudderColour(), true, "fuselagePartC")
+                };
     }
 
     @Override

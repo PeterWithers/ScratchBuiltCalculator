@@ -117,7 +117,7 @@ public class TrainerDataTest {
     public void testGetFuselageRadius() {
         System.out.println("getFuselageRadius");
         TrainerData instance = new TrainerData();
-        int expResult = 40;
+        int expResult = 60;
         int result = instance.getFuselageWidth();
         assertEquals(expResult, result);
     }
@@ -129,9 +129,8 @@ public class TrainerDataTest {
     public void testGetStabiliserSpan() {
         System.out.println("getStabiliserSpan");
         TrainerData instance = new TrainerData();
-        int expResult = 120;
-        int result = instance.getStabiliserSpan();
-        assertEquals(expResult, result);
+        assertEquals(160, instance.getStabiliserSpanLeading());
+        assertEquals(320, instance.getStabiliserSpanTrailing());
     }
 
     /**
@@ -141,9 +140,8 @@ public class TrainerDataTest {
     public void testGetStabiliserHeight() {
         System.out.println("getStabiliserHeight");
         TrainerData instance = new TrainerData();
-        int expResult = 80;
-        int result = instance.getStabiliserHeight();
-        assertEquals(expResult, result);
+        assertEquals(40, instance.getStabiliserHeightLeading());
+        assertEquals(120, instance.getStabiliserHeightTrailing());
     }
 
     /**
@@ -167,6 +165,18 @@ public class TrainerDataTest {
         TrainerData instance = new TrainerData();
         int expResult = 20;
         int result = instance.getElevatorChord();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getElevatorSpan method, of class TrainerData.
+     */
+    @Test
+    public void testGetElevatorSpan() {
+        System.out.println("getElevatorSpan");
+        TrainerData instance = new TrainerData();
+        int expResult = 160;
+        int result = instance.getElevatorSpan();
         assertEquals(expResult, result);
     }
 

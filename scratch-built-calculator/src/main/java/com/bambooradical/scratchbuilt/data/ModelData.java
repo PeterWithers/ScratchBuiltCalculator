@@ -44,13 +44,19 @@ public interface ModelData {
 
     public int getFuselageEndsDiameter();
 
-    public int getStabiliserSpan();
-
-    public int getStabiliserHeight();
+    public int getStabiliserSpanLeading();
 
     public int getStabiliserChord();
 
+    public int getStabiliserSpanTrailing();
+
+    public int getStabiliserHeightLeading();
+
+    public int getStabiliserHeightTrailing();
+
     public int getElevatorChord();
+
+    public int getElevatorSpan();
 
     public int getAileronStart();
 
