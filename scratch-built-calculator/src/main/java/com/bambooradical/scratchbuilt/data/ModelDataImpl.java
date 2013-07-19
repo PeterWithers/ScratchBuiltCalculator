@@ -37,18 +37,20 @@ public class ModelDataImpl implements ModelData {
     private final double dihedralAngle;
     private final double attackAngle;
     private final int stabiliserChord = 80;
-    private final int stabiliserSpan = (int) (stabiliserChord * 3.0 / 2.0);
+    //private final int stabiliserSpan = (int) (stabiliserChord * 3.0 / 2.0);
+    private final int stabiliserSpanLeading = 160;
+    private final int stabiliserSpanTrailing = 320;
     private final int elevatorChord = 20;
-    private final int stabiliserHeight;
-    private int stabiliserArea = stabiliserSpan * 2 * stabiliserChord; // stabiliser area should be 15-20% of the wing area
-    private int finArea;
+//    private final int stabiliserHeight;
+    private int stabiliserArea = (stabiliserSpanLeading + stabiliserSpanTrailing) / 2 * stabiliserChord; // stabiliser area should be 15-20% of the wing area
+//    private int finArea;
     private final int fuselageLength;
 //fuselageLength = chordLength*4.5;
 //    private final int fuselageRadius;
     private final int fuselageWidth;
     private final int fuselageHeight;
     private final int fuselageEndsDiameter;
-    private double stabiliserRatio = (stabiliserSpan * 2.0) / stabiliserChord; // stabiliser ratio should be about 3:1
+    private double stabiliserRatio = (stabiliserSpanLeading + stabiliserSpanTrailing) / 2 / stabiliserChord; // stabiliser ratio should be about 3:1
 //ECHO: "stabiliserArea: ", 19200
 //ECHO: "finArea: ", 6400
 //ECHO: "elevatorArea: ", 4800
@@ -77,8 +79,6 @@ public class ModelDataImpl implements ModelData {
         this.fuselageHeight = fuselageHeight;
         this.fuselageWidth = fuselageWidth;
         this.fuselageEndsDiameter = fuselageEndsDiameter;
-        stabiliserHeight = stabiliserChord;
-        finArea = stabiliserHeight * stabiliserChord; //fin area should be 33% of the stabaliser
         this.dihedralAngle = dihedralAngle;
         this.attackAngle = attackAngle;
         this.aileronStart = aileronStart;
@@ -99,12 +99,12 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public int getElevatorArea() {
-        return stabiliserSpan * 2 * elevatorChord; // elevator area should be 20-30% of the stabaliser area;
+        return getElevatorSpan() * elevatorChord; // elevator area should be 20-30% of the stabaliser area;
     }
 
     @Override
     public int getFinArea() {
-        return finArea;
+        return (getStabiliserHeightLeading() + getStabiliserHeightTrailing()) / 2 * getStabiliserChord(); //fin area should be 33% of the stabaliser
     }
 
     @Override
@@ -144,22 +144,22 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public int getStabiliserSpanLeading() {
-        return stabiliserSpan;
+        return stabiliserSpanLeading;
     }
 
     @Override
     public int getStabiliserSpanTrailing() {
-        return stabiliserSpan;
+        return stabiliserSpanTrailing;
     }
 
     @Override
     public int getStabiliserHeightLeading() {
-        return stabiliserSpan;
+        return 40;
     }
 
     @Override
     public int getStabiliserHeightTrailing() {
-        return stabiliserHeight;
+        return 120;
     }
 
     @Override
