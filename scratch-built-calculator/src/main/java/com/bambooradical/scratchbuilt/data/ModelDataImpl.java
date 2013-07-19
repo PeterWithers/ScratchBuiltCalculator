@@ -159,7 +159,7 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public int getStabiliserHeightTrailing() {
-        return 120;
+        return 120; // was stabiliserChord
     }
 
     @Override

@@ -209,6 +209,10 @@ public class Ac3dFile {
         return decimalFormat.format(colour.getRed() / 255.0) + " " + decimalFormat.format(colour.getGreen() / 255.0) + " " + decimalFormat.format(colour.getBlue() / 255.0);
     }
 
+    private String getElevator(double x, double y, double z, double chord, double span, double thickness) {
+        return getWing(z, z + chord, -span / 2, span / 2, thickness, 0, 0, 1);
+    }
+
     public String getAc3dFile() {
         FuselageSection[] fuselageSections = modelData.getFuselageSections();
         return "AC3Db\n"
@@ -225,6 +229,7 @@ public class Ac3dFile {
                 + getFuselageSection(0, 0, scaleToM(fuselageSections[1].getStart()), scaleToM(fuselageSections[1].getLength()), scaleToM(fuselageSections[1].getStartWidth()), scaleToM(fuselageSections[1].getStartHeight()), scaleToM(fuselageSections[1].getEndWidth()), scaleToM(fuselageSections[1].getEndHeight()), 6)
                 + getFuselageSection(0, 0, scaleToM(fuselageSections[2].getStart()), scaleToM(fuselageSections[2].getLength()), scaleToM(fuselageSections[2].getStartWidth()), scaleToM(fuselageSections[2].getStartHeight()), scaleToM(fuselageSections[2].getEndWidth()), scaleToM(fuselageSections[2].getEndHeight()), 7)
                 + getMainWing(0, scaleToM(modelData.getWingHeight()), scaleToM(fuselageSections[1].getStart()), scaleToM(modelData.getChordLength()), scaleToM(modelData.getWingLength()), modelData.getDihedralAngle(), modelData.getAttackAngle(), scaleToM(modelData.getAileronStart()), scaleToM(modelData.getAileronEnd()), scaleToM(modelData.getAileronChord()), scaleToM(5))
-                + getTailWing(0, 0, scaleToM(fuselageSections[2].getEnd() - modelData.getStabiliserChord() / 2), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserSpanLeading() / 2), scaleToM(modelData.getStabiliserHeightLeading()), scaleToM(modelData.getStabiliserSpanTrailing() / 2), scaleToM(modelData.getStabiliserHeightTrailing()), scaleToM(5));
+                + getTailWing(0, 0, scaleToM(fuselageSections[2].getEnd() - modelData.getStabiliserChord() / 2), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserChord()), scaleToM(modelData.getStabiliserSpanLeading() / 2), scaleToM(modelData.getStabiliserHeightLeading()), scaleToM(modelData.getStabiliserSpanTrailing() / 2), scaleToM(modelData.getStabiliserHeightTrailing()), scaleToM(5))
+                + getElevator(0, 0, scaleToM(fuselageSections[2].getEnd() + modelData.getStabiliserChord() / 2), scaleToM(modelData.getElevatorChord()), scaleToM(modelData.getElevatorSpan()), scaleToM(5));
     }
 }
