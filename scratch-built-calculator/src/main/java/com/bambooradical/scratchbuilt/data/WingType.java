@@ -17,28 +17,20 @@
  */
 package com.bambooradical.scratchbuilt.data;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 /**
+ * Created on : Jul 20, 2013, 11:16 AM
  *
  * @author Peter Withers <peter-ghc@bambooradical.com>
  */
-public class ModelDataImplTest {
+public enum WingType {
 
-    public ModelDataImplTest() {
-    }
+    flat(new double[]{0}, new double[]{0}),
+    hollow(new double[]{0}, new double[]{0});
+    final private double[] lengths;
+    final private double[] angles;
 
-    /**
-     * Test of getFuselageColour method, of class ModelDataImpl.
-     */
-    @Test
-    public void testGetFuselageColour() {
-        System.out.println("getFuselageColour");
-        ModelDataImpl instance = new ModelDataImpl(WingType.flat, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        String expResult = "#C27900".toLowerCase();
-        Colour result = instance.getRudderColour();
-        final String hexString = Integer.toHexString(result.getRGB());
-        assertEquals(expResult, "#" + hexString.substring(2, hexString.length()).toLowerCase());
+    private WingType(double[] lengths, double[] angles) {
+        this.lengths = lengths;
+        this.angles = angles;
     }
 }

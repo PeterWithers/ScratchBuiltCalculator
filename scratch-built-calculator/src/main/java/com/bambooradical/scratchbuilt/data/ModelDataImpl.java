@@ -25,6 +25,7 @@ package com.bambooradical.scratchbuilt.data;
 public class ModelDataImpl implements ModelData {
 
     private int chordRibLength;
+    private final WingType wingType;
     private final int aileronChord;
     private final int chordLength;
     private int strutSpacing = 50;
@@ -66,7 +67,8 @@ public class ModelDataImpl implements ModelData {
     int fuselageSectionLength = 160 + 160 + 280;
     int weightInGrams = 500;
 
-    public ModelDataImpl(int chordLength, int wingSpan, double dihedralAngle, double attackAngle, int aileronEnd, int aileronStart, int aileronChord, int wingHeight, int fuselageHeight, int fuselageWidth, int fuselageEndsDiameter) {
+    public ModelDataImpl(WingType wingType, int chordLength, int wingSpan, double dihedralAngle, double attackAngle, int aileronEnd, int aileronStart, int aileronChord, int wingHeight, int fuselageHeight, int fuselageWidth, int fuselageEndsDiameter) {
+        this.wingType = wingType;
         this.chordLength = chordLength;
         this.wingSpan = wingSpan;
         wingSpan = strutSpacing * strutsPerWing * 2;

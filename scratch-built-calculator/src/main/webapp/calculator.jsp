@@ -66,6 +66,7 @@
                 updateModel();
             }
             function getRestUrl(formatType) {
+                var wingType = document.getElementById("wingtype").value;
                 var wingSpan = document.getElementById("wingspan").value;
                 var wingChord = document.getElementById("wingchord").value;
                 var dihedral = document.getElementById("dihedral").value;
@@ -77,7 +78,7 @@
                 var fuselagewidth = document.getElementById("fuselagewidth").value;
                 var fuselageendseiameter = document.getElementById("fuselageendseiameter").value;
                 var wingheight = document.getElementById("wingheight").value;
-                var getParam = '?wingSpan=' + wingSpan + '&wingChord=' + wingChord
+                var getParam = '?wingSpan=' + wingSpan + '&wingType=' + wingType + '&wingChord=' + wingChord
                         + '&dihedral=' + dihedral + '&attackAngle=' + attackangle
                         + '&aileronEnd=' + aileronend
                         + '&aileronStart=' + aileronstart
@@ -121,6 +122,13 @@
         <table><tr><td>
                     <%--<%= // TrainerData trainerData = new TrainerData().getWingSpan(); %>--%>
                     <table><tr><td>
+                                Wing&nbsp;Type
+                            </td><td>
+                                <select id="wingtype">
+                                  <option value="flat">Flat</option>
+                                  <option value="hollow">Hollow</option>
+                                </select>
+                            </td></tr><tr><td>
                                 Wing&nbsp;Span
                             </td><td>
                                 <input id="wingspan" value="<%= new TrainerData().getWingSpan()%>"/>

@@ -18,6 +18,7 @@
 package com.bambooradical.scratchbuilt.rest;
 
 import com.bambooradical.scratchbuilt.data.ModelDataImpl;
+import com.bambooradical.scratchbuilt.data.WingType;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
 import com.bambooradical.scratchbuilt.serialisers.AircraftAnimation;
 import com.bambooradical.scratchbuilt.serialisers.AircraftSet;
@@ -54,6 +55,7 @@ public class CalculatorResource {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("ac3d")
     public String getAc3dFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
@@ -65,13 +67,14 @@ public class CalculatorResource {
             @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
             @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
             @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
-        return new Ac3dFile(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)).getAc3dFile();
+        return new Ac3dFile(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)).getAc3dFile();
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("yasim")
     public YasimConfig getYasimFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
@@ -83,13 +86,14 @@ public class CalculatorResource {
             @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
             @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
             @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
-        return new YasimConfig(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+        return new YasimConfig(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("svg")
     public SvgLayout getSvgFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
@@ -101,13 +105,14 @@ public class CalculatorResource {
             @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
             @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
             @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
-        return new SvgLayout(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+        return new SvgLayout(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("set")
     public AircraftSet getSetFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
@@ -119,13 +124,14 @@ public class CalculatorResource {
             @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
             @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
             @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
-        return new AircraftSet(new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+        return new AircraftSet(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
     }
 
     @GET
     @Produces("application/zip")
     @Path("zip")
     public Response getZipFile(@Context HttpServletRequest httpServletRequest,
+            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
             @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
             @DefaultValue("160") @QueryParam("wingChord") int wingChord,
             @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
@@ -137,7 +143,7 @@ public class CalculatorResource {
             @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
             @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
             @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) throws IOException, JAXBException {
-        final ModelDataImpl modelDataImpl = new ModelDataImpl(wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter);
+        final ModelDataImpl modelDataImpl = new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter);
         StreamingOutput zipfileStream = new StreamingOutput() {
 
             @Override
