@@ -225,10 +225,10 @@ public class ModelDataImpl implements ModelData {
         int secondSectionLength = (int) Math.abs(getChordLength() * Math.cos(Math.toRadians(getAttackAngle())));
         int thirdSectionLength = fuselageSectionLength - firstSectionLength - secondSectionLength;
         return new FuselageSection[]{
-                    new FuselageSection(fuselageEndsDiameter, fuselageEndsDiameter, fuselageWidth, fuselageHeight, 0, firstSectionLength, getRudderColour(), true, "fuselagePartA"),
-                    new FuselageSection(fuselageWidth, fuselageHeight, fuselageWidth, fuselageHeight, firstSectionLength, secondSectionLength, getMainWingColour(), false, "fuselagePartB"),
-                    new FuselageSection(fuselageWidth, fuselageHeight, fuselageEndsDiameter, fuselageEndsDiameter, firstSectionLength + secondSectionLength, thirdSectionLength, getRudderColour(), true, "fuselagePartC")
-                };
+            new FuselageSection(fuselageEndsDiameter, fuselageEndsDiameter, fuselageWidth, fuselageHeight, 0, firstSectionLength, getRudderColour(), true, "fuselagePartA"),
+            new FuselageSection(fuselageWidth, fuselageHeight, fuselageWidth, fuselageHeight, firstSectionLength, secondSectionLength, getMainWingColour(), false, "fuselagePartB"),
+            new FuselageSection(fuselageWidth, fuselageHeight, fuselageEndsDiameter, fuselageEndsDiameter, firstSectionLength + secondSectionLength, thirdSectionLength, getRudderColour(), true, "fuselagePartC")
+        };
     }
 
     @Override
@@ -264,5 +264,10 @@ public class ModelDataImpl implements ModelData {
     @Override
     public Colour getRudderColour() {
         return new Colour(0xC27900);
+    }
+
+    @Override
+    public WingType getWingType() {
+        return wingType;
     }
 }

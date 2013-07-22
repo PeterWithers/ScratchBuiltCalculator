@@ -24,28 +24,22 @@ package com.bambooradical.scratchbuilt.data;
  */
 public enum WingType {
 
-    flat("Flat", new double[]{1}, new double[]{0}),
-    gurney("Gurney Flap", new double[]{1, 0.1}, new double[]{0, 90}),
-    hollow("Hollow", new double[]{1, 0.2, 0.5}, new double[]{0, 90, 90});
+    flat("Flat", new double[][]{{1, 0}}),
+    gurney("Gurney Flap", new double[][]{{1, 0}, {0.1, 90}}),
+    hollow("Hollow", new double[][]{{1, 0}, {0.2, 90}, {0.5, 90}});
     final private String label;
-    final private double[] lengths;
-    final private double[] angles;
+    final private double[][] lengthsAngles;
 
-    private WingType(String label, double[] lengths, double[] angles) {
+    private WingType(String label, double[][] lengthsAngles) {
         this.label = label;
-        this.lengths = lengths;
-        this.angles = angles;
+        this.lengthsAngles = lengthsAngles;
     }
 
     public String getLabel() {
         return label;
-}
-
-    public double[] getLengths() {
-        return lengths;
     }
 
-    public double[] getAngles() {
-        return angles;
+    public double[][] getLengths() {
+        return lengthsAngles;
     }
 }

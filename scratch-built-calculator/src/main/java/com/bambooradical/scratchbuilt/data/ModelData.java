@@ -91,4 +91,6 @@ public interface ModelData {
     public Colour getElevatorColour();
 
     public Colour getRudderColour();
+
+    public WingType getWingType();
 }
