@@ -18,6 +18,7 @@
 
 --%>
 <%@page import="com.bambooradical.scratchbuilt.data.TrainerData"%>
+<%@page import="com.bambooradical.scratchbuilt.data.WingType"%>
 <%-- 
     Document   : scratchbuiltcalculator
     Created on : Jun 22, 2013, 5:00:13 PM
@@ -125,8 +126,9 @@
                                 Wing&nbsp;Type
                             </td><td>
                                 <select id="wingtype">
-                                  <option value="flat">Flat</option>
-                                  <option value="hollow">Hollow</option>
+                                    <% for (WingType wingType : WingType.values()) {%>
+                                    <option value="<%=wingType.name()%>"><%=wingType.getLabel()%></option>
+                                    <% }%>
                                 </select>
                             </td></tr><tr><td>
                                 Wing&nbsp;Span
