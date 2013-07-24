@@ -41,6 +41,12 @@ public class SvgStabilisers extends SvgGroup {
     }
 
     @Override
+    protected double getWidth() {
+        // todo: this offset will not always be correct
+        return modelData.getStabiliserHeightLeading() + modelData.getStabiliserSpanTrailing();
+    }
+
+    @Override
     public List<SvgPolyline> getPolylines() {
         final ArrayList<SvgPolyline> returnList = new ArrayList<SvgPolyline>();
         final SvgPolyline verticalPolyline = new SvgPolyline(modelData, x, y, modelData.getHStabiliserColour());

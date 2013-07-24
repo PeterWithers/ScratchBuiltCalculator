@@ -41,6 +41,11 @@ public class SvgElevator extends SvgGroup {
     }
 
     @Override
+    protected double getWidth() {
+        return modelData.getElevatorSpan();
+    }
+
+    @Override
     public List<SvgPolyline> getPolylines() {
         final ArrayList<SvgPolyline> returnList = new ArrayList<SvgPolyline>();
         final SvgPolyline elevatorPolyline = new SvgPolyline(modelData, x, y, modelData.getElevatorColour());

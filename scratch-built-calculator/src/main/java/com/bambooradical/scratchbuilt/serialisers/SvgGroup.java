@@ -48,6 +48,10 @@ public class SvgGroup {
         return 0;
     }
 
+    protected double getWidth() {
+        return 0;
+    }
+
 //    @XmlAttribute(name = "x")
 //    public double getX() {
 //        return x;

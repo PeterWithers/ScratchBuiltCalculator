@@ -51,9 +51,10 @@ public class SvgLayout {
         double fuselageOffsetY = svgWing.getHeight();
         final FuselageSection[] fuselageSections = modelData.getFuselageSections();
         final SvgStabilisers svgStabilisers = new SvgStabilisers(modelData, 0, fuselageOffsetY, "stabilisers");
+
+        final SvgElevator svgElevator = new SvgElevator(modelData, svgStabilisers.getWidth(), fuselageOffsetY, "elevator");
         fuselageOffsetY += svgStabilisers.getHeight();
-        final SvgElevator svgElevator = new SvgElevator(modelData, 0, fuselageOffsetY, "elevator");
-        fuselageOffsetY += svgElevator.getHeight();
+//       fuselageOffsetY += svgElevator.getHeight();
         return new SvgGroup[]{svgWing, svgStabilisers, svgElevator,
             new SvgFuselage(modelData, 0, fuselageOffsetY, fuselageSections[0]),
             new SvgFuselage(modelData, fuselageSections[0].getLength(), fuselageOffsetY, fuselageSections[1]),
