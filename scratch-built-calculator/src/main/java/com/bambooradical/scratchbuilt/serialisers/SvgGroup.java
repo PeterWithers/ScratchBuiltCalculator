@@ -17,8 +17,8 @@
  */
 package com.bambooradical.scratchbuilt.serialisers;
 
-import com.bambooradical.scratchbuilt.data.Colour;
 import com.bambooradical.scratchbuilt.data.ModelData;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -45,7 +45,7 @@ public class SvgGroup {
     }
 
     protected double getHeight() {
-        return modelData.getChordLength();
+        return 0;
     }
 
 //    @XmlAttribute(name = "x")
@@ -67,7 +67,7 @@ public class SvgGroup {
     }
 
     @XmlElement(name = "polyline", namespace = "http://www.w3.org/2000/svg")
-    public SvgPolyline[] getPolylines() {
+    public List<SvgPolyline> getPolylines() {
         return null;
     }
 }

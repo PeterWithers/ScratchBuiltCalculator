@@ -19,6 +19,8 @@ package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.FuselageSection;
 import com.bambooradical.scratchbuilt.data.ModelData;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created on : Jun 24, 2013, 6:51:29 PM
@@ -71,11 +73,12 @@ public class SvgFuselage extends SvgGroup {
             lastGap = (largestLast - lastEnd) / 2;
             nextGap = (largestNext - nextEnd) / 2;
         }
-        return largestLast - lastGap - nextGap ;
+        return largestLast - lastGap - nextGap;
     }
 
     @Override
-    public SvgPolyline[] getPolylines() {
+    public List<SvgPolyline> getPolylines() {
+        final ArrayList<SvgPolyline> returnList = new ArrayList<SvgPolyline>();
         double startHeight = fuselageSection.getStartHeight();
         double endHeight = fuselageSection.getEndHeight();
         double startWidth = fuselageSection.getStartWidth();
@@ -90,9 +93,15 @@ public class SvgFuselage extends SvgGroup {
         currentOffset += getOptimalOffset(startWidth, endWidth, endWidth, startWidth);
         final SvgPolyline top = getPolyline(0, currentOffset, endWidth, startWidth, length);
         if (fuselageSection.isRequiresTop()) {
-            return new SvgPolyline[]{leftSide, rightSide, bottom, top};
+            returnList.add(leftSide);
+            returnList.add(rightSide);
+            returnList.add(bottom);
+            returnList.add(top);
         } else {
-            return new SvgPolyline[]{leftSide, rightSide, bottom};
+            returnList.add(leftSide);
+            returnList.add(rightSide);
+            returnList.add(bottom);
         }
+        return returnList;
     }
 }

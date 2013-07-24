@@ -165,10 +165,11 @@ public class Ac3dFile {
         double lastLength = 0;
         for (double[] lengthAngle : type.getLengths()) {
             returnString += nextKids + "OBJECT poly\n"
-                    + "loc " + lastLength + " " + 0 + " " + 0 + "\n"
+                    + "loc " + 0 + " " + -lastLength + " " + 0 + "\n"
                     + getRotationMatrix(lengthAngle[1], 0, 0)
                     + "kids 2\n"
                     + getWing(0, lengthAngle[0] * chord, start, length, thickness, 0, 0, 2);
+            lastLength = lengthAngle[0] * chord;
         }
         returnString += "OBJECT poly\nkids 0\n";
         return returnString;
