@@ -177,7 +177,7 @@ public class Ac3dFile {
         for (double[] lengthAngle : type.getLengths()) {
             returnString += nextKids + "OBJECT poly\n"
                     + "loc " + 0 + " " + 0 + " " + lastLength + "\n"
-                    + getRotationMatrix(lengthAngle[1], 0, 0)
+                    + getRotationMatrix(-lengthAngle[1], 0, 0)
                     + "kids 2\n"
                     + getWing(0, lengthAngle[0] * chord, start, length, thickness, 0, 0, 2);
             lastLength = lengthAngle[0] * chord;
@@ -193,6 +193,7 @@ public class Ac3dFile {
         String postAileronSection = getWingOfType(type, chord, aileronEnd, length, thickness);
         return "OBJECT poly\n"
                 + "name \"wingwithaileron\"\n"
+                + "loc " + 0 + " " + 0 + " " + chord * 2 + "\n"
                 + "kids 4\n"
                 + preAileronSection
                 + aileronSection
@@ -201,20 +202,19 @@ public class Ac3dFile {
     }
 
     private String getMainWing(WingType type, double x, double y, double z, double chord, double length, double dihedral, double attackAngle, double aileronStart, double aileronEnd, double aileronChord, double thickness) {
-
         return "OBJECT poly\n"
                 + "name \"mainwing\"\n"
                 + "kids 2\n"
                 + "OBJECT poly\n"
                 + "name \"wingA\"\n"
                 + "loc " + x + " " + y + " " + z + "\n"
-                + getRotationMatrix(-attackAngle, 0, -dihedral)
+                + getRotationMatrix(180 - attackAngle, 0, -dihedral)
                 + getWingWithAileron(type, chord, length, aileronStart, aileronEnd, aileronChord, thickness)
                 //                 + "kids 0\n"
                 + "OBJECT poly\n"
                 + "name \"wingB\"\n"
                 + "loc " + x + " " + y + " " + z + "\n"
-                + getRotationMatrix(-attackAngle, 0, dihedral)
+                + getRotationMatrix(180 - attackAngle, 0, dihedral)
                 //                + "loc " + 0 + " " + 0 + " "  + "\n"
                 + getWingWithAileron(type, chord, -length, -aileronStart, -aileronEnd, aileronChord, thickness);
 //                + "kids 0\n";
