@@ -170,27 +170,29 @@ public class Ac3dFile {
                 + "kids 0\n";
     }
 
-    private String getWingOfType(WingType type, double chord, double start, double length, double thickness) {
+    private String getWingOfType(WingType type, double skipLength, double chord, double start, double length, double thickness) {
         String returnString = "";
         String nextKids = "";
         double lastLength = 0;
         for (double[] lengthAngle : type.getLengths()) {
+            final double currentLength = (lengthAngle[0] * chord) - skipLength;
             returnString += nextKids + "OBJECT poly\n"
-                    + "loc " + 0 + " " + 0 + " " + lastLength + "\n"
+                    + "loc " + 0 + " " + 0 + " " + (lastLength + skipLength) + "\n"
                     + getRotationMatrix(-lengthAngle[1], 0, 0)
                     + "kids 2\n"
-                    + getWing(0, lengthAngle[0] * chord, start, length, thickness, 0, 0, 2);
-            lastLength = lengthAngle[0] * chord;
+                    + getWing(0, currentLength, start, length, thickness, 0, 0, 2);
+            lastLength = currentLength;
+            skipLength = 0;
         }
         returnString += "OBJECT poly\nkids 0\n";
         return returnString;
     }
 
     private String getWingWithAileron(WingType type, double chord, double length, double aileronStart, double aileronEnd, double aileronChord, double thickness) {
-        String preAileronSection = getWingOfType(type, chord, 0, aileronStart, thickness);;
-        String aileronSection = getWingOfType(type, chord - aileronChord, aileronStart, aileronEnd, thickness);
-        String aileron = getWing(chord - aileronChord, chord, aileronStart, aileronEnd, thickness, 0, 0, 1);
-        String postAileronSection = getWingOfType(type, chord, aileronEnd, length, thickness);
+        String preAileronSection = getWingOfType(type, 0, chord, 0, aileronStart, thickness);;
+        String aileronSection = getWingOfType(type, aileronChord, chord, aileronStart, aileronEnd, thickness);
+        String aileron = getWing(0, aileronChord, aileronStart, aileronEnd, thickness, 0, 0, 1);
+        String postAileronSection = getWingOfType(type, 0, chord, aileronEnd, length, thickness);
         return "OBJECT poly\n"
                 + "name \"wingwithaileron\"\n"
                 + "loc " + 0 + " " + 0 + " " + chord * 2 + "\n"
