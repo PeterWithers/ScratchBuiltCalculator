@@ -26,7 +26,8 @@ public enum WingType {
 
     flat("Flat", new double[][]{{1, 0}}),
     gurney("Gurney Flap", new double[][]{{1, 0}, {0.1, 90}}),
-    hollow("Hollow", new double[][]{{1, 0}, {0.2, 90}, {0.5, 90}});
+    // the following values are derived from the experiment three (makeAerofoilFoam3) in: https://github.com/PeterWithers/PrintableFlyables/blob/master/aerofoil-foam-board.scad
+    hollow("Hollow", new double[][]{{0.96, 0.04}, {0.03, 20}, {0.04, 50}, {0.04, 50}, {0.08, 40}, {0.15, 16}, {0.25, 7}, {0.27, 7}});
     final private String label;
     final private double[][] lengthsAngles;
 
