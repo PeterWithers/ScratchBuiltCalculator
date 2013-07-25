@@ -25,6 +25,6 @@ package com.bambooradical.scratchbuilt.data;
 public class TrainerData extends ModelDataImpl {
 
     public TrainerData() {
-        super(WingType.flat, 160, 800, 3, 3, 400, 200, 40, 30, 60, 60, 20);
+        super(WingType.flat, 160, 800, 3, 3, 390, 190, 40, 30, 60, 60, 20);
     }
 }
