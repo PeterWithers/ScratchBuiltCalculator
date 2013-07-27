@@ -57,23 +57,11 @@ public class Ac3dFileTest {
         return nextLine;
     }
 
-    /**
-     * Test of getAc3dFile method, of class Ac3dFile.
-     */
-    @Test
-    public void testGetAc3dFile() {
-        System.out.println("getAc3dFile");
-        Ac3dFile instance = new Ac3dFile(new TrainerData());
-        String result = instance.getAc3dFile();
-        Scanner scanner = new Scanner(result);
-        scanner.useDelimiter("\n");
-        assertEquals("AC3Db", scanner.next());
-        String current = getLine(scanner);
-        while (current.startsWith("MATERIAL")) {
-            current = getLine(scanner);
-        }
-        while (scanner.hasNext()) {
+    private void checkKids(Scanner scanner, int kidCount, String current) {
+        int foundCount = 0;
+        while (current != null) {
             assertTrue(current.startsWith("OBJECT"));
+            foundCount++;
             current = getLine(scanner);
             for (String optional : new String[]{"name", "data", "texture", "texrep", "rot", "loc", "url"}) {
                 if (current.startsWith(optional)) {
@@ -117,27 +105,59 @@ public class Ac3dFileTest {
                 assertEquals(surfCount, actualSurf);
             }
             assertTrue(current.startsWith("kids"));
-            if (scanner.hasNext()) {
+            int nextKidsCount = Integer.parseInt(current.split(" ")[1]);
+            if (nextKidsCount > 0) {
                 current = getLine(scanner);
+                checkKids(scanner, nextKidsCount, current);
+            } else if (foundCount < kidCount) {
+                if (scanner.hasNext()) {
+                    current = getLine(scanner);
+                } else {
+                    current = null;
+                }
+            } else {
+                return;
             }
         }
+        assertEquals(foundCount, kidCount);
+    }
+
+    /**
+     * Test of getAc3dFile method, of class Ac3dFile.
+     *
+     * The output should match the following format description from
+     * http://www.inivis.com/ac3d/man/ac3dfileformat.html
+     */
+    //MATERIAL %s rgb %f %f %f  amb %f %f %f  emis %f %f %f  spec %f %f %f  shi %d  trans %f
+    //OBJECT %s
+    //	*name %s
+    //        *data %d
+    //	*texture %s
+    //	*texrep %f %f
+    //	*rot %f %f %f  %f %f %f  %f %f %f
+    //	*loc %f %f %f
+    //	*url %s
+    //	*numvert %d
+    //		numvert lines of %f %f %f
+    //	*numsurf %d
+    //		*SURF %d
+    //		*mat %d
+    //		refs %d
+    //                refs lines of %d %f %f
+    //	kids %d
+    @Test
+    public void testGetAc3dFile() {
+        System.out.println("getAc3dFile");
+        Ac3dFile instance = new Ac3dFile(new TrainerData());
+        String result = instance.getAc3dFile();
+        Scanner scanner = new Scanner(result);
+        scanner.useDelimiter("\n");
+        assertEquals("AC3Db", scanner.next());
+        String current = getLine(scanner);
+        while (current.startsWith("MATERIAL")) {
+            current = getLine(scanner);
+        }
+        checkKids(scanner, 1, current);
         scanner.close();
-//MATERIAL %s rgb %f %f %f  amb %f %f %f  emis %f %f %f  spec %f %f %f  shi %d  trans %f
-//OBJECT %s
-//	*name %s
-//        *data %d
-//	*texture %s
-//	*texrep %f %f
-//	*rot %f %f %f  %f %f %f  %f %f %f
-//	*loc %f %f %f
-//	*url %s
-//	*numvert %d
-//		numvert lines of %f %f %f
-//	*numsurf %d
-//		*SURF %d
-//		*mat %d
-//		refs %d
-//                refs lines of %d %f %f
-//	kids %d
     }
 }
