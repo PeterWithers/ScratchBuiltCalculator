@@ -18,6 +18,8 @@
 package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.Colour;
+import com.bambooradical.scratchbuilt.data.TrainerData;
+import java.util.Scanner;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -47,5 +49,95 @@ public class Ac3dFileTest {
         String expResult2 = "0.50 0.50 0.50";
         String result2 = instance.getFormattedColour(Colour.GREY);
         assertEquals(expResult2, result2);
+    }
+
+    private String getLine(Scanner scanner) {
+        final String nextLine = scanner.next();
+        System.out.println(nextLine);
+        return nextLine;
+    }
+
+    /**
+     * Test of getAc3dFile method, of class Ac3dFile.
+     */
+    @Test
+    public void testGetAc3dFile() {
+        System.out.println("getAc3dFile");
+        Ac3dFile instance = new Ac3dFile(new TrainerData());
+        String result = instance.getAc3dFile();
+        Scanner scanner = new Scanner(result);
+        scanner.useDelimiter("\n");
+        assertEquals("AC3Db", scanner.next());
+        String current = getLine(scanner);
+        while (current.startsWith("MATERIAL")) {
+            current = getLine(scanner);
+        }
+        while (scanner.hasNext()) {
+            assertTrue(current.startsWith("OBJECT"));
+            current = getLine(scanner);
+            for (String optional : new String[]{"name", "data", "texture", "texrep", "rot", "loc", "url"}) {
+                if (current.startsWith(optional)) {
+                    current = getLine(scanner);
+                }
+            }
+            if (current.startsWith("numvert")) {
+                int vertCount = Integer.parseInt(current.split(" ")[1]);
+                current = getLine(scanner);
+                int actualVert = 0;
+                // todo: test the count of "the numvert lines of "
+                while (current.matches("[0-9\\.\\- ]*")) {
+                    current = getLine(scanner);
+                    actualVert++;
+                }
+                assertEquals(vertCount, actualVert);
+            }
+            if (current.startsWith("numsurf")) {
+                int surfCount = Integer.parseInt(current.split(" ")[1]);
+                current = getLine(scanner);
+                int actualSurf = 0;
+                while (current.startsWith("SURF")) {
+                    actualSurf++;
+                    current = getLine(scanner);
+                    for (String optional : new String[]{"mat"}) {
+                        if (current.startsWith(optional)) {
+                            current = getLine(scanner);
+                        }
+                    }
+                    assertTrue(current.startsWith("refs"));
+                    int refsCount = Integer.parseInt(current.split(" ")[1]);
+                    current = getLine(scanner);
+                    int actualRefs = 0;
+                    // todo: test the count of "the refs lines of "
+                    while (current.matches("[0-9\\.\\- ]*")) {//"-?0-9+\\.?-?0-9* -?0-9+\\.?-?0-9* -?0-9+\\.?-?0-9*")) {
+                        actualRefs++;
+                        current = getLine(scanner);
+                    }
+                    assertEquals(refsCount, actualRefs);
+                }
+                assertEquals(surfCount, actualSurf);
+            }
+            assertTrue(current.startsWith("kids"));
+            if (scanner.hasNext()) {
+                current = getLine(scanner);
+            }
+        }
+        scanner.close();
+//MATERIAL %s rgb %f %f %f  amb %f %f %f  emis %f %f %f  spec %f %f %f  shi %d  trans %f
+//OBJECT %s
+//	*name %s
+//        *data %d
+//	*texture %s
+//	*texrep %f %f
+//	*rot %f %f %f  %f %f %f  %f %f %f
+//	*loc %f %f %f
+//	*url %s
+//	*numvert %d
+//		numvert lines of %f %f %f
+//	*numsurf %d
+//		*SURF %d
+//		*mat %d
+//		refs %d
+//                refs lines of %d %f %f
+//	kids %d
     }
 }

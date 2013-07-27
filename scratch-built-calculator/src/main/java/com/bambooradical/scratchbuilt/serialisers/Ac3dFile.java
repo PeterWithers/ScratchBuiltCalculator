@@ -177,8 +177,8 @@ public class Ac3dFile {
         for (double[] lengthAngle : type.getLengths()) {
             final double currentLength = (lengthAngle[0] * chord) - skipLength;
             returnString += nextKids + "OBJECT poly\n"
-                    + "loc " + 0 + " " + 0 + " " + (lastLength + skipLength) + "\n"
                     + getRotationMatrix(-lengthAngle[1], 0, 0)
+                    + "loc " + 0 + " " + 0 + " " + (lastLength + skipLength) + "\n"
                     + "kids 2\n"
                     + getWing(0, currentLength, start, length, thickness, 0, 0, 2);
             lastLength = currentLength;
@@ -195,7 +195,7 @@ public class Ac3dFile {
         String postAileronSection = getWingOfType(type, 0, chord, aileronEnd, length, thickness);
         return "OBJECT poly\n"
                 + "name \"wingwithaileron\"\n"
-                + "loc " + 0 + " " + 0 + " " + chord * 2 + "\n"
+                + "loc " + 0 + " " + 0 + " " + -chord + "\n"
                 + "kids 4\n"
                 + preAileronSection
                 + aileronSection
@@ -209,15 +209,17 @@ public class Ac3dFile {
                 + "kids 2\n"
                 + "OBJECT poly\n"
                 + "name \"wingA\"\n"
-                + "loc " + x + " " + y + " " + z + "\n"
                 + getRotationMatrix(180 - attackAngle, 0, -dihedral)
+                + "loc " + x + " " + y + " " + z + "\n"
+                + "kids 1\n"
                 + getWingWithAileron(type, chord, length, aileronStart, aileronEnd, aileronChord, thickness)
                 //                 + "kids 0\n"
                 + "OBJECT poly\n"
                 + "name \"wingB\"\n"
-                + "loc " + x + " " + y + " " + z + "\n"
                 + getRotationMatrix(180 - attackAngle, 0, dihedral)
+                + "loc " + x + " " + y + " " + z + "\n"
                 //                + "loc " + 0 + " " + 0 + " "  + "\n"
+                + "kids 1\n"
                 + getWingWithAileron(type, chord, -length, -aileronStart, -aileronEnd, aileronChord, thickness);
 //                + "kids 0\n";
     }
