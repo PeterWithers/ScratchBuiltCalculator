@@ -62,6 +62,7 @@ public class Ac3dFileTest {
         while (current != null) {
             assertTrue(current.startsWith("OBJECT"));
             foundCount++;
+            System.out.println(foundCount + " of " + kidCount + " kids expected");
             current = getLine(scanner);
             for (String optional : new String[]{"name", "data", "texture", "texrep", "rot", "loc", "url"}) {
                 if (current.startsWith(optional)) {
@@ -109,7 +110,8 @@ public class Ac3dFileTest {
             if (nextKidsCount > 0) {
                 current = getLine(scanner);
                 checkKids(scanner, nextKidsCount, current);
-            } else if (foundCount < kidCount) {
+            } 
+            if (foundCount < kidCount) {
                 if (scanner.hasNext()) {
                     current = getLine(scanner);
                 } else {
@@ -158,6 +160,29 @@ public class Ac3dFileTest {
             current = getLine(scanner);
         }
         checkKids(scanner, 1, current);
+        scanner.close();
+    }
+
+    @Test
+    public void testTestKids() {
+        System.out.println("test testKids");
+        Scanner scanner = new Scanner("OBJECT outer\n"
+                + "name a\n"
+                + "kids 1\n"
+                + "OBJECT mid\n"
+                + "name b\n"
+                + "kids 3\n"
+                + "OBJECT inner\n"
+                + "name c\n"
+                + "kids 0\n"
+                + "OBJECT inner\n"
+                + "name d\n"
+                + "kids 0\n"
+                + "OBJECT inner\n"
+                + "name e\n"
+                + "kids 0\n");
+        scanner.useDelimiter("\n");
+        checkKids(scanner, 1, getLine(scanner));
         scanner.close();
     }
 }
