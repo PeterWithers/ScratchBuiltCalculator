@@ -137,11 +137,11 @@ public class Ac3dFile {
                 + format.format(-Math.sin(radiansY)) + " " + format.format(Math.sin(radiansX)) + " " + format.format(Math.cos(radiansX) * Math.cos(radiansY)) + "\n";
     }
 
-    private String getWing(double chordStart, double chordEnd, double start, double end, double thickness, double angle, double attackAngle, int materialIndex) {
-        return getTaperedWing(chordStart, chordEnd, chordStart, chordEnd, start, end, start, end, thickness, angle, attackAngle, materialIndex);
+    private String getWing(boolean centerThickness, double chordStart, double chordEnd, double start, double end, double thickness, double angle, double attackAngle, int materialIndex) {
+        return getTaperedWing(centerThickness, chordStart, chordEnd, chordStart, chordEnd, start, end, start, end, thickness, angle, attackAngle, materialIndex);
     }
 
-    private String getTaperedWing(double chordStart, double chordEnd, double chordStartOuter, double chordEndOuter, double leadingStart, double leadingEnd, double trailingStart, double trailingEnd, double thickness, double angle, double attackAngle, int materialIndex) {
+    private String getTaperedWing(boolean centerThickness, double chordStart, double chordEnd, double chordStartOuter, double chordEndOuter, double leadingStart, double leadingEnd, double trailingStart, double trailingEnd, double thickness, double angle, double attackAngle, int materialIndex) {
         // make sure the faces point in the correct direction by keeping the start value less than the end value
         if (leadingStart > leadingEnd) {
             double temp = leadingStart;
@@ -153,19 +153,25 @@ public class Ac3dFile {
             trailingStart = trailingEnd;
             trailingEnd = temp;
         }
+        double thicknessTop = thickness / 2;
+        double thicknessBase = -thickness / 2;
+        if (!centerThickness) {
+            thicknessTop = 0;
+            thicknessBase = -thickness;
+        }
         return "OBJECT poly\n"
                 + "name \"wing\"\n"
                 //                + "loc " + x + " " + y + " " + 0 + "\n"
                 + getRotationMatrix(-attackAngle, 0, angle)
                 + "numvert 8\n"
-                + leadingStart + " " + thickness / 2 + " " + chordStart + "\n"
-                + leadingEnd + " " + thickness / 2 + " " + chordStartOuter + "\n"
-                + leadingEnd + " " + -thickness / 2 + " " + chordStartOuter + "\n"
-                + leadingStart + " " + -thickness / 2 + " " + chordStart + "\n"
-                + trailingStart + " " + thickness / 2 + " " + chordEnd + "\n"
-                + trailingEnd + " " + thickness / 2 + " " + chordEndOuter + "\n"
-                + trailingEnd + " " + -thickness / 2 + " " + chordEndOuter + "\n"
-                + trailingStart + " " + -thickness / 2 + " " + chordEnd + "\n"
+                + leadingStart + " " + thicknessTop + " " + chordStart + "\n"
+                + leadingEnd + " " + thicknessTop + " " + chordStartOuter + "\n"
+                + leadingEnd + " " + thicknessBase + " " + chordStartOuter + "\n"
+                + leadingStart + " " + thicknessBase + " " + chordStart + "\n"
+                + trailingStart + " " + thicknessTop + " " + chordEnd + "\n"
+                + trailingEnd + " " + thicknessTop + " " + chordEndOuter + "\n"
+                + trailingEnd + " " + thicknessBase + " " + chordEndOuter + "\n"
+                + trailingStart + " " + thicknessBase + " " + chordEnd + "\n"
                 + getBoxFaces(materialIndex)
                 + "kids 0\n";
     }
@@ -180,7 +186,7 @@ public class Ac3dFile {
                     + getRotationMatrix(-lengthAngle[1], 0, 0)
                     + "loc " + 0 + " " + 0 + " " + (lastLength + skipLength) + "\n"
                     + "kids 2\n"
-                    + getWing(0, currentLength, start, length, thickness, 0, 0, 2);
+                    + getWing(false, 0, currentLength, start, length, thickness, 0, 0, 2);
             lastLength = currentLength;
             skipLength = 0;
         }
@@ -191,7 +197,7 @@ public class Ac3dFile {
     private String getWingWithAileron(WingType type, double chord, double length, double aileronStart, double aileronEnd, double aileronChord, double thickness) {
         String preAileronSection = getWingOfType(type, 0, chord, 0, aileronStart, thickness);;
         String aileronSection = getWingOfType(type, aileronChord, chord, aileronStart, aileronEnd, thickness);
-        String aileron = getWing(0, aileronChord, aileronStart, aileronEnd, thickness, 0, 0, 1);
+        String aileron = getWing(false, 0, aileronChord, aileronStart, aileronEnd, thickness, 0, 0, 1);
         String postAileronSection = getWingOfType(type, 0, chord, aileronEnd, length, thickness);
         return "OBJECT poly\n"
                 + "name \"wingwithaileron\"\n"
@@ -228,9 +234,9 @@ public class Ac3dFile {
         return "OBJECT poly\n"
                 + "name \"tailwing\"\n"
                 + "kids 3\n"
-                + getTaperedWing(z, chordHorizontal + z, z, chordHorizontal + z, 0, lengthLeadingHorizontal, 0, lengthTrailingHorizontal, thickness, 0, 0, 3)
-                + getTaperedWing(z, chordVertical + z, z, chordVertical + z, 0, lengthLeadingVertical, 0, lengthTrailingVertical, thickness, -90, 0, 4)
-                + getTaperedWing(z, chordHorizontal + z, z, chordHorizontal + z, 0, lengthLeadingHorizontal, 0, lengthTrailingHorizontal, thickness, 180, 0, 3);
+                + getTaperedWing(true, z, chordHorizontal + z, z, chordHorizontal + z, 0, lengthLeadingHorizontal, 0, lengthTrailingHorizontal, thickness, 0, 0, 3)
+                + getTaperedWing(true, z, chordVertical + z, z, chordVertical + z, 0, lengthLeadingVertical, 0, lengthTrailingVertical, thickness, -90, 0, 4)
+                + getTaperedWing(true, z, chordHorizontal + z, z, chordHorizontal + z, 0, lengthLeadingHorizontal, 0, lengthTrailingHorizontal, thickness, 180, 0, 3);
     }
 
     private double scaleToM(double mm) {
@@ -243,7 +249,7 @@ public class Ac3dFile {
     }
 
     private String getElevator(double x, double y, double z, double chord, double span, double thickness) {
-        return getWing(z, z + chord, -span / 2, span / 2, thickness, 0, 0, 1);
+        return getWing(true, z, z + chord, -span / 2, span / 2, thickness, 0, 0, 1);
     }
 
     public String getAc3dFile() {
