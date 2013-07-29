@@ -51,101 +51,77 @@ import javax.xml.bind.Marshaller;
 @Path("/calculator")
 public class CalculatorResource {
 
+    @DefaultValue("flat")
+    @QueryParam("wingType")
+    WingType wingType;
+    @DefaultValue("800")
+    @QueryParam("wingSpan")
+    int wingSpan;
+    @DefaultValue("160")
+    @QueryParam("wingChord")
+    int wingChord;
+    @DefaultValue("3")
+    @QueryParam("attackAngle")
+    double attackAngle;
+    @DefaultValue("3")
+    @QueryParam("dihedral")
+    double dihedralAngle;
+    @DefaultValue("395")
+    @QueryParam("aileronEnd")
+    int aileronEnd;
+    @DefaultValue("200")
+    @QueryParam("aileronStart")
+    int aileronStart;
+    @DefaultValue("40")
+    @QueryParam("aileronChord")
+    int aileronChord;
+    @DefaultValue("15")
+    @QueryParam("wingHeight")
+    int wingHeight;
+    @DefaultValue("30")
+    @QueryParam("fuselageWidth")
+    int fuselageWidth;
+    @DefaultValue("30")
+    @QueryParam("fuselageHeight")
+    int fuselageHeight;
+    @DefaultValue("15")
+    @QueryParam("fuselageEndsDiameter")
+    int fuselageEndsDiameter;
+
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("ac3d")
-    public String getAc3dFile(@Context HttpServletRequest httpServletRequest,
-            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
-            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
-            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
-            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
-            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
-            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
-            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
-            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
-            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
-            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
-            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
-            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
+    public String getAc3dFile(@Context HttpServletRequest httpServletRequest) {
         return new Ac3dFile(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)).getAc3dFile();
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("yasim")
-    public YasimConfig getYasimFile(@Context HttpServletRequest httpServletRequest,
-            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
-            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
-            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
-            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
-            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
-            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
-            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
-            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
-            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
-            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
-            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
-            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
+    public YasimConfig getYasimFile(@Context HttpServletRequest httpServletRequest) {
         return new YasimConfig(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("svg")
-    public SvgLayout getSvgFile(@Context HttpServletRequest httpServletRequest,
-            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
-            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
-            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
-            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
-            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
-            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
-            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
-            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
-            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
-            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
-            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
-            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
+    public SvgLayout getSvgFile(@Context HttpServletRequest httpServletRequest) {
         return new SvgLayout(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("set")
-    public AircraftSet getSetFile(@Context HttpServletRequest httpServletRequest,
-            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
-            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
-            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
-            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
-            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
-            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
-            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
-            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
-            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
-            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
-            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
-            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) {
+    public AircraftSet getSetFile(@Context HttpServletRequest httpServletRequest) {
         return new AircraftSet(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
     }
 
     @GET
     @Produces("application/zip")
     @Path("zip")
-    public Response getZipFile(@Context HttpServletRequest httpServletRequest,
-            @DefaultValue("flat") @QueryParam("wingType") WingType wingType,
-            @DefaultValue("800") @QueryParam("wingSpan") int wingSpan,
-            @DefaultValue("160") @QueryParam("wingChord") int wingChord,
-            @DefaultValue("3") @QueryParam("attackAngle") double attackAngle,
-            @DefaultValue("3") @QueryParam("dihedral") double dihedralAngle,
-            @DefaultValue("395") @QueryParam("aileronEnd") int aileronEnd,
-            @DefaultValue("200") @QueryParam("aileronStart") int aileronStart,
-            @DefaultValue("40") @QueryParam("aileronChord") int aileronChord,
-            @DefaultValue("15") @QueryParam("wingHeight") int wingHeight,
-            @DefaultValue("30") @QueryParam("fuselageWidth") int fuselageWidth,
-            @DefaultValue("30") @QueryParam("fuselageHeight") int fuselageHeight,
-            @DefaultValue("15") @QueryParam("fuselageEndsDiameter") int fuselageEndsDiameter) throws IOException, JAXBException {
+    public Response getZipFile(@Context HttpServletRequest httpServletRequest) throws IOException, JAXBException {
         final ModelDataImpl modelDataImpl = new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter);
         StreamingOutput zipfileStream = new StreamingOutput() {
-
             @Override
             public void write(OutputStream out) throws IOException, WebApplicationException {
                 try {
