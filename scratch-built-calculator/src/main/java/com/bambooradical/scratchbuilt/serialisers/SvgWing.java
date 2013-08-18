@@ -86,12 +86,18 @@ public class SvgWing extends SvgGroup {
     public List<SvgText> getLabels() {
         final ArrayList<SvgText> returnList = new ArrayList<SvgText>();
         double totalWidth = 0;
+        boolean firstLabel = true;
         boolean offsetText = false;
         for (double[] lengthsAngles : modelData.getWingType().getLengths()) {
             final double currentlength = lengthsAngles[0] * modelData.getChordLength();
             final double currentAngle = lengthsAngles[1];
             totalWidth += currentlength;
-            String labelText = modelData.getWingSpan() + " x " + currentlength + " folded to " + currentAngle + " degrees";
+            String labelText = modelData.getWingSpan() + " x " + currentlength;
+            if (firstLabel) {
+                firstLabel = false;
+            } else {
+                labelText = labelText + " folded to " + currentAngle + " degrees";
+            }
             int leftOffset = 20;
             if (offsetText) {
                 leftOffset = 200;
