@@ -81,4 +81,29 @@ public class SvgWing extends SvgGroup {
         returnList.add(aileronRPolyline);
         return returnList;
     }
+
+    @Override
+    public List<SvgText> getLabels() {
+        final ArrayList<SvgText> returnList = new ArrayList<SvgText>();
+        double totalWidth = 0;
+        boolean offsetText = false;
+        for (double[] lengthsAngles : modelData.getWingType().getLengths()) {
+            final double currentlength = lengthsAngles[0] * modelData.getChordLength();
+            final double currentAngle = lengthsAngles[1];
+            totalWidth += currentlength;
+            String labelText = modelData.getWingSpan() + " x " + currentlength + " folded to " + currentAngle + " degrees";
+            int leftOffset = 20;
+            if (offsetText) {
+                leftOffset = 200;
+            }
+            final SvgText segmentLabel = new SvgText(x + leftOffset, y + totalWidth - (currentlength / 4), labelText);
+            returnList.add(segmentLabel);
+            offsetText = !offsetText;
+        }
+        final SvgText aileronLLabel = new SvgText(20 + modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronStart()), modelData.getAileronChord() / 2, "Left Aileron");
+        returnList.add(aileronLLabel);
+        final SvgText aileronRLabel = new SvgText(20 + modelData.getWingLength() - modelData.getAileronEnd(), modelData.getAileronChord() / 2, "Right Aileron");
+        returnList.add(aileronRLabel);
+        return returnList;
+    }
 }

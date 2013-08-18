@@ -21,12 +21,14 @@ import com.bambooradical.scratchbuilt.data.ModelData;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Created on : Jun 24, 2013, 6:51:29 PM
  *
  * @author Peter Withers <peter-ghc@bambooradical.com>
  */
+@XmlType(propOrder = {"polylines", "labels"})
 public class SvgGroup {
 
     protected ModelData modelData;
@@ -72,6 +74,11 @@ public class SvgGroup {
 
     @XmlElement(name = "polyline", namespace = "http://www.w3.org/2000/svg")
     public List<SvgPolyline> getPolylines() {
+        return null;
+    }
+
+    @XmlElement(name = "text", namespace = "http://www.w3.org/2000/svg")
+    public List<SvgText> getLabels() {
         return null;
     }
 }
