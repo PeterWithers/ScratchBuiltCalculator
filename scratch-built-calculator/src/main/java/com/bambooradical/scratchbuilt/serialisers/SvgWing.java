@@ -106,6 +106,7 @@ public class SvgWing extends SvgGroup {
             returnList.add(segmentLabel);
             offsetText = !offsetText;
         }
+        returnList.add(new SvgText(x + modelData.getWingSpan() / 3, y + 10, "Total Area = " + modelData.getWingSpan() + " x " + totalWidth));
         final SvgText aileronLLabel = new SvgText(20 + modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronStart()), modelData.getAileronChord() / 2, "Left Aileron");
         returnList.add(aileronLLabel);
         final SvgText aileronRLabel = new SvgText(20 + modelData.getWingLength() - modelData.getAileronEnd(), modelData.getAileronChord() / 2, "Right Aileron");
