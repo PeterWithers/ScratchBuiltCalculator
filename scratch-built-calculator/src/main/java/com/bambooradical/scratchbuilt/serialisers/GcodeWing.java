@@ -104,13 +104,13 @@ public class GcodeWing {
     }
 
     private void writeLayer(BufferedWriter bufferedWriter, List<double[]> aerofoilData) throws IOException {
-        currentX = aerofoilData.get(0)[0] * targetChord;
-        currentY = aerofoilData.get(0)[1] * targetChord;
+        currentX = aerofoilData.get(0)[1] * targetChord - targetChord / 2;
+        currentY = aerofoilData.get(0)[0] * targetChord - targetChord / 2;
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d; move\r\n", currentX, currentY, currentZ, travelSpeed));
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; prime\r\n", currentX, currentY, currentZ, primeSpeed, currentA));
         for (double[] dataElement : aerofoilData) {
-            final double nextX = dataElement[0] * targetChord;
-            final double nextY = dataElement[1] * targetChord;
+            final double nextX = dataElement[1] * targetChord - targetChord / 2;
+            final double nextY = dataElement[0] * targetChord - targetChord / 2;
             final double filamentTravel = calculateFilamentUsed(currentX, currentY, nextX, nextY);
             currentA += filamentTravel;
             currentX = nextX;
