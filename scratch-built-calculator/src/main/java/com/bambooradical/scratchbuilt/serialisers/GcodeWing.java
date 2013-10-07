@@ -63,14 +63,15 @@ public class GcodeWing {
     public void getGcode(OutputStream output) throws IOException {
         orientation = ModelOrientation.vertical;
         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(output));
+        addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter);
-        selectExtruder(bufferedWriter);
         List<double[]> aerofoilData = getAerofoilData();
         while (currentZ < targetHeight) {
             setNextLayer(bufferedWriter);
             writeLayer(bufferedWriter, aerofoilData);
             writePercentDone(bufferedWriter, targetHeight, currentZ);
         }
+        addGcode(bufferedWriter, "end.gcode");
         bufferedWriter.close();
     }
 
@@ -92,10 +93,16 @@ public class GcodeWing {
         bufferedWriter.write("; Using aerofoil data file: " + aerofoilDataFile + "\r\n");
         bufferedWriter.write("; chord length: " + targetChord + "\r\n");
         bufferedWriter.write("; span length: " + targetHeight + "\r\n");
+        bufferedWriter.write("; orientation: " + orientation.name() + "\r\n");
     }
 
-    private void selectExtruder(BufferedWriter bufferedWriter) throws IOException {
-        bufferedWriter.write("M135 T0; select the extruder\r\n");
+    private void addGcode(BufferedWriter bufferedWriter, String fileName) throws IOException {
+        final String resourceName = "/GcodeStartEnd/" + fileName;
+        final InputStream aerofoilData = GcodeWing.this.getClass().getResourceAsStream(resourceName);
+        Scanner scanner = new Scanner(aerofoilData);
+        while (scanner.hasNext()) {
+            bufferedWriter.write(scanner.nextLine() + "\r\n");
+        }
     }
 
     private void writePercentDone(BufferedWriter bufferedWriter, double linesToDo, double linesDone) throws IOException {
@@ -144,6 +151,6 @@ public class GcodeWing {
     private double calculateFilamentUsed(double startX, double startY, double endX, double endY) {
         double lengthA = (startY - endY);
         double lengthB = (startX - endX);
-        return Math.sqrt(lengthA * lengthA + lengthB * lengthB) / 100;
+        return Math.sqrt(lengthA * lengthA + lengthB * lengthB) / 30.0;
     }
 }
