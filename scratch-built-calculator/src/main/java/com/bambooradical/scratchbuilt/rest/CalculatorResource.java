@@ -22,6 +22,7 @@ import com.bambooradical.scratchbuilt.data.WingType;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
 import com.bambooradical.scratchbuilt.serialisers.AircraftAnimation;
 import com.bambooradical.scratchbuilt.serialisers.AircraftSet;
+import com.bambooradical.scratchbuilt.serialisers.GcodeWing;
 import com.bambooradical.scratchbuilt.serialisers.SvgLayout;
 import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
 import java.io.IOException;
@@ -93,6 +94,25 @@ public class CalculatorResource {
     @Path("ac3d")
     public String getAc3dFile(@Context HttpServletRequest httpServletRequest) {
         return new Ac3dFile(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)).getAc3dFile();
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("wing.gcode")
+    public StreamingOutput getGcodeWing(@Context HttpServletRequest httpServletRequest) throws IOException, JAXBException {
+        StreamingOutput gcodeStream = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try {
+                    GcodeWing gcodeWing = new GcodeWing(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+                    gcodeWing.getGcode(output);
+                } catch (IOException exception) {
+                    throw new WebApplicationException(exception);
+                }
+            }
+        };
+        return gcodeStream;
+        // return Response.ok().entity(gcodeStream).header("Content-Disposition", "attachment; filename = wing.gcode").build();
     }
 
     @GET
