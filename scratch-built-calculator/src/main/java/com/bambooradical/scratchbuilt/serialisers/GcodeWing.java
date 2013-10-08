@@ -68,8 +68,7 @@ public class GcodeWing {
         addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter);
         List<double[]> aerofoilData = getAerofoilData();
-        // todo replace this blob with two thick lines
-        currentA += 5; // make sure we make a blob on the first prime
+        writeAnchor(bufferedWriter);
         while (currentZ < targetHeight) {
             setNextLayer(bufferedWriter);
             writeLayer(bufferedWriter, aerofoilData);
@@ -116,6 +115,24 @@ public class GcodeWing {
             bufferedWriter.write(String.format("M73 P%.0f\r\n", percentDone));
             currentPercent = percentDone;
         }
+    }
+
+    private void writeAnchor(BufferedWriter bufferedWriter) throws IOException {
+        final double anchorRadius = targetChord / 2;
+        for (double[] anchorPoint : new double[][]{{-anchorRadius, -anchorRadius, anchorRadius, -anchorRadius}, {anchorRadius, -anchorRadius, anchorRadius, anchorRadius}, {anchorRadius, anchorRadius, -anchorRadius, anchorRadius}, {-anchorRadius, anchorRadius, -anchorRadius, -anchorRadius},}) {
+            currentX = anchorPoint[0];
+            currentY = anchorPoint[1];
+            double nextX = anchorPoint[2];
+            double nextY = anchorPoint[3];
+            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d; move\r\n", currentX, currentY, currentZ, travelSpeed));
+            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; prime\r\n", currentX, currentY, currentZ, primeSpeed, currentA));
+            final double filamentTravel = calculateFilamentUsed(currentX, currentY, nextX, nextY);
+            currentA += filamentTravel * 2; // use double the filament for the anchor
+            currentX = nextX;
+            currentY = nextY;
+            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; anchor\r\n", currentX, currentY, currentZ, extrudeSpeed, currentA));
+        }
+        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
     }
 
     private void setNextLayer(BufferedWriter bufferedWriter) throws IOException {
