@@ -6,8 +6,8 @@ G161 X Y F2500; home XY axis minimum
 M132 X Y Z A B; recall stored home offsets for XYZAB axis
 G1 X25 Y-60 Z10 F3300.0; move to waiting position
 M109 S110 T0; set platform temperature
-M134 T0; wait for platform to be ready
 M135 T0; change tool
 M104 S230 T0; set extruder temperature
+M134 T0; wait for platform to be ready
 M133 T0; wait for tool to be ready
 ; end start gcode
