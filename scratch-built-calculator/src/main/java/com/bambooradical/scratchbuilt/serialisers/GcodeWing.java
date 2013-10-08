@@ -68,12 +68,13 @@ public class GcodeWing {
         addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter);
         List<double[]> aerofoilData = getAerofoilData();
+        setNextLayer(bufferedWriter);
         writeAnchor(bufferedWriter);
         while (currentZ < targetHeight) {
-            setNextLayer(bufferedWriter);
             writeLayer(bufferedWriter, aerofoilData);
             writePercentDone(bufferedWriter, targetHeight, currentZ);
             extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
+            setNextLayer(bufferedWriter);
         }
         addGcode(bufferedWriter, "end.gcode");
         bufferedWriter.close();
