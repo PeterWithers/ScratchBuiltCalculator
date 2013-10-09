@@ -38,16 +38,17 @@ public class GcodeWing {
     final private ModelData modelData;
     final private String aerofoilDataFile = "/AerofoilData/n6409.dat";
     final private double layerHeight = 0.2;
-    final private double targetHeight = 40.0;
+    final private double targetHeight = 110.0;
     final private double targetChord = 110.0;
+    private double strutSpacing = 0.1;
     private double currentX = 0;
     private double currentY = 0;
-    private double currentZ = 0;
+    private double currentZ = layerHeight;
     private double currentA = 0;
     private double currentPercent = 0;
     private int primeSpeed = 1500;
     private int travelSpeed = 3000;
-    private int extrudeSpeedFirstLayer = 400;
+    private int extrudeSpeedFirstLayer = 200;
     private int extrudeSpeedMax = 1800;
     private int extrudeSpeed = extrudeSpeedFirstLayer;
     private ModelOrientation orientation;
@@ -67,10 +68,14 @@ public class GcodeWing {
         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(output));
         addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter);
-        List<double[]> aerofoilData = getAerofoilData();
-        setNextLayer(bufferedWriter);
+        final List<double[]> aerofoilData = getAerofoilData();
+        final List<double[]> aerofoilStruts = getStruts(aerofoilData);
+        final List<double[]> integratedStruts = getIntegratedStruts(aerofoilData);
         writeAnchor(bufferedWriter);
         while (currentZ < targetHeight) {
+            writeLayer(bufferedWriter, integratedStruts);
+            setNextLayer(bufferedWriter);
+            writeLayer(bufferedWriter, aerofoilStruts);
             writeLayer(bufferedWriter, aerofoilData);
             writePercentDone(bufferedWriter, targetHeight, currentZ);
             extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
@@ -81,7 +86,7 @@ public class GcodeWing {
     }
 
     private List<double[]> getAerofoilData() {
-        List pointsList = new ArrayList<double[]>();
+        List<double[]> pointsList = new ArrayList<double[]>();
         final InputStream aerofoilData = GcodeWing.this.getClass().getResourceAsStream(aerofoilDataFile);
         Scanner scanner = new Scanner(aerofoilData);
         while (scanner.hasNext()) {
@@ -91,6 +96,65 @@ public class GcodeWing {
             pointsList.add(new double[]{scanner.nextDouble(), scanner.nextDouble()});
         }
         return pointsList;
+    }
+
+    private List<double[]> getIntegratedStruts(List<double[]> pointsList) {
+        List<double[]> pointsStrutsList = new ArrayList<double[]>();
+        int startIndex = 0;
+        int endIndex = pointsList.size() - 1;
+        // add the initial part of the trailing edge
+        while (pointsList.get(startIndex)[0] > 1 - strutSpacing) {
+            pointsStrutsList.add(0, pointsList.get(startIndex));
+            startIndex++;
+        }
+        boolean startEnd = true;
+        // add the zigzags
+        for (double currentPosition = 1 - strutSpacing * 2; currentPosition > strutSpacing; currentPosition -= strutSpacing) {
+            if (startEnd) {
+                while (pointsList.get(endIndex)[0] > currentPosition) {
+                    pointsStrutsList.add(pointsList.get(endIndex - 1));
+                    endIndex--;
+                }
+                endIndex++;
+            } else {
+                startIndex--;
+                while (pointsList.get(startIndex)[0] > currentPosition) {
+                    pointsStrutsList.add(pointsList.get(startIndex));
+                    startIndex++;
+                }
+            }
+            startEnd = !startEnd;
+        }
+        endIndex--;
+        // add the final section at the leading edge
+        while (startIndex < endIndex + 2) {
+            pointsStrutsList.add(pointsList.get(endIndex));
+            endIndex--;
+        }
+        return pointsStrutsList;
+    }
+
+    private List<double[]> getStruts(List<double[]> pointsList) {
+        List<double[]> strutsList = new ArrayList<double[]>();
+//        pointsStrutsList.addAll(pointsList);
+        int startIndex = 0;
+        int endIndex = pointsList.size() - 1;
+        boolean startEnd = false;
+        for (double currentPosition = 1 - strutSpacing; currentPosition > strutSpacing; currentPosition -= strutSpacing) {
+            while (pointsList.get(startIndex)[0] > currentPosition) {
+                startIndex++;
+            }
+            while (pointsList.get(endIndex)[0] > currentPosition) {
+                endIndex--;
+            }
+            if (startEnd) {
+                strutsList.add(0, pointsList.get(endIndex));
+            } else {
+                strutsList.add(0, pointsList.get(startIndex - 1));
+            }
+            startEnd = !startEnd;
+        }
+        return strutsList;
     }
 
     private void writeInformativeHeader(BufferedWriter bufferedWriter) throws IOException {
@@ -119,19 +183,31 @@ public class GcodeWing {
     }
 
     private void writeAnchor(BufferedWriter bufferedWriter) throws IOException {
-        final double anchorRadius = targetChord / 2;
-        for (double[] anchorPoint : new double[][]{{-anchorRadius, -anchorRadius, anchorRadius, -anchorRadius}, {anchorRadius, -anchorRadius, anchorRadius, anchorRadius}, {anchorRadius, anchorRadius, -anchorRadius, anchorRadius}, {-anchorRadius, anchorRadius, -anchorRadius, -anchorRadius},}) {
-            currentX = anchorPoint[0];
-            currentY = anchorPoint[1];
-            double nextX = anchorPoint[2];
-            double nextY = anchorPoint[3];
+        final double anchorLongSide = targetChord / 2;
+        final double anchorShortSide = targetChord / 4;
+        for (double[] anchorPoint : new double[][]{{-anchorLongSide, -anchorShortSide, anchorLongSide, -anchorShortSide}, {-anchorLongSide, anchorShortSide, anchorLongSide, anchorShortSide}, {anchorLongSide, anchorShortSide, anchorLongSide, -anchorShortSide}, {-anchorLongSide, anchorShortSide, -anchorLongSide, -anchorShortSide},}) {
+            final double nextX;
+            final double nextY;
+            switch (orientation) {
+                case vertical:
+                    currentX = anchorPoint[1];
+                    currentY = anchorPoint[0];
+                    nextX = anchorPoint[3];
+                    nextY = anchorPoint[2];
+                    break;
+                default:
+                    currentX = anchorPoint[0];
+                    currentY = anchorPoint[1];
+                    nextX = anchorPoint[2];
+                    nextY = anchorPoint[3];
+            }
             bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d; move\r\n", currentX, currentY, currentZ, travelSpeed));
             bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; prime\r\n", currentX, currentY, currentZ, primeSpeed, currentA));
             final double filamentTravel = calculateFilamentUsed(currentX, currentY, nextX, nextY);
-            currentA += filamentTravel * 2; // use double the filament for the anchor
+            currentA += filamentTravel * 4; // use double the filament for the anchor
             currentX = nextX;
             currentY = nextY;
-            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; anchor\r\n", currentX, currentY, currentZ, extrudeSpeed, currentA));
+            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; anchor\r\n", currentX, currentY, currentZ, extrudeSpeedMax, currentA));
         }
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
     }
