@@ -25,8 +25,10 @@ import com.bambooradical.scratchbuilt.serialisers.AircraftSet;
 import com.bambooradical.scratchbuilt.serialisers.GcodeWing;
 import com.bambooradical.scratchbuilt.serialisers.SvgLayout;
 import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -105,7 +107,8 @@ public class CalculatorResource {
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
                     GcodeWing gcodeWing = new GcodeWing(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
-                    gcodeWing.getGcode(output);
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(output));
+                    gcodeWing.getGcode(bufferedWriter);
                 } catch (IOException exception) {
                     throw new WebApplicationException(exception);
                 }

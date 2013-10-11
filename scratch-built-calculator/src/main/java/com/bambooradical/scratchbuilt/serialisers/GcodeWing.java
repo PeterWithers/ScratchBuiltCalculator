@@ -18,11 +18,10 @@
 package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.ModelData;
+import com.bambooradical.scratchbuilt.data.WingSegment;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -38,8 +37,6 @@ public class GcodeWing {
     final private ModelData modelData;
     final private String aerofoilDataFile = "/AerofoilData/n6409.dat";
     final private double layerHeight = 0.2;
-    final private double targetHeight = 110.0;
-    final private double targetChord = 110.0;
     private double strutSpacing = 0.1;
     private double currentX = 0;
     private double currentY = 0;
@@ -63,26 +60,46 @@ public class GcodeWing {
         this.modelData = modelData;
     }
 
-    public void getGcode(OutputStream output) throws IOException {
+    public void getGcode(BufferedWriter bufferedWriter) throws IOException {
+        List<WingSegment> wingSegments = new ArrayList<WingSegment>();
+        wingSegments.add(new WingSegment(10, 50));
+        wingSegments.add(new WingSegment(20, 40));
+        wingSegments.add(new WingSegment(28, 20));
+        wingSegments.add(new WingSegment(30, 10));
         orientation = ModelOrientation.vertical;
-        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(output));
         addGcode(bufferedWriter, "start.gcode");
-        writeInformativeHeader(bufferedWriter);
+        writeInformativeHeader(bufferedWriter, wingSegments);
         final List<double[]> aerofoilData = getAerofoilData();
         final List<double[]> aerofoilStruts = getStruts(aerofoilData);
         final List<double[]> integratedStruts = getIntegratedStruts(aerofoilData);
-        writeAnchor(bufferedWriter);
-        while (currentZ < targetHeight) {
-            writeLayer(bufferedWriter, integratedStruts);
-            setNextLayer(bufferedWriter);
-            writeLayer(bufferedWriter, aerofoilStruts);
-            writeLayer(bufferedWriter, aerofoilData);
-            writePercentDone(bufferedWriter, targetHeight, currentZ);
-            extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
-            setNextLayer(bufferedWriter);
+//        List<List<double[]>> connectorData = getConnectorData();
+        WingSegment previous = new WingSegment(0, wingSegments.get(0).targetChord);
+        writeAnchor(bufferedWriter, previous.targetChord);
+        double maxZ = wingSegments.get(wingSegments.size() - 1).targetHeight;
+        for (WingSegment current : wingSegments) {
+            while (currentZ < current.targetHeight) {
+                final double calculatedChord = calculateChord(previous, current, currentZ);
+                writeLayer(bufferedWriter, integratedStruts, calculatedChord, false);
+                setNextLayer(bufferedWriter);
+                writeLayer(bufferedWriter, aerofoilStruts, calculatedChord, false);
+                writeLayer(bufferedWriter, aerofoilData, calculatedChord, false);
+                writePercentDone(bufferedWriter, maxZ, currentZ);
+                extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
+                setNextLayer(bufferedWriter);
+            }
+            previous = current;
         }
+//        writeComplexLayer(bufferedWriter, connectorData);
         addGcode(bufferedWriter, "end.gcode");
         bufferedWriter.close();
+    }
+
+    protected double calculateChord(WingSegment previous, WingSegment current, double currentLayer) {
+        final double chordDifference = current.targetChord - previous.targetChord;
+        final double totalHeight = current.targetHeight - previous.targetHeight;
+        final double currentHeight = currentLayer - previous.targetHeight;
+        final double fraction = currentHeight / totalHeight;
+        return previous.targetChord + chordDifference * fraction;
     }
 
     private List<double[]> getAerofoilData() {
@@ -157,11 +174,18 @@ public class GcodeWing {
         return strutsList;
     }
 
-    private void writeInformativeHeader(BufferedWriter bufferedWriter) throws IOException {
+    private List<List<double[]>> getConnectorData() {
+        List<List<double[]>> complexData = new ArrayList<List<double[]>>();
+        return complexData;
+    }
+
+    private void writeInformativeHeader(BufferedWriter bufferedWriter, List<WingSegment> wingSegments) throws IOException {
         bufferedWriter.write("; Aerofoil gcode produced by scratchbuiltcalculator: https://github.com/PeterWithers/ScratchBuiltCalculator\r\n");
         bufferedWriter.write("; Using aerofoil data file: " + aerofoilDataFile + "\r\n");
-        bufferedWriter.write("; chord length: " + targetChord + "\r\n");
-        bufferedWriter.write("; span length: " + targetHeight + "\r\n");
+        for (WingSegment segment : wingSegments) {
+            bufferedWriter.write("; segment chord length: " + segment.targetChord + "\r\n");
+            bufferedWriter.write("; segment span length: " + segment.targetHeight + "\r\n");
+        }
         bufferedWriter.write("; orientation: " + orientation.name() + "\r\n");
     }
 
@@ -182,7 +206,7 @@ public class GcodeWing {
         }
     }
 
-    private void writeAnchor(BufferedWriter bufferedWriter) throws IOException {
+    private void writeAnchor(BufferedWriter bufferedWriter, double targetChord) throws IOException {
         final double anchorLongSide = targetChord / 2;
         final double anchorShortSide = targetChord / 4;
         for (double[] anchorPoint : new double[][]{{-anchorLongSide, -anchorShortSide, anchorLongSide, -anchorShortSide}, {-anchorLongSide, anchorShortSide, anchorLongSide, anchorShortSide}, {anchorLongSide, anchorShortSide, anchorLongSide, -anchorShortSide}, {-anchorLongSide, anchorShortSide, -anchorLongSide, -anchorShortSide},}) {
@@ -217,7 +241,13 @@ public class GcodeWing {
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f; next layer\r\n", currentX, currentY, currentZ));
     }
 
-    private void writeLayer(BufferedWriter bufferedWriter, List<double[]> aerofoilData) throws IOException {
+    private void writeComplexLayer(BufferedWriter bufferedWriter, List<List<double[]>> complexData, double targetChord) throws IOException {
+        for (List<double[]> segment : complexData) {
+            writeLayer(bufferedWriter, segment, targetChord, true);
+        }
+    }
+
+    private void writeLayer(BufferedWriter bufferedWriter, List<double[]> aerofoilData, double targetChord, boolean deprime) throws IOException {
         final int xAxisElement;
         final int yAxisElement;
         final double xOffset;
@@ -250,7 +280,9 @@ public class GcodeWing {
             currentY = nextY;
             bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; data point\r\n", currentX, currentY, currentZ, extrudeSpeed, currentA));
         }
-        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
+        if (deprime) {
+            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
+        }
     }
 
     private double calculateFilamentUsed(double startX, double startY, double endX, double endY) {
