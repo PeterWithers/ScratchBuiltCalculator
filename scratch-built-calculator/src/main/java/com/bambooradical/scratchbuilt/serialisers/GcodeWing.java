@@ -31,34 +31,13 @@ import java.util.Scanner;
  *
  * @author Peter Withers <peter-ghc@bambooradical.com>
  */
-public class GcodeWing {
-
-    // all units are in millimeters
-    final private ModelData modelData;
-    final private String aerofoilDataFile = "/AerofoilData/n6409.dat";
-    final private double layerHeight = 0.2;
-    private double strutSpacing = 0.1;
-    private double currentX = 0;
-    private double currentY = 0;
-    private double currentZ = layerHeight;
-    private double currentA = 0;
-    private double currentPercent = 0;
-    private int primeSpeed = 1500;
-    private int travelSpeed = 3000;
-    private int extrudeSpeedFirstLayer = 200;
-    private int extrudeSpeedMax = 1800;
-    private int extrudeSpeed = extrudeSpeedFirstLayer;
-    private ModelOrientation orientation;
-
-    private enum ModelOrientation {
-
-        horizontal,
-        vertical
-    }
+public class GcodeWing extends Gcode {
 
     public GcodeWing(ModelData modelData) {
-        this.modelData = modelData;
+        super(modelData);
     }
+    final private String aerofoilDataFile = "/AerofoilData/n6409.dat";
+    private double strutSpacing = 0.1;
 
     public void getGcode(BufferedWriter bufferedWriter) throws IOException {
         List<WingSegment> wingSegments = new ArrayList<WingSegment>();
@@ -66,7 +45,7 @@ public class GcodeWing {
         wingSegments.add(new WingSegment(20, 40));
         wingSegments.add(new WingSegment(28, 20));
         wingSegments.add(new WingSegment(30, 10));
-        orientation = ModelOrientation.vertical;
+        orientation = Gcode.ModelOrientation.vertical;
         addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter, wingSegments);
         final List<double[]> aerofoilData = getAerofoilData();
@@ -187,107 +166,5 @@ public class GcodeWing {
             bufferedWriter.write("; segment span length: " + segment.targetHeight + "\r\n");
         }
         bufferedWriter.write("; orientation: " + orientation.name() + "\r\n");
-    }
-
-    private void addGcode(BufferedWriter bufferedWriter, String fileName) throws IOException {
-        final String resourceName = "/GcodeStartEnd/" + fileName;
-        final InputStream aerofoilData = GcodeWing.this.getClass().getResourceAsStream(resourceName);
-        Scanner scanner = new Scanner(aerofoilData);
-        while (scanner.hasNext()) {
-            bufferedWriter.write(scanner.nextLine() + "\r\n");
-        }
-    }
-
-    private void writePercentDone(BufferedWriter bufferedWriter, double linesToDo, double linesDone) throws IOException {
-        final double percentDone = linesDone / linesToDo * 100;
-        if (currentPercent + 1 < percentDone) {
-            bufferedWriter.write(String.format("M73 P%.0f\r\n", percentDone));
-            currentPercent = percentDone;
-        }
-    }
-
-    private void writeAnchor(BufferedWriter bufferedWriter, double targetChord) throws IOException {
-        final double anchorLongSide = targetChord / 2;
-        final double anchorShortSide = targetChord / 4;
-        for (double[] anchorPoint : new double[][]{{-anchorLongSide, -anchorShortSide, anchorLongSide, -anchorShortSide}, {-anchorLongSide, anchorShortSide, anchorLongSide, anchorShortSide}, {anchorLongSide, anchorShortSide, anchorLongSide, -anchorShortSide}, {-anchorLongSide, anchorShortSide, -anchorLongSide, -anchorShortSide},}) {
-            final double nextX;
-            final double nextY;
-            switch (orientation) {
-                case vertical:
-                    currentX = anchorPoint[1];
-                    currentY = anchorPoint[0];
-                    nextX = anchorPoint[3];
-                    nextY = anchorPoint[2];
-                    break;
-                default:
-                    currentX = anchorPoint[0];
-                    currentY = anchorPoint[1];
-                    nextX = anchorPoint[2];
-                    nextY = anchorPoint[3];
-            }
-            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d; move\r\n", currentX, currentY, currentZ, travelSpeed));
-            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; prime\r\n", currentX, currentY, currentZ, primeSpeed, currentA));
-            final double filamentTravel = calculateFilamentUsed(currentX, currentY, nextX, nextY);
-            currentA += filamentTravel * 4; // use double the filament for the anchor
-            currentX = nextX;
-            currentY = nextY;
-            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; anchor\r\n", currentX, currentY, currentZ, extrudeSpeedMax, currentA));
-        }
-        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
-    }
-
-    private void setNextLayer(BufferedWriter bufferedWriter) throws IOException {
-        currentZ += layerHeight;
-        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f; next layer\r\n", currentX, currentY, currentZ));
-    }
-
-    private void writeComplexLayer(BufferedWriter bufferedWriter, List<List<double[]>> complexData, double targetChord) throws IOException {
-        for (List<double[]> segment : complexData) {
-            writeLayer(bufferedWriter, segment, targetChord, true);
-        }
-    }
-
-    private void writeLayer(BufferedWriter bufferedWriter, List<double[]> aerofoilData, double targetChord, boolean deprime) throws IOException {
-        final int xAxisElement;
-        final int yAxisElement;
-        final double xOffset;
-        final double yOffset;
-        switch (orientation) {
-            case horizontal:
-                xAxisElement = 0;
-                yAxisElement = 1;
-                xOffset = targetChord / 2;
-                yOffset = 0;
-                break;
-            default:
-                xAxisElement = 1;
-                yAxisElement = 0;
-                xOffset = 0;
-                yOffset = targetChord / 2;
-                break;
-        }
-
-        currentX = aerofoilData.get(0)[xAxisElement] * targetChord - xOffset;
-        currentY = aerofoilData.get(0)[yAxisElement] * targetChord - yOffset;
-        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d; move\r\n", currentX, currentY, currentZ, travelSpeed));
-        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; prime\r\n", currentX, currentY, currentZ, primeSpeed, currentA));
-        for (double[] dataElement : aerofoilData) {
-            final double nextX = dataElement[xAxisElement] * targetChord - xOffset;
-            final double nextY = dataElement[yAxisElement] * targetChord - yOffset;
-            final double filamentTravel = calculateFilamentUsed(currentX, currentY, nextX, nextY);
-            currentA += filamentTravel;
-            currentX = nextX;
-            currentY = nextY;
-            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; data point\r\n", currentX, currentY, currentZ, extrudeSpeed, currentA));
-        }
-        if (deprime) {
-            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
-        }
-    }
-
-    private double calculateFilamentUsed(double startX, double startY, double endX, double endY) {
-        double lengthA = (startY - endY);
-        double lengthB = (startX - endX);
-        return Math.sqrt(lengthA * lengthA + lengthB * lengthB) / 30.0;
     }
 }
