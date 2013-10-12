@@ -24,12 +24,9 @@ package com.bambooradical.scratchbuilt.data;
  */
 public class ModelDataImpl implements ModelData {
 
-    private int chordRibLength;
     private final WingType wingType;
     private final int aileronChord;
     private final int chordLength;
-    private int strutSpacing = 50;
-    private int strutsPerWing = 8;
     private final int wingSpan;
     private double wingArea;
     private final int wingHeight;
@@ -37,21 +34,18 @@ public class ModelDataImpl implements ModelData {
     private final int aileronEnd;
     private final double dihedralAngle;
     private final double attackAngle;
-    private final int stabiliserChord = 80;
+    private final int stabiliserChord;
     //private final int stabiliserSpan = (int) (stabiliserChord * 3.0 / 2.0);
-    private final int stabiliserSpanLeading = 160;
-    private final int stabiliserSpanTrailing = 320;
-    private final int elevatorChord = 20;
-//    private final int stabiliserHeight;
-    private int stabiliserArea = (stabiliserSpanLeading + stabiliserSpanTrailing) / 2 * stabiliserChord; // stabiliser area should be 15-20% of the wing area
+    private final int stabiliserSpanLeading;
+    private final int stabiliserSpanTrailing;
+    private final int elevatorChord;
+//    private final int stabiliserHeight;   
 //    private int finArea;
     private final int fuselageLength;
-//fuselageLength = chordLength*4.5;
 //    private final int fuselageRadius;
     private final int fuselageWidth;
     private final int fuselageHeight;
     private final int fuselageEndsDiameter;
-    private double stabiliserRatio = (stabiliserSpanLeading + stabiliserSpanTrailing) / 2 / stabiliserChord; // stabiliser ratio should be about 3:1
 //ECHO: "stabiliserArea: ", 19200
 //ECHO: "finArea: ", 6400
 //ECHO: "elevatorArea: ", 4800
@@ -64,18 +58,21 @@ public class ModelDataImpl implements ModelData {
 //ECHO: "verticalStabiliser(112.8,169.2,112.8);"
 //ECHO: "horizontalStabiliser(112.8,169.2,112.8);"
 //ECHO: "elevator(80,120,112.8,20);"
-    int fuselageSectionLength = 160 + 160 + 280;
+//    final int fuselageSectionLength = 160 + 160 + 280;
     int weightInGrams = 500;
 
     public ModelDataImpl(WingType wingType, int chordLength, int wingSpan, double dihedralAngle, double attackAngle, int aileronEnd, int aileronStart, int aileronChord, int wingHeight, int fuselageHeight, int fuselageWidth, int fuselageEndsDiameter) {
         this.wingType = wingType;
         this.chordLength = chordLength;
         this.wingSpan = wingSpan;
-        wingSpan = strutSpacing * strutsPerWing * 2;
+//        wingSpan = strutSpacing * strutsPerWing * 2;
+        stabiliserChord = chordLength / 2;
+        stabiliserSpanLeading = chordLength;
+        stabiliserSpanTrailing = chordLength * 2;
 //        aileronLength = wingSpan / 4 - 5;
 //        chordLength = chordRibLength + aileronChord;
         wingArea = ((wingSpan / 100.0) * ((chordLength) / 100.0));
-        chordRibLength = 120;
+//        chordRibLength = 120;
         this.aileronChord = aileronChord;
         fuselageLength = (int) (wingSpan * 0.75);
         this.fuselageHeight = fuselageHeight;
@@ -86,16 +83,18 @@ public class ModelDataImpl implements ModelData {
         this.aileronStart = aileronStart;
         this.aileronEnd = aileronEnd;
         this.wingHeight = wingHeight;
-
+        elevatorChord = (int) (stabiliserChord * 0.25);
     }
 
     @Override
     public double getStabiliserRatio() {
+        double stabiliserRatio = (stabiliserSpanLeading + stabiliserSpanTrailing) / 2 / stabiliserChord; // stabiliser ratio should be about 3:1
         return stabiliserRatio;
     }
 
     @Override
     public int getStabiliserArea() {
+        int stabiliserArea = (stabiliserSpanLeading + stabiliserSpanTrailing) / 2 * stabiliserChord; // stabiliser area should be 15-20% of the wing area
         return stabiliserArea;
     }
 
@@ -156,12 +155,12 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public int getStabiliserHeightLeading() {
-        return 40;
+        return getStabiliserSpanLeading() / 4;
     }
 
     @Override
     public int getStabiliserHeightTrailing() {
-        return 120; // was stabiliserChord
+        return (int)(getStabiliserSpanTrailing() / 2.65); // was stabiliserChord
     }
 
     @Override
@@ -223,7 +222,7 @@ public class ModelDataImpl implements ModelData {
     public FuselageSection[] getFuselageSections() {
         int firstSectionLength = getChordLength();
         int secondSectionLength = (int) Math.abs(getChordLength() * Math.cos(Math.toRadians(getAttackAngle())));
-        int thirdSectionLength = fuselageSectionLength - firstSectionLength - secondSectionLength;
+        int thirdSectionLength = fuselageLength - firstSectionLength - secondSectionLength;
         return new FuselageSection[]{
             new FuselageSection(fuselageEndsDiameter, fuselageEndsDiameter, fuselageWidth, fuselageHeight, 0, firstSectionLength, getRudderColour(), true, "fuselagePartA"),
             new FuselageSection(fuselageWidth, fuselageHeight, fuselageWidth, fuselageHeight, firstSectionLength, secondSectionLength, getMainWingColour(), false, "fuselagePartB"),
