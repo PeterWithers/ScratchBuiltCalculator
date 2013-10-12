@@ -35,19 +35,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "svg", namespace = "http://www.w3.org/2000/svg")
 public class SvgGcodeViewer {
 
+    private Gcode gcode;
     private final int area = 110;
     private final double scale = 3;
     private final double offset = 60;
     private final SvgPolyline svgFront = new SvgPolyline(null, 10 * scale, 10 * scale, Colour.WHITE);
     public final SvgPolyline svgSide = new SvgPolyline(null, 130 * scale, 10 * scale, Colour.WHITE);
     public final SvgPolyline svgTop = new SvgPolyline(null, 260 * scale, 10 * scale, Colour.WHITE);
-    private ModelData modelData;
 
     public SvgGcodeViewer() {
     }
 
-    public SvgGcodeViewer(ModelData modelData) {
-        this.modelData = modelData;
+    public SvgGcodeViewer(Gcode gcode) {
+        this.gcode = gcode;
     }
 
     private void addBoundingBox(SvgPolyline svgPolyline) {
@@ -64,7 +64,7 @@ public class SvgGcodeViewer {
         addBoundingBox(svgSide);
         final StringWriter stringWriter = new StringWriter();
         final BufferedWriter bufferedWriter = new BufferedWriter(stringWriter);
-        new GcodeWing(modelData).getGcode(bufferedWriter);
+        gcode.getGcode(bufferedWriter);
         final Scanner scanner = new Scanner(stringWriter.getBuffer().toString());
         while (scanner.hasNext()) {
             final String nextLine = scanner.nextLine();
