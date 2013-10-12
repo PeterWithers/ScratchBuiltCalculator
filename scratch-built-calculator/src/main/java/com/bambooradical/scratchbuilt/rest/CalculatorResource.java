@@ -22,7 +22,9 @@ import com.bambooradical.scratchbuilt.data.WingType;
 import com.bambooradical.scratchbuilt.serialisers.Ac3dFile;
 import com.bambooradical.scratchbuilt.serialisers.AircraftAnimation;
 import com.bambooradical.scratchbuilt.serialisers.AircraftSet;
+import com.bambooradical.scratchbuilt.serialisers.GcodeFuselage;
 import com.bambooradical.scratchbuilt.serialisers.GcodeWing;
+import com.bambooradical.scratchbuilt.serialisers.SvgGcodeViewer;
 import com.bambooradical.scratchbuilt.serialisers.SvgLayout;
 import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
 import java.io.BufferedWriter;
@@ -57,10 +59,10 @@ public class CalculatorResource {
     @DefaultValue("flat")
     @QueryParam("wingType")
     WingType wingType;
-    @DefaultValue("800")
+    @DefaultValue("220") //800
     @QueryParam("wingSpan")
     int wingSpan;
-    @DefaultValue("160")
+    @DefaultValue("40") // 160
     @QueryParam("wingChord")
     int wingChord;
     @DefaultValue("3")
@@ -69,25 +71,25 @@ public class CalculatorResource {
     @DefaultValue("3")
     @QueryParam("dihedral")
     double dihedralAngle;
-    @DefaultValue("395")
+    @DefaultValue("100") // 395
     @QueryParam("aileronEnd")
     int aileronEnd;
-    @DefaultValue("200")
+    @DefaultValue("50") // 200
     @QueryParam("aileronStart")
     int aileronStart;
-    @DefaultValue("40")
+    @DefaultValue("10") // 40
     @QueryParam("aileronChord")
     int aileronChord;
-    @DefaultValue("15")
+    @DefaultValue("5") // 15
     @QueryParam("wingHeight")
     int wingHeight;
-    @DefaultValue("30")
+    @DefaultValue("10") // 30
     @QueryParam("fuselageWidth")
     int fuselageWidth;
-    @DefaultValue("30")
+    @DefaultValue("10") // 30
     @QueryParam("fuselageHeight")
     int fuselageHeight;
-    @DefaultValue("15")
+    @DefaultValue("5") // 15
     @QueryParam("fuselageEndsDiameter")
     int fuselageEndsDiameter;
 
@@ -119,10 +121,44 @@ public class CalculatorResource {
     }
 
     @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("fuselage.gcode")
+    public StreamingOutput getGcodeFuselage(@Context HttpServletRequest httpServletRequest) throws IOException, JAXBException {
+        StreamingOutput gcodeStream = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try {
+                    GcodeFuselage gcodeFuselage = new GcodeFuselage(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(output));
+                    gcodeFuselage.getGcode(bufferedWriter);
+                } catch (IOException exception) {
+                    throw new WebApplicationException(exception);
+                }
+            }
+        };
+        return gcodeStream;
+        // return Response.ok().entity(gcodeStream).header("Content-Disposition", "attachment; filename = wing.gcode").build();
+    }
+
+    @GET
     @Produces(MediaType.TEXT_XML)
     @Path("yasim")
     public YasimConfig getYasimFile(@Context HttpServletRequest httpServletRequest) {
         return new YasimConfig(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_XML)
+    @Path("gcodewing.svg")
+    public SvgGcodeViewer getGcodeWingSvg(@Context HttpServletRequest httpServletRequest) {
+        return new SvgGcodeViewer(new GcodeWing(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)));
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_XML)
+    @Path("gcodefuselage.svg")
+    public SvgGcodeViewer getGcodeFuselageSvg(@Context HttpServletRequest httpServletRequest) {
+        return new SvgGcodeViewer(new GcodeFuselage(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)));
     }
 
     @GET
