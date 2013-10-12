@@ -69,13 +69,13 @@ public class SvgGcodeViewer {
         while (scanner.hasNext()) {
             final String nextLine = scanner.nextLine();
             if (nextLine.startsWith("G1") && nextLine.contains(" A")) {
-                final String[] split = nextLine.split("[XYZ\\.]");
+                final String[] split = nextLine.split("[XYZF]");
 //                System.out.println("scanner.next():" + nextLine);
-                final Integer x = Integer.decode(split[1]);
+                final double x = Double.valueOf(split[1]);
 //                System.out.println("x:" + x);
-                final Integer y = Integer.decode(split[3]);
+                final double y = Double.valueOf(split[2]);
 //                System.out.println("y:" + y);
-                final Integer z = Integer.decode(split[5]);
+                final double z = Double.valueOf(split[3]).intValue();
 //                System.out.println("z:" + z);
                 svgTop.addPoint(x * scale + offset * scale, y * scale + offset * scale);
                 svgFront.addPoint(x * scale + offset * scale, area * scale - z * scale);
