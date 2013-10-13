@@ -21,8 +21,6 @@ import com.bambooradical.scratchbuilt.data.FuselageSection;
 import com.bambooradical.scratchbuilt.data.ModelData;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created on : Oct 12, 2013, 20:35 PM
@@ -41,30 +39,27 @@ public class GcodeFuselage extends Gcode {
         addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter);
         writeAnchor(bufferedWriter, modelData.getStabiliserSpanTrailing(), modelData.getStabiliserHeightTrailing() * 2);
-//        double maxZ = wingSegments.get(wingSegments.size() - 1).targetHeight;
+
+//        final FuselageSection[] fuselageSections = modelData.getFuselageSections();
+//        for (int sectionIndex = fuselageSections.length-1; sectionIndex > 0; sectionIndex--) {
+//            
+//            FuselageSection fuselageSection=fuselageSections[sectionIndex];
         for (FuselageSection fuselageSection : modelData.getFuselageSections()) {
             while (currentZ < fuselageSection.getEnd()) {
                 if (currentZ < modelData.getStabiliserChord()) {
                     addTail(bufferedWriter);
                 }
                 addFuselage(bufferedWriter, fuselageSection, currentZ);
-//                writeLayer(bufferedWriter, fuselageData, calculatedChord, false);
                 setNextLayer(bufferedWriter);
-//                writeLayer(bufferedWriter, aerofoilStruts, calculatedChord, false);
-//                writeLayer(bufferedWriter, aerofoilData, calculatedChord, false);
-//                writePercentDone(bufferedWriter, maxZ, currentZ);
-//                extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
-//                setNextLayer(bufferedWriter);
+                writePercentDone(bufferedWriter, modelData.getFuselageLength(), currentZ);
+                extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
             }
-//            previous = current;
         }
-//        writeComplexLayer(bufferedWriter, connectorData);
         addGcode(bufferedWriter, "end.gcode");
         bufferedWriter.close();
     }
 
     protected void addFuselage(BufferedWriter bufferedWriter, FuselageSection fuselageSection, double currentLayer) throws IOException {
-        // todo: change this to get width and height
         final double widthDifference = fuselageSection.getEndWidth() - fuselageSection.getStartWidth();
         final double heightDifference = fuselageSection.getEndHeight() - fuselageSection.getStartHeight();
         final double totalHeight = fuselageSection.getLength();
@@ -72,7 +67,7 @@ public class GcodeFuselage extends Gcode {
         final double fraction = sectionHeight / totalHeight;
         final double currentWidth = fuselageSection.getStartWidth() + widthDifference * fraction;
         final double currentHeight = fuselageSection.getStartHeight() + heightDifference * fraction;
-        moveTo(currentHeight / 2, currentWidth / 2, bufferedWriter);
+        extrudeTo(currentHeight / 2, currentWidth / 2, bufferedWriter);
         extrudeTo(currentHeight / 2, -currentWidth / 2, bufferedWriter);
         extrudeTo(-currentHeight / 2, -currentWidth / 2, bufferedWriter);
         extrudeTo(-currentHeight / 2, currentWidth / 2, bufferedWriter);
@@ -104,7 +99,6 @@ public class GcodeFuselage extends Gcode {
 
     private void writeInformativeHeader(BufferedWriter bufferedWriter) throws IOException {
         bufferedWriter.write("; Fuselage gcode produced by scratchbuiltcalculator: https://github.com/PeterWithers/ScratchBuiltCalculator\r\n");
-
         bufferedWriter.write("; FuselageEndsDiameter: " + modelData.getFuselageEndsDiameter() + "\r\n");
         for (FuselageSection fuselageSection : modelData.getFuselageSections()) {
             bufferedWriter.write("; Start: " + fuselageSection.getStart() + "\r\n");
