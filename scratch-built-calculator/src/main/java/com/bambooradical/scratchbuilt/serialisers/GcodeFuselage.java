@@ -56,9 +56,7 @@ public class GcodeFuselage extends Gcode {
                     offsetX = 25;
                     offsetY = (sectionIndex % 2) * 50 - 25;
                 }
-                if (currentZ < fuselageSection.getLength()) {
-                    addFuselage(bufferedWriter, fuselageSection, currentZ, offsetX, offsetY);
-                }
+                addFuselage(bufferedWriter, fuselageSection, currentZ, offsetX, offsetY);
             }
             setNextLayer(bufferedWriter);
             writePercentDone(bufferedWriter, modelData.getFuselageLength(), currentZ);
@@ -75,11 +73,42 @@ public class GcodeFuselage extends Gcode {
         final double fraction = currentLayer / totalHeight;
         final double currentWidth = fuselageSection.getEndWidth() - widthDifference * fraction;
         final double currentHeight = fuselageSection.getEndHeight() - heightDifference * fraction;
-        moveTo(currentHeight / 2 + offsetX, currentWidth / 2 + offsetY, bufferedWriter);
-        extrudeTo(currentHeight / 2 + offsetX, -currentWidth / 2 + offsetY, bufferedWriter);
-        extrudeTo(-currentHeight / 2 + offsetX, -currentWidth / 2 + offsetY, bufferedWriter);
-        extrudeTo(-currentHeight / 2 + offsetX, currentWidth / 2 + offsetY, bufferedWriter);
-        extrudeTo(currentHeight / 2 + offsetX, currentWidth / 2 + offsetY, bufferedWriter);
+        double wallThickness = 0.9;
+        if (currentLayer < fuselageSection.getLength()) {
+            moveTo(currentHeight / 2 + offsetX, currentWidth / 2 + offsetY, bufferedWriter);
+            extrudeTo(currentHeight / 2 + offsetX, -currentWidth / 2 + offsetY, bufferedWriter);
+            extrudeTo(-currentHeight / 2 + offsetX, -currentWidth / 2 + offsetY, bufferedWriter);
+            extrudeTo(-currentHeight / 2 + offsetX, currentWidth / 2 + offsetY, bufferedWriter);
+            extrudeTo(currentHeight / 2 + offsetX, currentWidth / 2 + offsetY, bufferedWriter);
+            if (currentLayer < 3) {
+                // add the female part of the connector              
+                // first part
+                moveTo(currentHeight / 2 + offsetX - wallThickness, currentWidth / 2 + offsetY, bufferedWriter);
+                extrudeTo(offsetX, wallThickness + offsetY, bufferedWriter);
+                extrudeTo(-currentHeight / 2 + offsetX + wallThickness, currentWidth / 2 + offsetY, bufferedWriter);
+                // second part
+                moveTo(-currentHeight / 2 + offsetX + wallThickness, -currentWidth / 2 + offsetY, bufferedWriter);
+                extrudeTo(offsetX, offsetY - wallThickness, bufferedWriter);
+                extrudeTo(currentHeight / 2 + offsetX - wallThickness, -currentWidth / 2 + offsetY, bufferedWriter);
+                // third part
+                moveTo(-currentHeight / 2 + offsetX, -currentWidth / 2 + offsetY + wallThickness, bufferedWriter);
+                extrudeTo(offsetX - wallThickness, offsetY, bufferedWriter);
+                extrudeTo(-currentHeight / 2 + offsetX, currentWidth / 2 + offsetY - wallThickness, bufferedWriter);
+                // forth part
+                moveTo(currentHeight / 2 + offsetX, -currentWidth / 2 + offsetY + wallThickness, bufferedWriter);
+                extrudeTo(offsetX + wallThickness, offsetY, bufferedWriter);
+                extrudeTo(currentHeight / 2 + offsetX, currentWidth / 2 + offsetY - wallThickness, bufferedWriter);
+            } else {
+                // add the standard internal strut
+                extrudeTo(-currentHeight / 2 + offsetX, -currentWidth / 2 + offsetY, bufferedWriter);
+            }
+        } else if (currentLayer < fuselageSection.getLength() + 2) {
+            // add the male part of the connector
+            moveTo(currentHeight / 2 + offsetX - wallThickness, currentWidth / 2 + offsetY - wallThickness, bufferedWriter);
+            extrudeTo(-currentHeight / 2 + offsetX + wallThickness, -currentWidth / 2 + offsetY + wallThickness, bufferedWriter);
+            moveTo(currentHeight / 2 + offsetX - wallThickness, -currentWidth / 2 + offsetY + wallThickness, bufferedWriter);
+            extrudeTo(-currentHeight / 2 + offsetX + wallThickness, currentWidth / 2 + offsetY - wallThickness, bufferedWriter);
+        }
     }
 
     private void addTail(BufferedWriter bufferedWriter) throws IOException {
