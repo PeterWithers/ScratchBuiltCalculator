@@ -18,37 +18,25 @@
 package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.TrainerData;
-import com.bambooradical.scratchbuilt.data.WingSegment;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- * Created on : Oct 07, 2013, 15:39 PM
+ * Created on : Oct 13, 2013, 14:30 PM
  *
  * @author Peter Withers <peter-ghc@bambooradical.com>
  */
-public class GcodeWingTest {
+public class GcodeFuselageTest {
 
-    /**
-     * Test of calculateChord method, of class GcodeWing.
-     */
-    @Test
-    public void testCalculateChord() {
-        System.out.println("calculateChord");
-        WingSegment previous = new WingSegment(50, 100);
-        WingSegment current = new WingSegment(100, 50);
-        GcodeWing instance = new GcodeWing(new TrainerData());
-        assertEquals(75, instance.calculateChord(previous, current, 75), 0.0);
-        assertEquals(100, instance.calculateChord(previous, current, 50), 0.0);
-        assertEquals(50, instance.calculateChord(previous, current, 100), 0.0);
+    public GcodeFuselageTest() {
     }
 
     /**
-     * Test of getGcode method, of class GcodeWing.
+     * Test of getGcode method, of class GcodeFuselage.
      */
     @Test
     public void testGetGcode() throws Exception {
-        GcodeWing instance = new GcodeWing(new TrainerData());
+        System.out.println("getGcode");
+        GcodeFuselage instance = new GcodeFuselage(new TrainerData());
         instance.getGcode(new GcodeValidator());
     }
 }
