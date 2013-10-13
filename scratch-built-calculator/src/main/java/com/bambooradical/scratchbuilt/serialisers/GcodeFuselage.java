@@ -21,6 +21,8 @@ import com.bambooradical.scratchbuilt.data.FuselageSection;
 import com.bambooradical.scratchbuilt.data.ModelData;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created on : Oct 12, 2013, 20:35 PM
@@ -38,29 +40,74 @@ public class GcodeFuselage extends Gcode {
         orientation = Gcode.ModelOrientation.vertical;
         addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter);
-//        final List<double[]> aerofoilData = getAerofoilData();
+        final List<double[]> fuselageData = getFuselageData();
 //        final List<double[]> aerofoilStruts = getStruts(aerofoilData);
 //        final List<double[]> integratedStruts = getIntegratedStruts(aerofoilData);
 ////        List<List<double[]>> connectorData = getConnectorData();
 //        WingSegment previous = new WingSegment(0, wingSegments.get(0).targetChord);
 //        writeAnchor(bufferedWriter, previous.targetChord);
 //        double maxZ = wingSegments.get(wingSegments.size() - 1).targetHeight;
-//        for (WingSegment current : wingSegments) {
-//            while (currentZ < current.targetHeight) {
-//                final double calculatedChord = calculateChord(previous, current, currentZ);
-//                writeLayer(bufferedWriter, integratedStruts, calculatedChord, false);
-//                setNextLayer(bufferedWriter);
+        for (FuselageSection fuselageSection : modelData.getFuselageSections()) {
+            while (currentZ < fuselageSection.getEnd()) {
+                if (currentZ < modelData.getStabiliserChord()) {
+                    addTail(bufferedWriter);
+                }
+                final double calculatedChord = calculateChord(fuselageSection, currentZ);
+                writeLayer(bufferedWriter, fuselageData, calculatedChord, false);
+                setNextLayer(bufferedWriter);
 //                writeLayer(bufferedWriter, aerofoilStruts, calculatedChord, false);
 //                writeLayer(bufferedWriter, aerofoilData, calculatedChord, false);
 //                writePercentDone(bufferedWriter, maxZ, currentZ);
 //                extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
 //                setNextLayer(bufferedWriter);
-//            }
+            }
 //            previous = current;
-//        }
+        }
 //        writeComplexLayer(bufferedWriter, connectorData);
         addGcode(bufferedWriter, "end.gcode");
         bufferedWriter.close();
+    }
+
+    protected double calculateChord(FuselageSection fuselageSection, double currentLayer) {
+        // todo: change this to get width and height
+        final double chordDifference = fuselageSection.getEndWidth() - fuselageSection.getStartWidth();
+        final double totalHeight = fuselageSection.getLength();
+        final double currentHeight = currentLayer - fuselageSection.getStart();
+        final double fraction = currentHeight / totalHeight;
+        return fuselageSection.getStartWidth() + chordDifference * fraction;
+    }
+
+    private List<double[]> getFuselageData() {
+        List<double[]> pointsList = new ArrayList<double[]>();
+        pointsList.add(new double[]{1, 1});
+        pointsList.add(new double[]{1, -1});
+        pointsList.add(new double[]{-1, -1});
+        pointsList.add(new double[]{-1, 1});
+        pointsList.add(new double[]{1, 1});
+        return pointsList;
+    }
+
+    private void addTail(BufferedWriter bufferedWriter) throws IOException {
+        final int stabiliserChord = modelData.getStabiliserChord();
+        final int heightTrailing = modelData.getStabiliserHeightTrailing();
+        final int heightLeading = modelData.getStabiliserHeightLeading();
+        final int spanLeading = modelData.getStabiliserSpanLeading();
+        final int spanTrailing = modelData.getStabiliserSpanTrailing();
+        final double verticalDifference = heightLeading - heightTrailing;
+        final double horizontalDifference = spanLeading - spanTrailing;
+        final double fraction = currentZ / stabiliserChord;
+        final double verticalChord = heightTrailing + verticalDifference * fraction;
+        final double horizontalChord = (spanTrailing + horizontalDifference * fraction) / 2;
+        final double finWidth = 0.3;
+        moveTo(finWidth, finWidth, bufferedWriter);
+        extrudeTo(verticalChord, finWidth, bufferedWriter);
+        extrudeTo(verticalChord, -finWidth, bufferedWriter);
+        extrudeTo(finWidth, -finWidth, bufferedWriter);
+        extrudeTo(finWidth, -horizontalChord, bufferedWriter);
+        extrudeTo(-finWidth, -horizontalChord, bufferedWriter);
+        extrudeTo(-finWidth, horizontalChord, bufferedWriter);
+        extrudeTo(finWidth, horizontalChord, bufferedWriter);
+        extrudeTo(finWidth, finWidth, bufferedWriter);
     }
 
     private void writeInformativeHeader(BufferedWriter bufferedWriter) throws IOException {
