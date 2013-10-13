@@ -41,10 +41,10 @@ public class GcodeWing extends Gcode {
 
     public void getGcode(BufferedWriter bufferedWriter) throws IOException {
         List<WingSegment> wingSegments = new ArrayList<WingSegment>();
-        wingSegments.add(new WingSegment(10, 50));
-        wingSegments.add(new WingSegment(20, 40));
-        wingSegments.add(new WingSegment(28, 20));
-        wingSegments.add(new WingSegment(30, 10));
+        wingSegments.add(new WingSegment(50, 110));
+        wingSegments.add(new WingSegment(100, 40));
+        wingSegments.add(new WingSegment(108, 20));
+        wingSegments.add(new WingSegment(110, 10));
         orientation = Gcode.ModelOrientation.vertical;
         addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter, wingSegments);
@@ -53,7 +53,7 @@ public class GcodeWing extends Gcode {
         final List<double[]> integratedStruts = getIntegratedStruts(aerofoilData);
 //        List<List<double[]>> connectorData = getConnectorData();
         WingSegment previous = new WingSegment(0, wingSegments.get(0).targetChord);
-        writeAnchor(bufferedWriter, previous.targetChord);
+        writeAnchor(bufferedWriter, previous.targetChord, previous.targetChord / 2);
         double maxZ = wingSegments.get(wingSegments.size() - 1).targetHeight;
         for (WingSegment current : wingSegments) {
             while (currentZ < current.targetHeight) {

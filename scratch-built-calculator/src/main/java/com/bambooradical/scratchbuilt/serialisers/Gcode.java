@@ -75,9 +75,9 @@ public abstract class Gcode {
         }
     }
 
-    protected void writeAnchor(BufferedWriter bufferedWriter, double targetChord) throws IOException {
+    protected void writeAnchor(BufferedWriter bufferedWriter, double targetChord, double targetHeight) throws IOException {
         final double anchorLongSide = targetChord / 2;
-        final double anchorShortSide = targetChord / 4;
+        final double anchorShortSide = targetHeight / 2;
         for (double[] anchorPoint : new double[][]{{-anchorLongSide, -anchorShortSide, anchorLongSide, -anchorShortSide}, {-anchorLongSide, anchorShortSide, anchorLongSide, anchorShortSide}, {anchorLongSide, anchorShortSide, anchorLongSide, -anchorShortSide}, {-anchorLongSide, anchorShortSide, -anchorLongSide, -anchorShortSide},}) {
             final double nextX;
             final double nextY;
@@ -108,6 +108,22 @@ public abstract class Gcode {
     protected void setNextLayer(BufferedWriter bufferedWriter) throws IOException {
         currentZ += layerHeight;
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f; next layer\r\n", currentX, currentY, currentZ));
+    }
+
+    protected void extrudeTo(final double nextX, final double nextY, BufferedWriter bufferedWriter) throws IOException {
+        final double filamentTravel = calculateFilamentUsed(currentX, currentY, nextX, nextY);
+        currentA += filamentTravel;
+        currentX = nextX;
+        currentY = nextY;
+        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; extrude\r\n", currentX, currentY, currentZ, extrudeSpeed, currentA));
+    }
+
+    protected void moveTo(final double nextX, final double nextY, BufferedWriter bufferedWriter) throws IOException {
+        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
+        currentX = nextX;
+        currentY = nextY;
+        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d; move\r\n", currentX, currentY, currentZ, travelSpeed));
+        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; prime\r\n", currentX, currentY, currentZ, primeSpeed, currentA));
     }
 
     protected void writeComplexLayer(BufferedWriter bufferedWriter, List<List<double[]>> complexData, double targetChord) throws IOException {
@@ -143,11 +159,7 @@ public abstract class Gcode {
         for (double[] dataElement : aerofoilData) {
             final double nextX = dataElement[xAxisElement] * targetChord - xOffset;
             final double nextY = dataElement[yAxisElement] * targetChord - yOffset;
-            final double filamentTravel = calculateFilamentUsed(currentX, currentY, nextX, nextY);
-            currentA += filamentTravel;
-            currentX = nextX;
-            currentY = nextY;
-            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; data point\r\n", currentX, currentY, currentZ, extrudeSpeed, currentA));
+            extrudeTo(nextX, nextY, bufferedWriter);
         }
         if (deprime) {
             bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));

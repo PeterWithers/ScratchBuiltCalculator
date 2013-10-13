@@ -40,20 +40,15 @@ public class GcodeFuselage extends Gcode {
         orientation = Gcode.ModelOrientation.vertical;
         addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter);
-        final List<double[]> fuselageData = getFuselageData();
-//        final List<double[]> aerofoilStruts = getStruts(aerofoilData);
-//        final List<double[]> integratedStruts = getIntegratedStruts(aerofoilData);
-////        List<List<double[]>> connectorData = getConnectorData();
-//        WingSegment previous = new WingSegment(0, wingSegments.get(0).targetChord);
-//        writeAnchor(bufferedWriter, previous.targetChord);
+        writeAnchor(bufferedWriter, modelData.getStabiliserSpanTrailing(), modelData.getStabiliserHeightTrailing() * 2);
 //        double maxZ = wingSegments.get(wingSegments.size() - 1).targetHeight;
         for (FuselageSection fuselageSection : modelData.getFuselageSections()) {
             while (currentZ < fuselageSection.getEnd()) {
                 if (currentZ < modelData.getStabiliserChord()) {
                     addTail(bufferedWriter);
                 }
-                final double calculatedChord = calculateChord(fuselageSection, currentZ);
-                writeLayer(bufferedWriter, fuselageData, calculatedChord, false);
+                addFuselage(bufferedWriter, fuselageSection, currentZ);
+//                writeLayer(bufferedWriter, fuselageData, calculatedChord, false);
                 setNextLayer(bufferedWriter);
 //                writeLayer(bufferedWriter, aerofoilStruts, calculatedChord, false);
 //                writeLayer(bufferedWriter, aerofoilData, calculatedChord, false);
@@ -68,23 +63,20 @@ public class GcodeFuselage extends Gcode {
         bufferedWriter.close();
     }
 
-    protected double calculateChord(FuselageSection fuselageSection, double currentLayer) {
+    protected void addFuselage(BufferedWriter bufferedWriter, FuselageSection fuselageSection, double currentLayer) throws IOException {
         // todo: change this to get width and height
-        final double chordDifference = fuselageSection.getEndWidth() - fuselageSection.getStartWidth();
+        final double widthDifference = fuselageSection.getEndWidth() - fuselageSection.getStartWidth();
+        final double heightDifference = fuselageSection.getEndHeight() - fuselageSection.getStartHeight();
         final double totalHeight = fuselageSection.getLength();
-        final double currentHeight = currentLayer - fuselageSection.getStart();
-        final double fraction = currentHeight / totalHeight;
-        return fuselageSection.getStartWidth() + chordDifference * fraction;
-    }
-
-    private List<double[]> getFuselageData() {
-        List<double[]> pointsList = new ArrayList<double[]>();
-        pointsList.add(new double[]{1, 1});
-        pointsList.add(new double[]{1, -1});
-        pointsList.add(new double[]{-1, -1});
-        pointsList.add(new double[]{-1, 1});
-        pointsList.add(new double[]{1, 1});
-        return pointsList;
+        final double sectionHeight = currentLayer - fuselageSection.getStart();
+        final double fraction = sectionHeight / totalHeight;
+        final double currentWidth = fuselageSection.getStartWidth() + widthDifference * fraction;
+        final double currentHeight = fuselageSection.getStartHeight() + heightDifference * fraction;
+        moveTo(currentHeight / 2, currentWidth / 2, bufferedWriter);
+        extrudeTo(currentHeight / 2, -currentWidth / 2, bufferedWriter);
+        extrudeTo(-currentHeight / 2, -currentWidth / 2, bufferedWriter);
+        extrudeTo(-currentHeight / 2, currentWidth / 2, bufferedWriter);
+        extrudeTo(currentHeight / 2, currentWidth / 2, bufferedWriter);
     }
 
     private void addTail(BufferedWriter bufferedWriter) throws IOException {
