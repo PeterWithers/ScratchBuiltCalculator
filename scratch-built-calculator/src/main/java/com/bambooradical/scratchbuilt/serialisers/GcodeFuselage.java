@@ -40,38 +40,46 @@ public class GcodeFuselage extends Gcode {
         writeInformativeHeader(bufferedWriter);
         writeAnchor(bufferedWriter, modelData.getStabiliserSpanTrailing(), modelData.getStabiliserHeightTrailing() * 2);
 
-//        final FuselageSection[] fuselageSections = modelData.getFuselageSections();
-//        for (int sectionIndex = fuselageSections.length-1; sectionIndex > 0; sectionIndex--) {
-//            
-//            FuselageSection fuselageSection=fuselageSections[sectionIndex];
-        for (FuselageSection fuselageSection : modelData.getFuselageSections()) {
-            while (currentZ < fuselageSection.getEnd()) {
-                if (currentZ < modelData.getStabiliserChord()) {
-                    addTail(bufferedWriter);
-                }
-                addFuselage(bufferedWriter, fuselageSection, currentZ);
-                setNextLayer(bufferedWriter);
-                writePercentDone(bufferedWriter, modelData.getFuselageLength(), currentZ);
-                extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
+        while (currentZ < modelData.getFuselageLength()) {
+            if (currentZ < modelData.getStabiliserChord()) {
+                addTail(bufferedWriter);
             }
+            final FuselageSection[] fuselageSections = modelData.getFuselageSections();
+            for (int sectionIndex = fuselageSections.length - 1; sectionIndex >= 0; sectionIndex--) {
+                FuselageSection fuselageSection = fuselageSections[sectionIndex];
+                final double offsetX;
+                final double offsetY;
+                if (sectionIndex == fuselageSections.length - 1) {
+                    offsetX = 0;
+                    offsetY = 0;
+                } else {
+                    offsetX = 25;
+                    offsetY = (sectionIndex % 2) * 50 - 25;
+                }
+                if (currentZ < fuselageSection.getLength()) {
+                    addFuselage(bufferedWriter, fuselageSection, currentZ, offsetX, offsetY);
+                }
+            }
+            setNextLayer(bufferedWriter);
+            writePercentDone(bufferedWriter, modelData.getFuselageLength(), currentZ);
+            extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
         }
         addGcode(bufferedWriter, "end.gcode");
         bufferedWriter.close();
     }
 
-    protected void addFuselage(BufferedWriter bufferedWriter, FuselageSection fuselageSection, double currentLayer) throws IOException {
+    protected void addFuselage(BufferedWriter bufferedWriter, FuselageSection fuselageSection, double currentLayer, double offsetX, double offsetY) throws IOException {
         final double widthDifference = fuselageSection.getEndWidth() - fuselageSection.getStartWidth();
         final double heightDifference = fuselageSection.getEndHeight() - fuselageSection.getStartHeight();
         final double totalHeight = fuselageSection.getLength();
-        final double sectionHeight = currentLayer - fuselageSection.getStart();
-        final double fraction = sectionHeight / totalHeight;
-        final double currentWidth = fuselageSection.getStartWidth() + widthDifference * fraction;
-        final double currentHeight = fuselageSection.getStartHeight() + heightDifference * fraction;
-        extrudeTo(currentHeight / 2, currentWidth / 2, bufferedWriter);
-        extrudeTo(currentHeight / 2, -currentWidth / 2, bufferedWriter);
-        extrudeTo(-currentHeight / 2, -currentWidth / 2, bufferedWriter);
-        extrudeTo(-currentHeight / 2, currentWidth / 2, bufferedWriter);
-        extrudeTo(currentHeight / 2, currentWidth / 2, bufferedWriter);
+        final double fraction = currentLayer / totalHeight;
+        final double currentWidth = fuselageSection.getEndWidth() - widthDifference * fraction;
+        final double currentHeight = fuselageSection.getEndHeight() - heightDifference * fraction;
+        moveTo(currentHeight / 2 + offsetX, currentWidth / 2 + offsetY, bufferedWriter);
+        extrudeTo(currentHeight / 2 + offsetX, -currentWidth / 2 + offsetY, bufferedWriter);
+        extrudeTo(-currentHeight / 2 + offsetX, -currentWidth / 2 + offsetY, bufferedWriter);
+        extrudeTo(-currentHeight / 2 + offsetX, currentWidth / 2 + offsetY, bufferedWriter);
+        extrudeTo(currentHeight / 2 + offsetX, currentWidth / 2 + offsetY, bufferedWriter);
     }
 
     private void addTail(BufferedWriter bufferedWriter) throws IOException {

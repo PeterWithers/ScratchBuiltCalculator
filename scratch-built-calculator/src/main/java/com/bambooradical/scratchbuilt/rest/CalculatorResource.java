@@ -86,7 +86,7 @@ public class CalculatorResource {
     @DefaultValue("10") // 30
     @QueryParam("fuselageWidth")
     int fuselageWidth;
-    @DefaultValue("20") // 30
+    @DefaultValue("15") // 30
     @QueryParam("fuselageHeight")
     int fuselageHeight;
     @DefaultValue("5") // 15
