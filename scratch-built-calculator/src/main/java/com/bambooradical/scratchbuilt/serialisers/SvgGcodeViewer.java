@@ -18,7 +18,6 @@
 package com.bambooradical.scratchbuilt.serialisers;
 
 import com.bambooradical.scratchbuilt.data.Colour;
-import com.bambooradical.scratchbuilt.data.ModelData;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -77,7 +76,9 @@ public class SvgGcodeViewer {
 //                System.out.println("y:" + y);
                 final double z = Double.valueOf(split[3]).intValue();
 //                System.out.println("z:" + z);
-                svgTop.addPoint(x * scale + offset * scale, y * scale + offset * scale);
+                if (z == 0) {
+                    svgTop.addPoint(x * scale + offset * scale, y * scale + offset * scale);
+                }
                 svgFront.addPoint(x * scale + offset * scale, area * scale - z * scale);
                 svgSide.addPoint(y * scale + offset * scale, area * scale - z * scale);
             }
