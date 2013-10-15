@@ -53,7 +53,7 @@ public class GcodeFuselage extends Gcode {
                     offsetX = 0;
                     offsetY = 0;
                 } else {
-                    offsetX = 25;
+                    offsetX = -25;
                     offsetY = (sectionIndex % 2) * 50 - 25;
                 }
 //                if(sectionIndex==0)
