@@ -78,36 +78,46 @@ public class SvgGcodeViewer {
         gcode.getGcode(bufferedWriter);
         final Scanner scanner = new Scanner(stringWriter.getBuffer().toString());
         double lastA = 0;
-        boolean isNewLine = true;
+        boolean extruding = true;
+        renewPolyLines(null, Colour.BLACK);
         while (scanner.hasNext()) {
             final String nextLine = scanner.nextLine();
-            if (nextLine.startsWith("G1") && nextLine.contains(" A")) {
-                if (isNewLine) {
-                    renewPolyLines(null, Colour.BLACK);
-                    isNewLine = false;
-                }
+            if (nextLine.startsWith("G1 ") && nextLine.contains(" X") && nextLine.contains(" Y") && nextLine.contains(" Z")) {
                 final String[] split = nextLine.split("[XYZFA;]");
-//                System.out.println("scanner.next():" + nextLine);
+//                if (split.length > 5) {
+//                    System.out.println("scanner.next():" + nextLine);
                 final double x = Double.valueOf(split[1]);
 //                System.out.println("x:" + x);
                 final double y = Double.valueOf(split[2]);
 //                System.out.println("y:" + y);
                 final double z = Double.valueOf(split[3]).intValue();
 //                System.out.println("z:" + z);
-                final double a = Double.valueOf(split[5]);
+                final double a;
+                if (nextLine.contains(" A")) {
+                    a = Double.valueOf(split[5]);
+//                    if (a > lastA) {
+                    if (!extruding) {
+                        renewPolyLines(null, Colour.BLACK);
+                        extruding = true;
+                    }
+//                    }
 //                System.out.println("a:" + a);
+                } else {
+                    if (extruding) {
+                        renewPolyLines(null, Colour.LIGHT_GREEN);
+                        extruding = false;
+                    }
+                    a = lastA;
+                }
                 if (z == 0) {
                     svgTop.addPoint(x * scale + offset * scale, y * scale + offset * scale);
                 }
-                if (a > lastA) {
-                    final double yDepthHint = y * scale / 200;
-                    svgFront.addPoint(x * scale + offset * scale, area * scale - z * scale + yDepthHint);
-                    final double xDepthHint = x * scale / 200;
-                    svgSide.addPoint(y * scale + offset * scale, area * scale - z * scale + xDepthHint);
-                }
+                final double yDepthHint = y * scale / 200;
+                svgFront.addPoint(x * scale + offset * scale, area * scale - z * scale + yDepthHint);
+                final double xDepthHint = x * scale / 200;
+                svgSide.addPoint(y * scale + offset * scale, area * scale - z * scale + xDepthHint);
                 lastA = a;
-            } else {
-                isNewLine = true;
+//                }
             }
         }
     }
