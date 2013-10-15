@@ -21,6 +21,7 @@ import com.bambooradical.scratchbuilt.data.Colour;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -38,9 +39,10 @@ public class SvgGcodeViewer {
     private final int area = 110;
     private final double scale = 3;
     private final double offset = 60;
-    private final SvgPolyline svgFront = new SvgPolyline(null, 10 * scale, 10 * scale, Colour.WHITE);
-    public final SvgPolyline svgSide = new SvgPolyline(null, 130 * scale, 10 * scale, Colour.WHITE);
-    public final SvgPolyline svgTop = new SvgPolyline(null, 260 * scale, 10 * scale, Colour.WHITE);
+    private SvgPolyline svgFront;
+    private SvgPolyline svgSide;
+    private SvgPolyline svgTop;
+    private final ArrayList<SvgPolyline> polyLines = new ArrayList<SvgPolyline>();
 
     public SvgGcodeViewer() {
     }
@@ -57,7 +59,17 @@ public class SvgGcodeViewer {
         svgPolyline.addPoint(0, 0);
     }
 
+    private void renewPolyLines(Colour colourFill, Colour colourLine) {
+        svgFront = new SvgPolyline(null, 10 * scale, 10 * scale, colourFill, colourLine);
+        svgSide = new SvgPolyline(null, 130 * scale, 10 * scale, colourFill, colourLine);
+        svgTop = new SvgPolyline(null, 260 * scale, 10 * scale, colourFill, colourLine);
+        polyLines.add(svgFront);
+        polyLines.add(svgSide);
+        polyLines.add(svgTop);
+    }
+
     public void calculateDiagram() throws IOException {
+        renewPolyLines(Colour.WHITE, Colour.LIGHT_RED);
         addBoundingBox(svgTop);
         addBoundingBox(svgFront);
         addBoundingBox(svgSide);
@@ -65,10 +77,16 @@ public class SvgGcodeViewer {
         final BufferedWriter bufferedWriter = new BufferedWriter(stringWriter);
         gcode.getGcode(bufferedWriter);
         final Scanner scanner = new Scanner(stringWriter.getBuffer().toString());
+        double lastA = 0;
+        boolean isNewLine = true;
         while (scanner.hasNext()) {
             final String nextLine = scanner.nextLine();
             if (nextLine.startsWith("G1") && nextLine.contains(" A")) {
-                final String[] split = nextLine.split("[XYZF]");
+                if (isNewLine) {
+                    renewPolyLines(null, Colour.BLACK);
+                    isNewLine = false;
+                }
+                final String[] split = nextLine.split("[XYZFA;]");
 //                System.out.println("scanner.next():" + nextLine);
                 final double x = Double.valueOf(split[1]);
 //                System.out.println("x:" + x);
@@ -76,11 +94,20 @@ public class SvgGcodeViewer {
 //                System.out.println("y:" + y);
                 final double z = Double.valueOf(split[3]).intValue();
 //                System.out.println("z:" + z);
+                final double a = Double.valueOf(split[5]);
+//                System.out.println("a:" + a);
                 if (z == 0) {
                     svgTop.addPoint(x * scale + offset * scale, y * scale + offset * scale);
                 }
-                svgFront.addPoint(x * scale + offset * scale, area * scale - z * scale);
-                svgSide.addPoint(y * scale + offset * scale, area * scale - z * scale);
+                if (a > lastA) {
+                    final double yDepthHint = y * scale / 200;
+                    svgFront.addPoint(x * scale + offset * scale, area * scale - z * scale + yDepthHint);
+                    final double xDepthHint = x * scale / 200;
+                    svgSide.addPoint(y * scale + offset * scale, area * scale - z * scale + xDepthHint);
+                }
+                lastA = a;
+            } else {
+                isNewLine = true;
             }
         }
     }
@@ -108,6 +135,6 @@ public class SvgGcodeViewer {
     @XmlElement(name = "polyline", namespace = "http://www.w3.org/2000/svg")
     public SvgPolyline[] getPolylines() throws IOException {
         calculateDiagram();
-        return new SvgPolyline[]{svgFront, svgSide, svgTop};
+        return polyLines.toArray(new SvgPolyline[0]);
     }
 }

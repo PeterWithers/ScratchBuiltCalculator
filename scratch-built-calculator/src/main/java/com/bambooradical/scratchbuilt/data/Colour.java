@@ -27,6 +27,9 @@ public class Colour {
     static final public Colour BLACK = new Colour(0x000000);
     static final public Colour WHITE = new Colour(0xffffff);
     static final public Colour GREY = new Colour(0x808080);
+    static final public Colour LIGHT_RED = new Colour(0x800000);
+    static final public Colour LIGHT_GREEN = new Colour(0x008000);
+    static final public Colour LIGHT_BLUE = new Colour(0x000080);
     final private int colourValue;
 
     public Colour(int colourValue) {

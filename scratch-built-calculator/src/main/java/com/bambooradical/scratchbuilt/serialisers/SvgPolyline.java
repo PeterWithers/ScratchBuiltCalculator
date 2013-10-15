@@ -40,6 +40,19 @@ public class SvgPolyline {
     public SvgPolyline() {
     }
 
+    public SvgPolyline(ModelData modelData, double x, double y, Colour colourFill, Colour colourLine) {
+        this.modelData = modelData;
+        this.x = x;
+        this.y = y;
+        final String fillColour;
+        if (colourFill == null) {
+            fillColour = "none";
+        } else {
+            fillColour = getFormattedColour(colourFill);
+        }
+        this.style = "fill:" + fillColour + ";stroke:" + getFormattedColour(colourLine) + ";stroke-width:1";
+    }
+
     public SvgPolyline(ModelData modelData, double x, double y, Colour colour) {
         this.modelData = modelData;
         this.x = x;
