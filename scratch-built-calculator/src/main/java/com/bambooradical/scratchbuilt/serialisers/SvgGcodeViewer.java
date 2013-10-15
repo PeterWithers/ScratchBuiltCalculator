@@ -80,6 +80,7 @@ public class SvgGcodeViewer {
         double lastA = 0;
         boolean extruding = true;
         renewPolyLines(null, Colour.BLACK);
+        double lastX = 0, lastY = 0, lastZ = 0;
         while (scanner.hasNext()) {
             final String nextLine = scanner.nextLine();
             if (nextLine.startsWith("G1 ") && nextLine.contains(" X") && nextLine.contains(" Y") && nextLine.contains(" Z")) {
@@ -99,6 +100,9 @@ public class SvgGcodeViewer {
                     if (!extruding) {
                         renewPolyLines(null, Colour.BLACK);
                         extruding = true;
+                        svgTop.addPoint(lastX * scale + offset * scale, lastY * scale + offset * scale);
+                        svgFront.addPoint(lastX * scale + offset * scale, area * scale - lastZ * scale);
+                        svgSide.addPoint(lastY * scale + offset * scale, area * scale - lastZ * scale);
                     }
 //                    }
 //                System.out.println("a:" + a);
@@ -106,10 +110,13 @@ public class SvgGcodeViewer {
                     if (extruding) {
                         renewPolyLines(null, Colour.LIGHT_GREEN);
                         extruding = false;
+                        svgTop.addPoint(lastX * scale + offset * scale, lastY * scale + offset * scale);
+                        svgFront.addPoint(lastX * scale + offset * scale, area * scale - lastZ * scale);
+                        svgSide.addPoint(lastY * scale + offset * scale, area * scale - lastZ * scale);
                     }
                     a = lastA;
                 }
-                if (z == 0) {
+                if (z == 0 /*|| !extruding*/) {
                     svgTop.addPoint(x * scale + offset * scale, y * scale + offset * scale);
                 }
                 final double yDepthHint = y * scale / 200;
@@ -117,6 +124,9 @@ public class SvgGcodeViewer {
                 final double xDepthHint = x * scale / 200;
                 svgSide.addPoint(y * scale + offset * scale, area * scale - z * scale + xDepthHint);
                 lastA = a;
+                lastX = x;
+                lastY = y;
+                lastZ = z;
 //                }
             }
         }
