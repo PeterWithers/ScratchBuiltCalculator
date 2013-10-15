@@ -63,7 +63,6 @@ public class GcodeWing extends Gcode {
                 writeLayer(bufferedWriter, aerofoilStruts, calculatedChord, false);
                 writeLayer(bufferedWriter, aerofoilData, calculatedChord, false);
                 writePercentDone(bufferedWriter, maxZ, currentZ);
-                extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
                 setNextLayer(bufferedWriter);
             }
             previous = current;

@@ -38,12 +38,14 @@ public abstract class Gcode {
     private double currentY = 0;
     protected double currentZ = layerHeight;
     private double currentA = 0;
+    private double lastLayerA = 0;
     private double currentPercent = 0;
+    private final int deprimeTravel = 0; // deprime has been disabled here because it seems that sailfish handles it internally
     private int primeSpeed = 1500;
     private int travelSpeed = 3000;
     private int extrudeSpeedFirstLayer = 200;
     protected int extrudeSpeedMax = 1800;
-    protected int extrudeSpeed = extrudeSpeedFirstLayer;
+    private int extrudeSpeed = extrudeSpeedFirstLayer;
     protected ModelOrientation orientation;
 
     protected enum ModelOrientation {
@@ -102,12 +104,25 @@ public abstract class Gcode {
             currentY = nextY;
             bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; anchor\r\n", currentX, currentY, currentZ, extrudeSpeedMax, currentA));
         }
-        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
+        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - deprimeTravel));
     }
 
     protected void setNextLayer(BufferedWriter bufferedWriter) throws IOException {
         currentZ += layerHeight;
+        if (currentA != lastLayerA && currentA - lastLayerA < 5) {
+            // if the layer is fast then time must be allowed for the extruded material to cool
+            // move out of the way
+            // moveTo(currentX - 40, currentY, bufferedWriter);
+            // add dwell
+            // bufferedWriter.write("G04 P1000\r\n"); // G04 dwell is not supported in sailfish, presumably because it would lead to imperfections and blobs, so we reduce the extrusion speed instead
+            // moveTo(currentX, currentY + 40, bufferedWriter);
+            extrudeSpeed = extrudeSpeedFirstLayer; // if the layer is very fast to print then we must print slower so that it has time to cool
+            // todo: calculate the extrustrusion speed required to maintain a minumum layer time rather than just using the first layer speed
+        } else {
+            extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
+        }
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f; next layer\r\n", currentX, currentY, currentZ));
+        lastLayerA = currentA;
     }
 
     protected void extrudeTo(final double nextX, final double nextY, BufferedWriter bufferedWriter) throws IOException {
@@ -119,11 +134,17 @@ public abstract class Gcode {
     }
 
     protected void moveTo(final double nextX, final double nextY, BufferedWriter bufferedWriter) throws IOException {
-        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
+//        if (currentZ < 1) {
+        // the following was to replace moves with exrudes when trying to identify an issue with multiple objects in the same layer 
+//            extrudeTo(nextX, nextY, bufferedWriter);
+//        } else {
+        bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - deprimeTravel));
         currentX = nextX;
         currentY = nextY;
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d; move\r\n", currentX, currentY, currentZ, travelSpeed));
+//        currentA += deprimeTravel; // trying adding more travel after a deprime to see if that helps the first layer
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; prime\r\n", currentX, currentY, currentZ, primeSpeed, currentA));
+//        }
     }
 
     protected void writeComplexLayer(BufferedWriter bufferedWriter, List<List<double[]>> complexData, double targetChord) throws IOException {
@@ -162,7 +183,7 @@ public abstract class Gcode {
             extrudeTo(nextX, nextY, bufferedWriter);
         }
         if (deprime) {
-            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - 1));
+            bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; deprime\r\n", currentX, currentY, currentZ, primeSpeed, currentA - deprimeTravel));
         }
     }
 

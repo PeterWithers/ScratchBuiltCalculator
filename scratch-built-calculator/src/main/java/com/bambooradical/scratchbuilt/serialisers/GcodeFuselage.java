@@ -56,11 +56,11 @@ public class GcodeFuselage extends Gcode {
                     offsetX = 25;
                     offsetY = (sectionIndex % 2) * 50 - 25;
                 }
+//                if(sectionIndex==0)
                 addFuselage(bufferedWriter, fuselageSection, currentZ, offsetX, offsetY);
             }
             setNextLayer(bufferedWriter);
             writePercentDone(bufferedWriter, modelData.getFuselageLength(), currentZ);
-            extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
         }
         addGcode(bufferedWriter, "end.gcode");
         bufferedWriter.close();
