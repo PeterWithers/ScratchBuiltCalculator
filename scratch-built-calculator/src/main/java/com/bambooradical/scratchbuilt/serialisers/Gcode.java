@@ -118,7 +118,7 @@ public abstract class Gcode {
             // moveTo(currentX, currentY + 40, bufferedWriter);
             extrudeSpeed = extrudeSpeedFirstLayer; // if the layer is very fast to print then we must print slower so that it has time to cool
             // todo: calculate the extrustrusion speed required to maintain a minumum layer time rather than just using the first layer speed
-        } else {
+        } else { 
             extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
         }
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f; next layer\r\n", currentX, currentY, currentZ));

@@ -59,17 +59,17 @@ public class SvgGcodeViewer {
         svgPolyline.addPoint(0, 0);
     }
 
-    private void renewPolyLines(Colour colourFill, Colour colourLine) {
-        svgFront = new SvgPolyline(null, 10 * scale, 10 * scale, colourFill, colourLine);
-        svgSide = new SvgPolyline(null, 130 * scale, 10 * scale, colourFill, colourLine);
-        svgTop = new SvgPolyline(null, 260 * scale, 10 * scale, colourFill, colourLine);
+    private void renewPolyLines(Colour colourFill, Colour colourLine, double width) {
+        svgFront = new SvgPolyline(null, 10 * scale, 10 * scale, colourFill, colourLine, width);
+        svgSide = new SvgPolyline(null, 130 * scale, 10 * scale, colourFill, colourLine, width);
+        svgTop = new SvgPolyline(null, 260 * scale, 10 * scale, colourFill, colourLine, width);
         polyLines.add(svgFront);
         polyLines.add(svgSide);
         polyLines.add(svgTop);
     }
 
     public void calculateDiagram() throws IOException {
-        renewPolyLines(Colour.WHITE, Colour.LIGHT_RED);
+        renewPolyLines(Colour.WHITE, Colour.LIGHT_RED, 1);
         addBoundingBox(svgTop);
         addBoundingBox(svgFront);
         addBoundingBox(svgSide);
@@ -79,8 +79,8 @@ public class SvgGcodeViewer {
         final Scanner scanner = new Scanner(stringWriter.getBuffer().toString());
         double lastA = 0;
         boolean extruding = true;
-        renewPolyLines(null, Colour.BLACK);
-        double lastX = 0, lastY = 0, lastZ = 0;
+        renewPolyLines(null, Colour.BLACK, 1);
+        double lastX = area / 2, lastY = -area / 2, lastZ = area;
         while (scanner.hasNext()) {
             final String nextLine = scanner.nextLine();
             if (nextLine.startsWith("G1 ") && nextLine.contains(" X") && nextLine.contains(" Y") && nextLine.contains(" Z")) {
@@ -98,7 +98,7 @@ public class SvgGcodeViewer {
                     a = Double.valueOf(split[5]);
 //                    if (a > lastA) {
                     if (!extruding) {
-                        renewPolyLines(null, Colour.BLACK);
+                        renewPolyLines(null, Colour.BLACK, 1);
                         extruding = true;
                         svgTop.addPoint(lastX * scale + offset * scale, lastY * scale + offset * scale);
                         svgFront.addPoint(lastX * scale + offset * scale, area * scale - lastZ * scale);
@@ -108,7 +108,7 @@ public class SvgGcodeViewer {
 //                System.out.println("a:" + a);
                 } else {
                     if (extruding) {
-                        renewPolyLines(null, Colour.LIGHT_GREEN);
+                        renewPolyLines(null, Colour.LIGHT_GREEN, 0.2);
                         extruding = false;
                         svgTop.addPoint(lastX * scale + offset * scale, lastY * scale + offset * scale);
                         svgFront.addPoint(lastX * scale + offset * scale, area * scale - lastZ * scale);
