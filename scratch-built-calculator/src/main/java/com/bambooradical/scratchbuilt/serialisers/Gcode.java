@@ -46,6 +46,7 @@ public abstract class Gcode {
     private int extrudeSpeedFirstLayer = 200;
     protected int extrudeSpeedMax = 1800;
     private int extrudeSpeed = extrudeSpeedFirstLayer;
+    private int layersTillMaxSpeed = 20;
     protected ModelOrientation orientation;
 
     protected enum ModelOrientation {
@@ -118,8 +119,11 @@ public abstract class Gcode {
             // moveTo(currentX, currentY + 40, bufferedWriter);
             extrudeSpeed = extrudeSpeedFirstLayer; // if the layer is very fast to print then we must print slower so that it has time to cool
             // todo: calculate the extrustrusion speed required to maintain a minumum layer time rather than just using the first layer speed
-        } else { 
-            extrudeSpeed = extrudeSpeedMax; // once the first layer is done we can increase the extrusion speed
+        } else {
+            double speedDifference = extrudeSpeedMax - extrudeSpeedFirstLayer;
+            double speedDifferencePerLayer = speedDifference / layersTillMaxSpeed;
+            extrudeSpeed += speedDifferencePerLayer;// once the first layer is done we can increase the extrusion speed
+            extrudeSpeed = (extrudeSpeed > extrudeSpeedMax) ? extrudeSpeedMax : extrudeSpeed; // cap the speed to the max speed
         }
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f; next layer\r\n", currentX, currentY, currentZ));
         lastLayerA = currentA;
