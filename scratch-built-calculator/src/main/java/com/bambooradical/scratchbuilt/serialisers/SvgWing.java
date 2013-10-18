@@ -46,6 +46,11 @@ public class SvgWing extends SvgGroup {
     }
 
     @Override
+    protected double getWidth() {
+        return modelData.getWingSpan();
+    }
+
+    @Override
     public List<SvgPolyline> getPolylines() {
         final ArrayList<SvgPolyline> returnList = new ArrayList<SvgPolyline>();
 //        final SvgPolyline wingPolyline = new SvgPolyline(modelData, x, y, modelData.getMainWingColour());
@@ -105,6 +110,7 @@ public class SvgWing extends SvgGroup {
             final SvgText segmentLabel = new SvgText(x + leftOffset, y + totalWidth - (currentlength / 4), labelText);
             returnList.add(segmentLabel);
             offsetText = !offsetText;
+            returnList.add(new SvgText(x + modelData.getWingSpan() + leftOffset, y + totalWidth, totalWidth + "mm"));
         }
         returnList.add(new SvgText(x + modelData.getWingSpan() / 3, y + 10, "Total Area = " + modelData.getWingSpan() + " x " + totalWidth));
         final SvgText aileronLLabel = new SvgText(20 + modelData.getWingSpan() - (modelData.getWingLength() - modelData.getAileronStart()), modelData.getAileronChord() / 2, "Left Aileron");

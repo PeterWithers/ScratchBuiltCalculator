@@ -31,13 +31,45 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "svg", namespace = "http://www.w3.org/2000/svg")
 public class SvgLayout {
 
-    private ModelData modelData;
+    final private ModelData modelData;
+    final private SvgGroup[] svgGroups;
+    final private double width;
+    final private double height;
 
     public SvgLayout() {
+        modelData = null;
+        svgGroups = null;
+        width = 0;
+        height = 0;
     }
 
     public SvgLayout(ModelData modelData) {
         this.modelData = modelData;
+        double maxWidth = 0;
+        final SvgWing svgWing = new SvgWing(modelData, 0, 0, "mainwing");
+        maxWidth = (maxWidth < svgWing.getWidth()) ? svgWing.getWidth() : maxWidth;
+        double fuselageOffsetY = svgWing.getHeight();
+        final FuselageSection[] fuselageSections = modelData.getFuselageSections();
+        final SvgStabilisers svgStabilisers = new SvgStabilisers(modelData, 0, fuselageOffsetY, "stabilisers");
+        final SvgElevator svgElevator = new SvgElevator(modelData, svgStabilisers.getWidth(), fuselageOffsetY, "elevator");
+        fuselageOffsetY += svgStabilisers.getHeight();
+        maxWidth = (maxWidth < svgStabilisers.getWidth() + svgStabilisers.getWidth()) ? svgStabilisers.getWidth() + svgStabilisers.getWidth() : maxWidth;
+
+        final SvgFuselage svgFuselageA = new SvgFuselage(modelData, 0, fuselageOffsetY, fuselageSections[0]);
+        final SvgFuselage svgFuselageB = new SvgFuselage(modelData, fuselageSections[0].getLength(), fuselageOffsetY, fuselageSections[1]);
+        final SvgFuselage svgFuselageC = new SvgFuselage(modelData, fuselageSections[0].getLength() + fuselageSections[1].getLength(), fuselageOffsetY, fuselageSections[2]);
+        maxWidth = (maxWidth < svgFuselageA.getWidth() + svgFuselageB.getWidth() + svgFuselageB.getWidth()) ? svgFuselageA.getWidth() + svgFuselageB.getWidth() + svgFuselageB.getWidth() : maxWidth;
+
+        
+        svgGroups = new SvgGroup[]{svgWing, svgStabilisers, svgElevator, svgFuselageA, svgFuselageB, svgFuselageC};
+//       fuselageOffsetY += svgElevator.getHeight();
+        height = fuselageOffsetY + svgFuselageA.getHeight() + svgFuselageB.getHeight() + svgFuselageC.getHeight();
+        width = maxWidth;
+    }
+
+    @XmlAttribute(name = "viewBox")
+    protected String getViewBox() {
+        return "0 0 " + width + " " + height;
     }
 
     @XmlAttribute(name = "version")
@@ -47,18 +79,7 @@ public class SvgLayout {
 
     @XmlElement(name = "g", namespace = "http://www.w3.org/2000/svg")
     public SvgGroup[] getGroups() {
-        final SvgWing svgWing = new SvgWing(modelData, 0, 0, "mainwing");
-        double fuselageOffsetY = svgWing.getHeight();
-        final FuselageSection[] fuselageSections = modelData.getFuselageSections();
-        final SvgStabilisers svgStabilisers = new SvgStabilisers(modelData, 0, fuselageOffsetY, "stabilisers");
-
-        final SvgElevator svgElevator = new SvgElevator(modelData, svgStabilisers.getWidth(), fuselageOffsetY, "elevator");
-        fuselageOffsetY += svgStabilisers.getHeight();
-//       fuselageOffsetY += svgElevator.getHeight();
-        return new SvgGroup[]{svgWing, svgStabilisers, svgElevator,
-            new SvgFuselage(modelData, 0, fuselageOffsetY, fuselageSections[0]),
-            new SvgFuselage(modelData, fuselageSections[0].getLength(), fuselageOffsetY, fuselageSections[1]),
-            new SvgFuselage(modelData, fuselageSections[0].getLength() + fuselageSections[1].getLength(), fuselageOffsetY, fuselageSections[2])};
+        return svgGroups;
     }
 
     @XmlElement(name = "polyline", namespace = "http://www.w3.org/2000/svg")

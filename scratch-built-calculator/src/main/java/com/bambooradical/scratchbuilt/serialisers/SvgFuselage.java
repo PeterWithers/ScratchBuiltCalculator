@@ -39,6 +39,18 @@ public class SvgFuselage extends SvgGroup {
         this.fuselageSection = fuselageSection;
     }
 
+    @Override
+    protected double getHeight() {
+        // todo: this is not really correct and will often over estimate the height
+        return Math.max(fuselageSection.getEndHeight(), fuselageSection.getStartHeight())
+                + Math.max(fuselageSection.getEndWidth(), fuselageSection.getStartWidth());
+    }
+
+    @Override
+    protected double getWidth() {
+        return fuselageSection.getLength();
+    }
+
     private SvgPolyline getPolyline(double offsetX, double offsetY, double start, double end, double length) {
         final SvgPolyline svgPolyline = new SvgPolyline(modelData, x + offsetX, y + offsetY, fuselageSection.getColour());
         double startOffset;

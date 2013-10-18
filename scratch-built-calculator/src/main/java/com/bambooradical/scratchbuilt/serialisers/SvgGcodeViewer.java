@@ -132,6 +132,11 @@ public class SvgGcodeViewer {
         }
     }
 
+    @XmlAttribute(name = "viewBox")
+    protected String getViewBox() {
+        return "0 0 " + 130 * scale * 3 + " " + 130 * scale;
+    }
+
     @XmlAttribute(name = "version")
     protected double getVersion() {
         return 1.1;

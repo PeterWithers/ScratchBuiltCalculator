@@ -19,6 +19,8 @@
 --%>
 <%@page import="com.bambooradical.scratchbuilt.data.TrainerData"%>
 <%@page import="com.bambooradical.scratchbuilt.data.WingType"%>
+<%@page import="java.lang.reflect.Field"%>
+<%@page import="com.bambooradical.scratchbuilt.data.ModelDataImpl"%>
 <%-- 
     Document   : scratchbuiltcalculator
     Created on : Jun 22, 2013, 5:00:13 PM
@@ -97,7 +99,9 @@
             function onLoaded() {
             }
             function updateModel() {
-                document.getElementById("svgImage").src = getRestUrl('svg');
+                document.getElementById("svgImage").data = getRestUrl('svg');
+                document.getElementById("gcodeFuselage").data = getRestUrl('gcodefuselage.svg');
+                document.getElementById("gcodeWing").data = getRestUrl('gcodewing.svg');
                 viewer.show(getRestUrl('ac3d'), {callback: onLoaded});
             }</script>
         <script>
@@ -122,6 +126,9 @@
         This is a work in progress, for more info: <a href="https://github.com/PeterWithers/ScratchBuiltCalculator">https://github.com/PeterWithers/ScratchBuiltCalculator</a><br>
         <table><tr><td>
                     <%--<%= // TrainerData trainerData = new TrainerData().getWingSpan(); %>--%>
+<%--                    fields: <% for (Field field : ModelDataImpl.class.getFields()) {%>
+                    field: <%=field.getName()%>"><br>
+                    <% }%>--%>
                     <table><tr><td>
                                 Wing&nbsp;Type
                             </td><td>
@@ -184,12 +191,17 @@
                 </td></tr><tr><td>        
                     <input id="ac3dButton" type="button" value="Browse to AC3D File" onclick="window.location.href = getRestUrl('ac3d');"/><br>
                     <input id="svgButton" type="button" value="Browse to SVG File" onclick="window.location.href = getRestUrl('svg');"/><br>
+                    <input id="svgButton" type="button" value="Browse to wing.gcode File" onclick="window.location.href = getRestUrl('wing.gcode');"/><br>
+                    <input id="svgButton" type="button" value="Browse to fuselage.gcode File" onclick="window.location.href = getRestUrl('fuselage.gcode');"/><br>
+                    <input id="svgButton" type="button" value="Browse to wing.gcode preview SVG File" onclick="window.location.href = getRestUrl('gcodewing.svg');"/><br>
+                    <input id="svgButton" type="button" value="Browse to fuselage.gcode preview SVG File" onclick="window.location.href = getRestUrl('gcodefuselage.svg');"/><br>
                     <input id="yasimButton" type="button" value="Browse to YASim File" onclick="window.location.href = getRestUrl('yasim');"/><br>
                     <input id="setButton" type="button" value="Browse to Aircraft Set File" onclick="window.location.href = getRestUrl('set');"/><br>
                     <input id="zipButton" type="button" value="Download Zip File" onclick="window.location.href = getRestUrl('zip');"/>
                 </td><td>
-                    <!--                    <embed id="svgImage" src="" type="image/svg+xml"/>-->
-                    <iframe id="svgImage" height="500" width="900"></iframe>
+                    <object id="svgImage" type="image/svg+xml" style="border:2px solid;"></object><br>
+                    <object id="gcodeWing" type="image/svg+xml" style="border:2px solid;"></object><br>
+                    <object id="gcodeFuselage" type="image/svg+xml" style="border:2px solid;"></object><br>
                 </td></tr></table>
     </body>
 </html>
