@@ -110,21 +110,22 @@ public abstract class Gcode {
 
     protected void setNextLayer(BufferedWriter bufferedWriter) throws IOException {
         currentZ += layerHeight;
-        if (currentA != lastLayerA && currentA - lastLayerA < 5) {
+        double speedDifference = extrudeSpeedMax - extrudeSpeedFirstLayer;
+        final double amountExtruded = currentA - lastLayerA;
+        if (currentA != lastLayerA && amountExtruded < 5) {
             // if the layer is fast then time must be allowed for the extruded material to cool
             // move out of the way
             // moveTo(currentX - 40, currentY, bufferedWriter);
             // add dwell
             // bufferedWriter.write("G04 P1000\r\n"); // G04 dwell is not supported in sailfish, presumably because it would lead to imperfections and blobs, so we reduce the extrusion speed instead
             // moveTo(currentX, currentY + 40, bufferedWriter);
-            extrudeSpeed = extrudeSpeedFirstLayer; // if the layer is very fast to print then we must print slower so that it has time to cool
+            extrudeSpeed = extrudeSpeedFirstLayer + (int) (speedDifference / 5 * amountExtruded); // if the layer is very fast to print then we must print slower so that it has time to cool
             // todo: calculate the extrustrusion speed required to maintain a minumum layer time rather than just using the first layer speed
         } else {
-            double speedDifference = extrudeSpeedMax - extrudeSpeedFirstLayer;
             double speedDifferencePerLayer = speedDifference / layersTillMaxSpeed;
             extrudeSpeed += speedDifferencePerLayer;// once the first layer is done we can increase the extrusion speed
-            extrudeSpeed = (extrudeSpeed > extrudeSpeedMax) ? extrudeSpeedMax : extrudeSpeed; // cap the speed to the max speed
         }
+        extrudeSpeed = (extrudeSpeed > extrudeSpeedMax) ? extrudeSpeedMax : extrudeSpeed; // cap the speed to the max speed
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f; next layer\r\n", currentX, currentY, currentZ));
         lastLayerA = currentA;
     }
@@ -151,13 +152,13 @@ public abstract class Gcode {
 //        }
     }
 
-    protected void writeComplexLayer(BufferedWriter bufferedWriter, List<List<double[]>> complexData, double targetChord) throws IOException {
+    protected void writeComplexLayer(BufferedWriter bufferedWriter, List<List<double[]>> complexData, double targetChord, double forwardOffset, double heightOffset) throws IOException {
         for (List<double[]> segment : complexData) {
-            writeLayer(bufferedWriter, segment, targetChord, true);
+            writeLayer(bufferedWriter, segment, targetChord, forwardOffset, heightOffset, true);
         }
     }
 
-    protected void writeLayer(BufferedWriter bufferedWriter, List<double[]> aerofoilData, double targetChord, boolean deprime) throws IOException {
+    protected void writeLayer(BufferedWriter bufferedWriter, List<double[]> aerofoilData, double targetChord, double forwardOffset, double heightOffset, boolean deprime) throws IOException {
         final int xAxisElement;
         final int yAxisElement;
         final double xOffset;
@@ -166,14 +167,14 @@ public abstract class Gcode {
             case horizontal:
                 xAxisElement = 0;
                 yAxisElement = 1;
-                xOffset = targetChord / 2;
-                yOffset = 0;
+                xOffset = targetChord / 2 + heightOffset;
+                yOffset = 0 + forwardOffset;
                 break;
             default:
                 xAxisElement = 1;
                 yAxisElement = 0;
-                xOffset = 0;
-                yOffset = targetChord / 2;
+                xOffset = 0 + heightOffset;
+                yOffset = targetChord / 2 + forwardOffset;
                 break;
         }
 

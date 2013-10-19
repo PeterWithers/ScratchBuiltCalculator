@@ -26,9 +26,13 @@ public class WingSegment {
 
     final public double targetHeight;
     final public double targetChord;
+    final public double forwardOffset;
+    final public double heightOffset;
 
-    public WingSegment(double targetHeight, double targetChord) {
+    public WingSegment(double targetHeight, double targetChord, double forwardOffset, double heightOffset) {
         this.targetHeight = targetHeight;
         this.targetChord = targetChord;
+        this.forwardOffset = forwardOffset;
+        this.heightOffset = heightOffset;
     }
 }

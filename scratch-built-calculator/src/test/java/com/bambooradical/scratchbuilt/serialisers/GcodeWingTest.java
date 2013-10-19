@@ -35,12 +35,12 @@ public class GcodeWingTest {
     @Test
     public void testCalculateChord() {
         System.out.println("calculateChord");
-        WingSegment previous = new WingSegment(50, 100);
-        WingSegment current = new WingSegment(100, 50);
+        WingSegment previous = new WingSegment(50, 100, 0, 0);
+        WingSegment current = new WingSegment(100, 50, 0, 0);
         GcodeWing instance = new GcodeWing(new TrainerData());
-        assertEquals(75, instance.calculateChord(previous, current, 75), 0.0);
-        assertEquals(100, instance.calculateChord(previous, current, 50), 0.0);
-        assertEquals(50, instance.calculateChord(previous, current, 100), 0.0);
+        assertEquals(75, instance.interpolateValue(previous, previous.targetChord, current, current.targetChord, 75), 0.0);
+        assertEquals(100, instance.interpolateValue(previous, previous.targetChord, current, current.targetChord, 50), 0.0);
+        assertEquals(50, instance.interpolateValue(previous, previous.targetChord, current, current.targetChord, 100), 0.0);
     }
 
     /**
