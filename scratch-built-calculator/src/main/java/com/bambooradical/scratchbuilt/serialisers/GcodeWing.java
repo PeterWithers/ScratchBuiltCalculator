@@ -41,10 +41,12 @@ public class GcodeWing extends Gcode {
 
     public void getGcode(BufferedWriter bufferedWriter) throws IOException {
         List<WingSegment> wingSegments = new ArrayList<WingSegment>();
-        wingSegments.add(new WingSegment(50, 110));
-        wingSegments.add(new WingSegment(100, 40));
-        wingSegments.add(new WingSegment(108, 20));
-        wingSegments.add(new WingSegment(110, 10));
+        wingSegments.add(new WingSegment(50, 50, 0, 0));
+        wingSegments.add(new WingSegment(75, 48, 2, 0));
+        wingSegments.add(new WingSegment(90, 45, 5, 0));
+        wingSegments.add(new WingSegment(100, 40, 10, 0));
+        wingSegments.add(new WingSegment(108, 20, 30, 0));
+        wingSegments.add(new WingSegment(110, 10, 40, 0));
         orientation = Gcode.ModelOrientation.vertical;
         addGcode(bufferedWriter, "start.gcode");
         writeInformativeHeader(bufferedWriter, wingSegments);
@@ -52,16 +54,17 @@ public class GcodeWing extends Gcode {
         final List<double[]> aerofoilStruts = getStruts(aerofoilData);
         final List<double[]> integratedStruts = getIntegratedStruts(aerofoilData);
 //        List<List<double[]>> connectorData = getConnectorData();
-        WingSegment previous = new WingSegment(0, wingSegments.get(0).targetChord);
+        WingSegment previous = new WingSegment(0, wingSegments.get(0).targetChord, wingSegments.get(0).forwardOffset, wingSegments.get(0).heightOffset);
         writeAnchor(bufferedWriter, previous.targetChord, previous.targetChord / 2);
         double maxZ = wingSegments.get(wingSegments.size() - 1).targetHeight;
         for (WingSegment current : wingSegments) {
             while (currentZ < current.targetHeight) {
-                final double calculatedChord = calculateChord(previous, current, currentZ);
-                writeLayer(bufferedWriter, integratedStruts, calculatedChord, false);
+                final double calculatedChord = interpolateValue(previous, previous.targetChord, current, current.targetChord, currentZ);
+                final double forwardOffset = interpolateValue(previous, previous.forwardOffset, current, current.forwardOffset, currentZ);;
+                writeLayer(bufferedWriter, integratedStruts, calculatedChord, forwardOffset, current.heightOffset, false);
                 setNextLayer(bufferedWriter);
-                writeLayer(bufferedWriter, aerofoilStruts, calculatedChord, false);
-                writeLayer(bufferedWriter, aerofoilData, calculatedChord, false);
+                writeLayer(bufferedWriter, aerofoilStruts, calculatedChord, forwardOffset, current.heightOffset, false);
+                writeLayer(bufferedWriter, aerofoilData, calculatedChord, forwardOffset, current.heightOffset, false);
                 writePercentDone(bufferedWriter, maxZ, currentZ);
                 setNextLayer(bufferedWriter);
             }
@@ -72,12 +75,12 @@ public class GcodeWing extends Gcode {
         bufferedWriter.close();
     }
 
-    protected double calculateChord(WingSegment previous, WingSegment current, double currentLayer) {
-        final double chordDifference = current.targetChord - previous.targetChord;
+    protected double interpolateValue(WingSegment previous, double oldValue, WingSegment current, double nextValue, double currentLayer) {
+        final double chordDifference = nextValue - oldValue;
         final double totalHeight = current.targetHeight - previous.targetHeight;
         final double currentHeight = currentLayer - previous.targetHeight;
         final double fraction = currentHeight / totalHeight;
-        return previous.targetChord + chordDifference * fraction;
+        return oldValue + chordDifference * fraction;
     }
 
     private List<double[]> getAerofoilData() {
