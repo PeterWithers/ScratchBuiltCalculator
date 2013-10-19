@@ -61,10 +61,10 @@ public class GcodeWing extends Gcode {
             while (currentZ < current.targetHeight) {
                 final double calculatedChord = interpolateValue(previous, previous.targetChord, current, current.targetChord, currentZ);
                 final double forwardOffset = interpolateValue(previous, previous.forwardOffset, current, current.forwardOffset, currentZ);;
-                writeLayer(bufferedWriter, integratedStruts, calculatedChord, forwardOffset, current.heightOffset, false);
+                writeLayer(bufferedWriter, integratedStruts, calculatedChord, forwardOffset, current.heightOffset, true, false);
                 setNextLayer(bufferedWriter);
-                writeLayer(bufferedWriter, aerofoilStruts, calculatedChord, forwardOffset, current.heightOffset, false);
-                writeLayer(bufferedWriter, aerofoilData, calculatedChord, forwardOffset, current.heightOffset, false);
+                writeLayer(bufferedWriter, aerofoilStruts, calculatedChord, forwardOffset, current.heightOffset, true, false);
+                writeLayer(bufferedWriter, aerofoilData, calculatedChord, forwardOffset, current.heightOffset, true, false);
                 writePercentDone(bufferedWriter, maxZ, currentZ);
                 setNextLayer(bufferedWriter);
             }

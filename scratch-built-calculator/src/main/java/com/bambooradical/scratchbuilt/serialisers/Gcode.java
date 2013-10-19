@@ -154,37 +154,54 @@ public abstract class Gcode {
 
     protected void writeComplexLayer(BufferedWriter bufferedWriter, List<List<double[]>> complexData, double targetChord, double forwardOffset, double heightOffset) throws IOException {
         for (List<double[]> segment : complexData) {
-            writeLayer(bufferedWriter, segment, targetChord, forwardOffset, heightOffset, true);
+            writeLayer(bufferedWriter, segment, targetChord, forwardOffset, heightOffset, false, true);
         }
     }
 
-    protected void writeLayer(BufferedWriter bufferedWriter, List<double[]> aerofoilData, double targetChord, double forwardOffset, double heightOffset, boolean deprime) throws IOException {
+    protected void writeLayer(BufferedWriter bufferedWriter, List<double[]> aerofoilData, double targetChord, double forwardOffset, double heightOffset, boolean flip, boolean deprime) throws IOException {
         final int xAxisElement;
         final int yAxisElement;
         final double xOffset;
         final double yOffset;
+        final double xFlip;
+        final double yFlip;
+
         switch (orientation) {
             case horizontal:
                 xAxisElement = 0;
                 yAxisElement = 1;
                 xOffset = targetChord / 2 + heightOffset;
                 yOffset = 0 + forwardOffset;
+                if (flip) {
+                    xFlip = 1;
+                    yFlip = -1;
+                } else {
+                    xFlip = 1;
+                    yFlip = 1;
+                }
                 break;
             default:
                 xAxisElement = 1;
                 yAxisElement = 0;
                 xOffset = 0 + heightOffset;
                 yOffset = targetChord / 2 + forwardOffset;
+                if (flip) {
+                    xFlip = -1;
+                    yFlip = 1;
+                } else {
+                    xFlip = 1;
+                    yFlip = 1;
+                }
                 break;
         }
 
-        currentX = aerofoilData.get(0)[xAxisElement] * targetChord - xOffset;
-        currentY = aerofoilData.get(0)[yAxisElement] * targetChord - yOffset;
+        currentX = (aerofoilData.get(0)[xAxisElement] * xFlip) * targetChord - xOffset;
+        currentY = (aerofoilData.get(0)[yAxisElement] * yFlip) * targetChord - yOffset;
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d; move\r\n", currentX, currentY, currentZ, travelSpeed));
         bufferedWriter.write(String.format("G1 X%.3f Y%.3f Z%.3f F%d A%.5f; prime\r\n", currentX, currentY, currentZ, primeSpeed, currentA));
         for (double[] dataElement : aerofoilData) {
-            final double nextX = dataElement[xAxisElement] * targetChord - xOffset;
-            final double nextY = dataElement[yAxisElement] * targetChord - yOffset;
+            final double nextX = (dataElement[xAxisElement] * xFlip) * targetChord - xOffset;
+            final double nextY = (dataElement[yAxisElement] * yFlip) * targetChord - yOffset;
             extrudeTo(nextX, nextY, bufferedWriter);
         }
         if (deprime) {
