@@ -272,7 +272,31 @@ public class TrainerDataTest {
         System.out.println("getWingArea");
         TrainerData instance = new TrainerData();
         double expResult = 12.8;
-        double result = instance.getWingArea();
+        double result = instance.getWingAreaDm2();
         assertEquals(expResult, result, 0);
+    }
+
+    /**
+     * Test of getWingLoading method, of class TrainerData.
+     */
+    @Test
+    public void testGetWingLoading() {
+        System.out.println("getWingLoading");
+        TrainerData instance = new TrainerData();
+        double expResult = 39.0625;
+        double result = instance.getWingLoading();
+        assertEquals(expResult, result, 0);
+    }
+
+    /**
+     * Test of getCubicWingLoading method, of class TrainerData.
+     */
+    @Test
+    public void testGetCubicWingLoading() {
+        System.out.println("getCubicWingLoading");
+        TrainerData instance = new TrainerData();
+        double expResult = 10.9;
+        double result = instance.getCubicWingLoading();
+        assertEquals(expResult, result, 0.05);
     }
 }

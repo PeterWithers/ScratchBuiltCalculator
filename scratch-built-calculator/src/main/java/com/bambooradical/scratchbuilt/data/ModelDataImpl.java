@@ -28,7 +28,7 @@ public class ModelDataImpl implements ModelData {
     private final int aileronChord;
     private final int chordLength;
     private final int wingSpan;
-    private double wingArea;
+    private final double weightGrams;
     private final int wingHeight;
     private final int aileronStart;
     private final int aileronEnd;
@@ -59,19 +59,18 @@ public class ModelDataImpl implements ModelData {
 //ECHO: "horizontalStabiliser(112.8,169.2,112.8);"
 //ECHO: "elevator(80,120,112.8,20);"
 //    final int fuselageSectionLength = 160 + 160 + 280;
-    int weightInGrams = 500;
 
-    public ModelDataImpl(WingType wingType, int chordLength, int wingSpan, double dihedralAngle, double attackAngle, int aileronEnd, int aileronStart, int aileronChord, int wingHeight, int fuselageHeight, int fuselageWidth, int fuselageEndsDiameter) {
+    public ModelDataImpl(WingType wingType, int chordLength, int wingSpan, double dihedralAngle, double attackAngle, int aileronEnd, int aileronStart, int aileronChord, int wingHeight, int fuselageHeight, int fuselageWidth, int fuselageEndsDiameter, double grams) {
         this.wingType = wingType;
         this.chordLength = chordLength;
         this.wingSpan = wingSpan;
+        this.weightGrams = grams;
 //        wingSpan = strutSpacing * strutsPerWing * 2;
         stabiliserChord = chordLength / 2;
         stabiliserSpanLeading = chordLength;
         stabiliserSpanTrailing = chordLength * 2;
 //        aileronLength = wingSpan / 4 - 5;
 //        chordLength = chordRibLength + aileronChord;
-        wingArea = ((wingSpan / 100.0) * ((chordLength) / 100.0));
 //        chordRibLength = 120;
         this.aileronChord = aileronChord;
         fuselageLength = (int) (wingSpan * 0.75);
@@ -160,7 +159,7 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public int getStabiliserHeightTrailing() {
-        return (int)(getStabiliserSpanTrailing() / 2.65); // was stabiliserChord
+        return (int) (getStabiliserSpanTrailing() / 2.65); // was stabiliserChord
     }
 
     @Override
@@ -214,8 +213,20 @@ public class ModelDataImpl implements ModelData {
     }
 
     @Override
-    public double getWingArea() {
-        return wingArea;
+    public double getWingAreaDm2() {
+        return ((wingSpan / 100.0) * ((chordLength) / 100.0));
+    }
+
+    @Override
+    public double getWingLoading() {
+        return getWeightInGrams() / getWingAreaDm2();
+    }
+
+    @Override
+    public double getCubicWingLoading() {
+        final double weightInKg = getWeightInGrams() / 1000;
+        final double rootAreaMeters = Math.sqrt((wingSpan / 1000.0) * ((chordLength) / 1000.0));
+        return weightInKg / (rootAreaMeters * rootAreaMeters * rootAreaMeters);
     }
 
     @Override
@@ -232,7 +243,7 @@ public class ModelDataImpl implements ModelData {
 
     @Override
     public double getWeightInGrams() {
-        return weightInGrams;
+        return weightGrams;
     }
 
     @Override

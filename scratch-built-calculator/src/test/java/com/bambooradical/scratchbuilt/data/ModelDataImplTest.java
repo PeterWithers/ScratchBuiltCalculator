@@ -35,7 +35,7 @@ public class ModelDataImplTest {
     @Test
     public void testGetFuselageColour() {
         System.out.println("getFuselageColour");
-        ModelDataImpl instance = new ModelDataImpl(WingType.flat, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        ModelDataImpl instance = new ModelDataImpl(WingType.flat, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         String expResult = "#C27900".toLowerCase();
         Colour result = instance.getRudderColour();
         final String hexString = Integer.toHexString(result.getRGB());

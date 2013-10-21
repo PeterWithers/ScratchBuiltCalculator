@@ -26,6 +26,7 @@ import com.bambooradical.scratchbuilt.serialisers.GcodeFuselage;
 import com.bambooradical.scratchbuilt.serialisers.GcodeWing;
 import com.bambooradical.scratchbuilt.serialisers.SvgGcodeViewer;
 import com.bambooradical.scratchbuilt.serialisers.SvgLayout;
+import com.bambooradical.scratchbuilt.serialisers.SvgReport;
 import com.bambooradical.scratchbuilt.serialisers.YasimConfig;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -92,12 +93,22 @@ public class CalculatorResource {
     @DefaultValue("5") // 15
     @QueryParam("fuselageEndsDiameter")
     int fuselageEndsDiameter;
+    @DefaultValue("500") // 15
+    @QueryParam("weightGrams")
+    double weightGrams;
+
+    @GET
+    @Produces(MediaType.TEXT_XML)
+    @Path("report")
+    public SvgReport getReport(@Context HttpServletRequest httpServletRequest) {
+        return new SvgReport(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams));
+    }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("ac3d")
     public String getAc3dFile(@Context HttpServletRequest httpServletRequest) {
-        return new Ac3dFile(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)).getAc3dFile();
+        return new Ac3dFile(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams)).getAc3dFile();
     }
 
     @GET
@@ -108,7 +119,7 @@ public class CalculatorResource {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
-                    GcodeWing gcodeWing = new GcodeWing(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+                    GcodeWing gcodeWing = new GcodeWing(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams));
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(output));
                     gcodeWing.getGcode(bufferedWriter);
                 } catch (IOException exception) {
@@ -128,7 +139,7 @@ public class CalculatorResource {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
-                    GcodeFuselage gcodeFuselage = new GcodeFuselage(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+                    GcodeFuselage gcodeFuselage = new GcodeFuselage(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams));
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(output));
                     gcodeFuselage.getGcode(bufferedWriter);
                 } catch (IOException exception) {
@@ -144,42 +155,42 @@ public class CalculatorResource {
     @Produces(MediaType.TEXT_XML)
     @Path("yasim")
     public YasimConfig getYasimFile(@Context HttpServletRequest httpServletRequest) {
-        return new YasimConfig(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+        return new YasimConfig(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams));
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("gcodewing.svg")
     public SvgGcodeViewer getGcodeWingSvg(@Context HttpServletRequest httpServletRequest) {
-        return new SvgGcodeViewer(new GcodeWing(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)));
+        return new SvgGcodeViewer(new GcodeWing(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams)));
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("gcodefuselage.svg")
     public SvgGcodeViewer getGcodeFuselageSvg(@Context HttpServletRequest httpServletRequest) {
-        return new SvgGcodeViewer(new GcodeFuselage(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter)));
+        return new SvgGcodeViewer(new GcodeFuselage(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams)));
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("svg")
     public SvgLayout getSvgFile(@Context HttpServletRequest httpServletRequest) {
-        return new SvgLayout(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+        return new SvgLayout(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams));
     }
 
     @GET
     @Produces(MediaType.TEXT_XML)
     @Path("set")
     public AircraftSet getSetFile(@Context HttpServletRequest httpServletRequest) {
-        return new AircraftSet(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter));
+        return new AircraftSet(new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams));
     }
 
     @GET
     @Produces("application/zip")
     @Path("zip")
     public Response getZipFile(@Context HttpServletRequest httpServletRequest) throws IOException, JAXBException {
-        final ModelDataImpl modelDataImpl = new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter);
+        final ModelDataImpl modelDataImpl = new ModelDataImpl(wingType, wingChord, wingSpan, dihedralAngle, attackAngle, aileronEnd, aileronStart, aileronChord, wingHeight, fuselageHeight, fuselageWidth, fuselageEndsDiameter, weightGrams);
         StreamingOutput zipfileStream = new StreamingOutput() {
             @Override
             public void write(OutputStream out) throws IOException, WebApplicationException {

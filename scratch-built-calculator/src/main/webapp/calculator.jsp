@@ -81,6 +81,7 @@
                 var fuselagewidth = document.getElementById("fuselagewidth").value;
                 var fuselageendseiameter = document.getElementById("fuselageendseiameter").value;
                 var wingheight = document.getElementById("wingheight").value;
+                var weightGrams = document.getElementById("weightGrams").value;
                 var getParam = '?wingSpan=' + wingSpan + '&wingType=' + wingType + '&wingChord=' + wingChord
                         + '&dihedral=' + dihedral + '&attackAngle=' + attackangle
                         + '&aileronEnd=' + aileronend
@@ -89,7 +90,8 @@
                         + '&fuselageHeight=' + fuselageheight
                         + '&fuselageWidth=' + fuselagewidth
                         + '&fuselageEndsDiameter=' + fuselageendseiameter
-                        + '&wingHeight=' + wingheight;
+                        + '&wingHeight=' + wingheight
+                        + '&weightGrams=' + weightGrams;
                 ga('send', 'event', {
                     'eventCategory': formatType,
                     'eventAction': getParam
@@ -99,6 +101,7 @@
             function onLoaded() {
             }
             function updateModel() {
+                document.getElementById("svgReport").data = getRestUrl('report');
                 document.getElementById("svgImage").data = getRestUrl('svg');
                 document.getElementById("gcodeFuselage").data = getRestUrl('gcodefuselage.svg');
                 document.getElementById("gcodeWing").data = getRestUrl('gcodewing.svg');
@@ -126,9 +129,9 @@
         This is a work in progress, for more info: <a href="https://github.com/PeterWithers/ScratchBuiltCalculator">https://github.com/PeterWithers/ScratchBuiltCalculator</a><br>
         <table><tr><td>
                     <%--<%= // TrainerData trainerData = new TrainerData().getWingSpan(); %>--%>
-<%--                    fields: <% for (Field field : ModelDataImpl.class.getFields()) {%>
-                    field: <%=field.getName()%>"><br>
-                    <% }%>--%>
+                    <%--                    fields: <% for (Field field : ModelDataImpl.class.getFields()) {%>
+                                        field: <%=field.getName()%>"><br>
+                                        <% }%>--%>
                     <table><tr><td>
                                 Wing&nbsp;Type
                             </td><td>
@@ -180,6 +183,10 @@
                                 Wing&nbsp;Height
                             </td><td>
                                 <input id="wingheight" value="<%= new TrainerData().getWingHeight()%>"/>                            
+                            </td></tr><tr><td>
+                                Weight&nbsp;Grams
+                            </td><td>
+                                <input id="weightGrams" value="<%= new TrainerData().getWeightInGrams()%>"/>                            
                             </td></tr><tr><td></td><td>
                                 <input id="clickMe" type="button" value="update" onclick="updateModel();" />
                             </td></tr></table>
@@ -199,6 +206,7 @@
                     <input id="setButton" type="button" value="Browse to Aircraft Set File" onclick="window.location.href = getRestUrl('set');"/><br>
                     <input id="zipButton" type="button" value="Download Zip File" onclick="window.location.href = getRestUrl('zip');"/>
                 </td><td>
+                    <object id="svgReport" type="image/svg+xml" style="border:2px solid;"></object><br>
                     <object id="svgImage" type="image/svg+xml" style="border:2px solid;"></object><br>
                     <object id="gcodeWing" type="image/svg+xml" style="border:2px solid;"></object><br>
                     <object id="gcodeFuselage" type="image/svg+xml" style="border:2px solid;"></object><br>

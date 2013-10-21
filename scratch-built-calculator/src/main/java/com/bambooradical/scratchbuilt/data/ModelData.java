@@ -72,7 +72,11 @@ public interface ModelData {
 
     public int getWingSpan();
 
-    public double getWingArea();
+    public double getWingAreaDm2();
+
+    public double getWingLoading();
+
+    public double getCubicWingLoading();
 
     public int getWingHeight();
 
